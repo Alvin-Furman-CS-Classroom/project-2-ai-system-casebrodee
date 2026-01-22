@@ -8,7 +8,8 @@ Equipment monitoring uses core AI techniques: propositional logic defines normal
 
 ## Team
 
-- [Team member names to be added]
+- Case
+- Brodee
 
 ## Proposal
 
