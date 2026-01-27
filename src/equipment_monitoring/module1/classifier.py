@@ -36,8 +36,23 @@ def classify_reading(
     violated_rules = rules.evaluate_rules(reading, config, equipment_specs)
     status = "anomaly" if violated_rules else "normal"
 
-    # Placeholder confidence until a real scheme is chosen.
-    confidence = 1.0 if violated_rules else 1.0
+    # Calculate confidence based on number and type of violations
+    # More violations = higher confidence it's an anomaly
+    # Missing sensor values = lower confidence (could be data issue)
+    if not violated_rules:
+        confidence = 1.0  # High confidence in normal status
+    else:
+        num_violations = len(violated_rules)
+        has_missing = any("missing_" in rule for rule in violated_rules)
+        
+        # Base confidence: 0.7 for single violation, up to 0.95 for multiple
+        base_confidence = min(0.7 + (num_violations - 1) * 0.1, 0.95)
+        
+        # Reduce confidence if missing sensors (could be data quality issue)
+        if has_missing:
+            confidence = base_confidence * 0.8
+        else:
+            confidence = base_confidence
 
     result = {
         "timestamp": reading.get("timestamp"),
