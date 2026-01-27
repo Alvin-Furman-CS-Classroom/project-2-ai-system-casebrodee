@@ -180,20 +180,27 @@ Unit tests will mirror the structure of `src/`. For Module 1:
   - Loading configuration and equipment-spec JSON.
   - Handling missing or malformed fields.
   - Correctly applying equipment-specific overrides.
+  - Edge cases around threshold boundaries (exactly at `min`/`max`).
 
 - `unit_tests/module1/test_rules.py`
   - Correct detection of:
     - `*_high` and `*_low` conditions at and beyond thresholds.
     - Multiple simultaneous violations for one reading.
     - No violations when readings are within range.
+  - Handling of missing values (e.g., `missing_temperature` rules).
 
 - `unit_tests/module1/test_classifier.py`
   - End-to-end classification of synthetic readings using simple configs/specs.
   - Asserting status, violated rules, and confidence values.
+  - Scenarios with:
+    - all-normal readings,
+    - clearly anomalous readings,
+    - mixed batches (normal + anomaly).
 
 - `unit_tests/module1/test_io.py`
   - Reading well-formed CSVs into internal data structures.
   - Writing JSONL classifications and alert text files.
+  - Basic round-trip behavior for a tiny synthetic CSV.
 
 ### Integration Tests (`integration_tests/`)
 
