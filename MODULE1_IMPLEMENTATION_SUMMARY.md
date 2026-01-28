@@ -1,7 +1,7 @@
 # Module 1 Implementation Summary
 
 ## Overview
-Implemented the core rule evaluation logic for Module 1 (Basic Rule-Based Monitoring) using propositional logic. This completes the missing piece that connects the existing I/O, config loading, and classifier orchestration code.
+Implemented the core rule evaluation logic for Module 1 (Basic Rule-Based Monitoring) using propositional logic.
 
 ## Files Modified
 
@@ -165,22 +165,3 @@ pytest integration_tests/module1/test_module1_smoke.py -v
 - Sample data files (not required - tests create their own)
 - Additional edge cases (can be added incrementally)
 - More sophisticated confidence algorithms (current is functional)
-
----
-
-## Notes for Partner
-
-- The rule evaluation is now fully functional - the system can detect anomalies
-- All existing code structure is preserved - no breaking changes
-- CSV values are automatically converted from strings to floats
-- Equipment-specific thresholds work as expected (override global config)
-- Confidence scores are now meaningful (not hardcoded to 1.0)
-- All tests are ready to run and should pass
-
-The module is now **functionally complete** for Module 1 requirements. The system can:
-1. Load configs and equipment specs ✅
-2. Read sensor data from CSV ✅
-3. Evaluate rules using propositional logic ✅
-4. Classify readings as normal/anomaly ✅
-5. Generate confidence scores ✅
-6. Output classifications and alerts ✅
