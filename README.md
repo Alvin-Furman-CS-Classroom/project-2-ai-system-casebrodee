@@ -1,83 +1,229 @@
-# [Your System Title]
+## Industrial Equipment Monitoring & Predictive Maintenance System
 
-## Overview
+This project implements an industrial equipment monitoring and predictive maintenance system for motors, pumps, and bearings using sensor data (temperature, vibration, pressure). The system is organized into modules that correspond to core AI topics from CSC-343.
 
-Provide a concise system overview (200-300 words). Explain the unifying theme and how the modules combine into a coherent AI system.
+The implementation language is **Python**, with **pytest** for testing.
 
-## Team
-
-- Member 1
-- Member 2
-- Member 3 (if applicable)
-
-## Proposal
-
-Link to the approved Project 1 proposal (or paste a short summary here).
+---
 
 ## Module Plan
 
-Your system must include 5-6 modules. Fill in the table below as you plan each module.
+The overall module plan is adapted from `PROPOSAL.md`:
 
 | Module | Topic(s) | Inputs | Outputs | Depends On | Checkpoint |
 | ------ | -------- | ------ | ------- | ---------- | ---------- |
-| 1 |  |  |  |  |  |
-| 2 |  |  |  |  |  |
-| 3 |  |  |  |  |  |
-| 4 |  |  |  |  |  |
-| 5 |  |  |  |  |  |
-| 6 (optional) |  |  |  |  |  |
+| 1 | Propositional Logic | Configuration file (JSON), Sensor readings CSV, Equipment specifications (JSON) | Per-reading classification (JSON), Alert messages (text) | None | Checkpoint 1 (Week 3) |
+| 2 | Uninformed Search (BFS, DFS), Informed Search (A*, Heuristics) | Historical sensor data with failure events, Graph structure, Search parameters | Discovered failure sequences, Visualizations, Ranked warning signs | Module 1 | Checkpoint 2 (Week 5) |
+| 3 | First-Order Logic (Quantifiers, Unification, Inference) | Knowledge base, Equipment state and sensor readings, Detected anomalies | Inferred diagnosis with confidence, Explanation chains, Priority ranking, Inspection recommendations | Modules 1-2 | Checkpoint 3 (Week 7) |
+| 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Equipment health assessments, Maintenance actions, Production schedule, Cost parameters | Optimized maintenance schedule, Trade-off analysis, Contingency plans | Modules 1-3 | Checkpoint 4 (Week 9) |
+| 5 | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | Labeled dataset, Feature engineering pipeline, Training parameters | Trained model with metrics, Confusion matrix, Real-time predictions, Performance comparison | Modules 1-4 | Checkpoint 5 (Week 11) |
+| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Environment state, Reward function, Historical feedback data | Learned policy, Adaptation history, Performance metrics | Modules 1-5 | Checkpoint 6 (Week 13) |
+
+---
+
+## Module 1: Basic Rule-Based Monitoring
+
+- **Topic:** Propositional Logic (knowledge bases, inference methods)
+- **Goal:** For each sensor reading, classify the equipment status as **normal** or **anomaly**, list violated rules, and provide a confidence score. Also generate human-readable alert summaries.
+
+### Inputs
+
+- **Configuration JSON** (global thresholds per metric)
+  - Example shape:
+
+```json
+{
+  "temperature": { "min": 20.0, "max": 80.0 },
+  "vibration":  { "max": 5.0 },
+  "pressure":   { "min": 10.0, "max": 50.0 }
+}
+```
+
+- **Equipment specification JSON** (per equipment type ranges and metadata)
+
+```json
+{
+  "pump_A": {
+    "temperature": { "min": 25.0, "max": 75.0 },
+    "vibration":  { "max": 4.5 },
+    "pressure":   { "min": 12.0, "max": 45.0 }
+  }
+}
+```
+
+- **Sensor readings CSV**
+  - Required columns: `timestamp, equipment_id, temperature, vibration, pressure`
+  - Example:
+
+```text
+timestamp,equipment_id,temperature,vibration,pressure
+2026-01-01T00:00:00Z,pump_A,30.0,2.1,20.0
+2026-01-01T00:01:00Z,pump_A,85.0,5.5,8.0
+```
+
+### Outputs
+
+- **Per-reading JSON classification records** (one per CSV row), e.g.:
+
+```json
+{
+  "timestamp": "2026-01-01T00:01:00Z",
+  "equipment_id": "pump_A",
+  "status": "anomaly",
+  "violated_rules": ["temperature_high", "pressure_low", "vibration_high"],
+  "confidence": 0.9
+}
+```
+
+- **Alert messages (text)**
+  - Example line-oriented format:
+
+```text
+[2026-01-01T00:01:00Z] pump_A anomaly: temperature_high, pressure_low, vibration_high (confidence=0.90)
+```
+
+### Assumptions
+
+- Timestamps are ISO-8601 strings in UTC.
+- Units:
+  - Temperature in °C.
+  - Vibration as a scalar magnitude (e.g., mm/s).
+  - Pressure in bar (or a consistent single unit you choose and document).
+- Missing values:
+  - By default, a missing sensor reading for a metric will be treated as **no reading** and can optionally trigger a `missing_<metric>` rule.
+- Configuration JSON provides defaults; equipment-spec JSON can override per-equipment thresholds.
+
+### Public Interfaces (for later modules)
+
+These interfaces will be defined under `src/equipment_monitoring/module1/`:
+
+- `classify_reading(reading, config, specs) -> dict`
+  - Classify a single reading dict into the JSON structure above.
+- `run_module1(config_path, specs_path, csv_path, output_dir) -> None`
+  - End-to-end runner used by the CLI and integration tests.
+
+---
 
 ## Repository Layout
 
+The repository is organized as follows:
+
+```text
+project-2-ai-system-casebrodee/
+├── src/                      # main Python source code
+├── unit_tests/               # pytest unit tests (parallel to src/)
+├── integration_tests/        # integration / end-to-end tests
+├── .claude/                  # agent skills
+├── AGENTS.md                 # LLM agent instructions
+└── README.md                 # this file
 ```
-your-repo/
-├── src/                              # main system source code
-├── unit_tests/                       # unit tests (parallel structure to src/)
-├── integration_tests/                # integration tests (new folder for each module)
-├── .claude/skills/code-review/SKILL.md  # rubric-based agent review
-├── AGENTS.md                         # instructions for your LLM agent
-└── README.md                         # system overview and checkpoints
+
+Module 1 code will live in `src/equipment_monitoring/module1/` with matching tests in `unit_tests/module1/`.
+
+---
+
+## Environment & Setup
+
+- **Python version:** 3.10+ (recommended)
+
+### Installing dependencies
+
+1. Create and activate a virtual environment (example using `venv`):
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-## Setup
+2. Install dependencies:
 
-List dependencies, setup steps, and any environment variables required to run the system.
+```bash
+pip install -r requirements.txt
+```
 
-## Running
+The initial dependencies are:
 
-Provide commands or scripts for running modules and demos.
+- `pytest` — testing framework.
+
+Additional dependencies for future modules (e.g., plotting, ML libraries) can be added later.
+
+---
+
+## Running Module 1
+
+Once Module 1 is implemented, you will be able to run it via a small CLI:
+
+```bash
+python -m equipment_monitoring.cli \
+  --config data/module1/config.json \
+  --specs data/module1/equipment_specs.json \
+  --readings data/module1/readings.csv \
+  --output-dir outputs/module1
+```
+
+Expected outputs:
+
+- `outputs/module1/classifications.jsonl` — one JSON record per line.
+- `outputs/module1/alerts.txt` — human-readable alerts.
+
+The exact CLI options will be defined in `src/equipment_monitoring/cli.py`.
+
+---
 
 ## Testing
 
-**Unit Tests** (`unit_tests/`): Mirror the structure of `src/`. Each module should have corresponding unit tests.
+### Unit Tests (`unit_tests/`)
 
-**Integration Tests** (`integration_tests/`): Create a new subfolder for each module beyond the first, demonstrating how modules work together.
+Unit tests will mirror the structure of `src/`. For Module 1:
 
-Provide commands to run tests and describe any test data needed.
+- `unit_tests/module1/test_config.py`
+  - Loading configuration and equipment-spec JSON.
+  - Handling missing or malformed fields.
+  - Correctly applying equipment-specific overrides.
+  - Edge cases around threshold boundaries (exactly at `min`/`max`).
+
+- `unit_tests/module1/test_rules.py`
+  - Correct detection of:
+    - `*_high` and `*_low` conditions at and beyond thresholds.
+    - Multiple simultaneous violations for one reading.
+    - No violations when readings are within range.
+  - Handling of missing values (e.g., `missing_temperature` rules).
+
+- `unit_tests/module1/test_classifier.py`
+  - End-to-end classification of synthetic readings using simple configs/specs.
+  - Asserting status, violated rules, and confidence values.
+  - Scenarios with:
+    - all-normal readings,
+    - clearly anomalous readings,
+    - mixed batches (normal + anomaly).
+
+- `unit_tests/module1/test_io.py`
+  - Reading well-formed CSVs into internal data structures.
+  - Writing JSONL classifications and alert text files.
+  - Basic round-trip behavior for a tiny synthetic CSV.
+
+### Integration Tests (`integration_tests/`)
+
+For Module 1, a basic smoke test will live in `integration_tests/module1/`:
+
+- Run the full Module 1 pipeline on a tiny synthetic dataset.
+- Assert that:
+  - Output files exist.
+  - The expected number of anomalies is detected.
+  - Specific `violated_rules` tags appear in the outputs.
+
+---
 
 ## Checkpoint Log
 
+Use this section to track progress against course checkpoints:
+
 | Checkpoint | Date | Modules Included | Status | Evidence |
 | ---------- | ---- | ---------------- | ------ | -------- |
-| 1 |  |  |  |  |
+| 1 |  | Module 1 |  |  |
 | 2 |  |  |  |  |
 | 3 |  |  |  |  |
 | 4 |  |  |  |  |
+| 5 |  |  |  |  |
+| 6 |  |  |  |  |
 
-## Required Workflow (Agent-Guided)
-
-Before each module:
-
-1. Write a short module spec in this README (inputs, outputs, dependencies, tests).
-2. Ask the agent to propose a plan in "Plan" mode.
-3. Review and edit the plan. You must understand and approve the approach.
-4. Implement the module in `src/`.
-5. Unit test the module, placing tests in `unit_tests/` (parallel structure to `src/`).
-6. For modules beyond the first, add integration tests in `integration_tests/` (new subfolder per module).
-7. Run a rubric review using the code-review skill at `.claude/skills/code-review/SKILL.md`.
-
-Keep `AGENTS.md` updated with your module plan, constraints, and links to APIs/data sources.
-
-## References
-
-List libraries, APIs, datasets, and other references used by the system.
