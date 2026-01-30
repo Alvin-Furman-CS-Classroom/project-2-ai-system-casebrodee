@@ -173,3 +173,231 @@ def test_evaluate_rules_equipment_specific_violation() -> None:
 
     assert "temperature_high" in result
 
+
+# Boundary Value Tests
+
+def test_evaluate_rules_exactly_at_min_boundary() -> None:
+    """Test that value exactly at min threshold is normal (not a violation)."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "20.0",  # Exactly at min
+        "vibration": "2.0",
+        "pressure": "10.0",  # Exactly at min
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    # Values exactly at min should be normal (not < min, so no violation)
+    assert result == []
+
+
+def test_evaluate_rules_exactly_at_max_boundary() -> None:
+    """Test that value exactly at max threshold is normal (not a violation)."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "80.0",  # Exactly at max
+        "vibration": "5.0",  # Exactly at max
+        "pressure": "50.0",  # Exactly at max
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    # Values exactly at max should be normal (not > max, so no violation)
+    assert result == []
+
+
+def test_evaluate_rules_just_above_max_boundary() -> None:
+    """Test that value just above max threshold triggers violation."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "80.0001",  # Just above max
+        "vibration": "2.0",
+        "pressure": "25.0",
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    assert "temperature_high" in result
+    assert len(result) == 1
+
+
+def test_evaluate_rules_just_below_min_boundary() -> None:
+    """Test that value just below min threshold triggers violation."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "30.0",
+        "vibration": "2.0",
+        "pressure": "9.9999",  # Just below min
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    assert "pressure_low" in result
+    assert len(result) == 1
+
+
+def test_evaluate_rules_at_boundary_with_equipment_specific() -> None:
+    """Test boundary values with equipment-specific thresholds."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "75.0",  # Exactly at equipment-specific max
+        "vibration": "2.0",
+        "pressure": "25.0",
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {
+        "pump_A": {
+            "temperature": {"min": 25.0, "max": 75.0},
+        }
+    }
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    # Should be normal - exactly at equipment-specific max
+    assert result == []
+
+
+def test_evaluate_rules_just_above_equipment_specific_max() -> None:
+    """Test value just above equipment-specific max triggers violation."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "75.0001",  # Just above equipment-specific max
+        "vibration": "2.0",
+        "pressure": "25.0",
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {
+        "pump_A": {
+            "temperature": {"min": 25.0, "max": 75.0},
+        }
+    }
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    assert "temperature_high" in result
+    assert len(result) == 1
+
+
+def test_evaluate_rules_very_small_epsilon_above_max() -> None:
+    """Test that even very small differences above max trigger violations."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "80.0000001",  # Tiny epsilon above max
+        "vibration": "2.0",
+        "pressure": "25.0",
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    assert "temperature_high" in result
+
+
+def test_evaluate_rules_very_small_epsilon_below_min() -> None:
+    """Test that even very small differences below min trigger violations."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "30.0",
+        "vibration": "2.0",
+        "pressure": "9.9999999",  # Tiny epsilon below min
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    assert "pressure_low" in result
+
+
+def test_evaluate_rules_boundary_with_only_max_threshold() -> None:
+    """Test boundary behavior when only max threshold is defined."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "30.0",
+        "vibration": "5.0",  # Exactly at max (no min defined)
+        "pressure": "25.0",
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},  # Only max, no min
+        "pressure": {"min": 10.0, "max": 50.0},
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    # Should be normal - exactly at max, and no min to check
+    assert result == []
+
+
+def test_evaluate_rules_boundary_with_only_min_threshold() -> None:
+    """Test boundary behavior when only min threshold is defined."""
+    reading = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "equipment_id": "pump_A",
+        "temperature": "30.0",
+        "vibration": "2.0",
+        "pressure": "10.0",  # Exactly at min (max not defined for this test)
+    }
+    cfg = {
+        "temperature": {"min": 20.0, "max": 80.0},
+        "vibration": {"max": 5.0},
+        "pressure": {"min": 10.0},  # Only min, no max
+    }
+    specs = {}
+
+    result = rules.evaluate_rules(reading, cfg, specs)
+
+    # Should be normal - exactly at min, and no max to check
+    assert result == []
+
