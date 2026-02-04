@@ -52,7 +52,10 @@ The overall module plan is adapted from `PROPOSAL.md`:
 ```
 
 - **Sensor readings CSV**
-  - Required columns: `timestamp, equipment_id, temperature, vibration, pressure`
+  - Required columns for Module 1: `timestamp, equipment_id, temperature, vibration, pressure`
+  - The rule engine derives which sensors to check from the configuration and equipment-spec JSON files, so adding new numeric sensors in the future is as simple as:
+    - adding them (with thresholds) to the config/specs JSON, and
+    - adding matching columns to the CSV.
   - Example:
 
 ```text
@@ -92,6 +95,7 @@ timestamp,equipment_id,temperature,vibration,pressure
 - Missing values:
   - By default, a missing sensor reading for a metric will be treated as **no reading** and can optionally trigger a `missing_<metric>` rule.
 - Configuration JSON provides defaults; equipment-spec JSON can override per-equipment thresholds.
+- Confidence is a **heuristic severity indicator**, not a calibrated probability. More independent rule violations generally produce higher anomaly confidence, while the presence of `missing_*` rules reduces confidence to reflect data quality concerns.
 
 ### Public Interfaces (for later modules)
 

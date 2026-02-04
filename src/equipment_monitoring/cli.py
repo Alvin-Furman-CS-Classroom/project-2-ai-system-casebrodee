@@ -13,9 +13,12 @@ Example usage (from the project README):
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 from .module1 import classifier
+from .module1 import config as config_module
+from .module1 import io as io_module
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -47,12 +50,25 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
-    classifier.run_module1(
-        config_path=Path(args.config),
-        specs_path=Path(args.specs),
-        csv_path=Path(args.readings),
-        output_dir=Path(args.output_dir),
-    )
+    try:
+        classifier.run_module1(
+            config_path=Path(args.config),
+            specs_path=Path(args.specs),
+            csv_path=Path(args.readings),
+            output_dir=Path(args.output_dir),
+        )
+    except FileNotFoundError as e:
+        print(f"[error] {e}", file=sys.stderr)
+        sys.exit(1)
+    except config_module.ConfigValidationError as e:
+        print(f"[config error] {e}", file=sys.stderr)
+        sys.exit(1)
+    except io_module.CSVValidationError as e:
+        print(f"[csv error] {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:  # Fallback for unexpected errors
+        print(f"[unexpected error] {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

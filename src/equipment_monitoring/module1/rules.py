@@ -13,7 +13,7 @@ Rules are expressed as logical conditions:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 
 def _get_thresholds(
@@ -85,6 +85,27 @@ def _check_sensor_rule(
     return violations
 
 
+def _collect_sensors(
+    config: Dict[str, Any],
+    equipment_specs: Dict[str, Any],
+) -> List[str]:
+    """
+    Collect the set of sensor names that have thresholds defined.
+
+    This supports easy extension: adding a new sensor is as simple as:
+    - adding it to the configuration / equipment specs JSON, and
+    - ensuring the CSV has a matching column.
+    """
+    sensors: Set[str] = set(config.keys())
+
+    for equipment_config in equipment_specs.values():
+        if isinstance(equipment_config, dict):
+            sensors.update(equipment_config.keys())
+
+    # Deterministic order for easier testing/debugging
+    return sorted(sensors)
+
+
 def evaluate_rules(
     reading: Dict[str, Any],
     config: Dict[str, Any],
@@ -117,8 +138,10 @@ def evaluate_rules(
     violations: List[str] = []
     equipment_id = reading.get("equipment_id")
 
-    # Check each sensor type
-    sensors = ["temperature", "vibration", "pressure"]
+    # Determine which sensors to check based on config/specs.
+    # For Module 1 this will typically be {"temperature", "vibration", "pressure"},
+    # but this approach makes it easy to add more sensors later.
+    sensors = _collect_sensors(config, equipment_specs)
     for sensor_name in sensors:
         # Parse the sensor value (CSV values are strings)
         sensor_value = _parse_sensor_value(reading.get(sensor_name))

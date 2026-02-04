@@ -1,3 +1,4 @@
+import json
 import pathlib
 import pytest
 
@@ -46,7 +47,7 @@ def test_load_threshold_config_invalid_json(tmp_path: pathlib.Path) -> None:
     cfg_path = tmp_path / "config.json"
     cfg_path.write_text('{"temperature": {invalid}', encoding="utf-8")
 
-    with pytest.raises(Exception):  # JSONDecodeError
+    with pytest.raises(json.JSONDecodeError):
         config.load_threshold_config(cfg_path)
 
 

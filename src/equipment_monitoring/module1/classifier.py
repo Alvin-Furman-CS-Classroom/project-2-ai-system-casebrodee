@@ -15,6 +15,13 @@ from . import config as config_module
 from . import rules
 from . import io
 
+# Heuristic confidence parameters (severity indicators, not calibrated probabilities)
+CONFIDENCE_NORMAL = 1.0
+CONFIDENCE_ANOMALY_BASE = 0.7  # base confidence for a single violation
+CONFIDENCE_ANOMALY_INCREMENT = 0.1  # added per additional violation
+CONFIDENCE_ANOMALY_CAP = 0.95  # maximum anomaly confidence
+CONFIDENCE_MISSING_SENSOR_FACTOR = 0.8  # multiplier when missing_* rules are present
+
 
 def classify_reading(
     reading: Dict[str, Any],
@@ -29,9 +36,7 @@ def classify_reading(
     - equipment_id
     - status: "normal" or "anomaly"
     - violated_rules: list of strings
-    - confidence: float between 0 and 1
-
-    Implementation will be completed in the Module 1 coding phase.
+    - confidence: float between 0 and 1 (heuristic severity indicator)
     """
     violated_rules = rules.evaluate_rules(reading, config, equipment_specs)
     status = "anomaly" if violated_rules else "normal"
@@ -40,17 +45,17 @@ def classify_reading(
     # More violations = higher confidence it's an anomaly
     # Missing sensor values = lower confidence (could be data issue)
     if not violated_rules:
-        confidence = 1.0  # High confidence in normal status
+        confidence = CONFIDENCE_NORMAL
     else:
         num_violations = len(violated_rules)
         has_missing = any("missing_" in rule for rule in violated_rules)
-        
-        # Base confidence: 0.7 for single violation, up to 0.95 for multiple
-        base_confidence = min(0.7 + (num_violations - 1) * 0.1, 0.95)
-        
-        # Reduce confidence if missing sensors (could be data quality issue)
+
+        base_confidence = min(
+            CONFIDENCE_ANOMALY_BASE + (num_violations - 1) * CONFIDENCE_ANOMALY_INCREMENT,
+            CONFIDENCE_ANOMALY_CAP,
+        )
         if has_missing:
-            confidence = base_confidence * 0.8
+            confidence = base_confidence * CONFIDENCE_MISSING_SENSOR_FACTOR
         else:
             confidence = base_confidence
 
