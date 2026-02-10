@@ -1,3 +1,11 @@
+"""Unit tests for Module 1 I/O helpers (`io` module).
+
+These tests exercise:
+- CSV reading and validation behavior under various header/row conditions,
+- JSONL and alerts text writing (including directory creation), and
+- filtering so that only anomaly records appear in the alerts output.
+"""
+
 import pytest
 from pathlib import Path
 

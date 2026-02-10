@@ -1,3 +1,11 @@
+"""Unit tests for Module 1 configuration loading and validation (`config` module).
+
+These tests cover:
+- loading JSON configs/specs from disk (including error cases),
+- structural and type validation for threshold and equipment-spec entries, and
+- edge cases such as empty configs and invalid key/threshold combinations.
+"""
+
 import json
 import pathlib
 import pytest

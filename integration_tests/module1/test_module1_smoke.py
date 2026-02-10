@@ -1,3 +1,10 @@
+"""Integration / smoke tests for the Module 1 end-to-end pipeline.
+
+These tests run the full flow:
+config/spec loading -> CSV ingestion -> rule evaluation -> classification
+-> output file generation, including an equipment-specific thresholds scenario.
+"""
+
 import json
 from pathlib import Path
 

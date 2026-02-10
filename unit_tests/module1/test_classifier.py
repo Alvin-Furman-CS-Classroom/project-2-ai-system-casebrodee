@@ -1,3 +1,11 @@
+"""Unit tests for Module 1 classifier (`classifier.classify_reading`).
+
+These tests ensure that:
+- the returned classification dict has the expected shape,
+- confidence behaves sensibly as violations increase, and
+- missing_* rules lower confidence relative to purely sensor-based violations.
+"""
+
 from equipment_monitoring.module1 import classifier
 
 

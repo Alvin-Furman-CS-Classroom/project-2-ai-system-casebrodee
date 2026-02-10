@@ -1,3 +1,12 @@
+"""Unit tests for Module 1 rule evaluation (`rules.evaluate_rules`).
+
+These tests cover:
+- basic return type,
+- normal vs anomalous readings,
+- equipment-specific overrides, and
+- detailed boundary behavior around configured thresholds.
+"""
+
 from equipment_monitoring.module1 import rules
 
 
