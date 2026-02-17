@@ -32,9 +32,16 @@ Module 1 is **complete and aligned with the specification**: it implements the r
   Module 1 meaningfully engages with **Propositional Logic**: rules are expressed as logical conditions over sensor values (e.g., `IF temperature > max THEN temperature_high`, `IF sensor missing THEN missing_temperature`), forming a simple knowledge base over thresholds. The implementation cleanly separates rule evaluation from I/O and uses these propositional rules to drive anomaly detection and confidence, matching the intended AI topic and demonstrating understanding of rule-based reasoning.
 
 - **8. GitHub Practices — 3 / 4**  
-  Commit history shows regular, descriptive commit messages and work broken into logical units (e.g., boundary tests, CSV validation, Module 1 summary, Module 2 plan). While the rubric also mentions pull requests and issues, there is limited evidence of PR/issue workflows from the local repository view alone, so this is scored as “good practices” rather than exemplary. If you are using PRs and issues on GitHub Classroom, that will further strengthen this criterion.
+  Commit history shows regular, descriptive commit messages and work broken into logical units (e.g., boundary tests, CSV validation, Module 1 summary, Module 2 plan). While the rubric also mentions pull requests and issues, there is limited evidence of PR/issue workflows from the local repository view alone, so this is scored as “good practices” rather than exemplary. **This criterion is process- and workflow-based, not code-based.** To reach 4/4, use pull requests for feature branches and track work in issues where appropriate; the codebase itself does not need further changes for this item.
 
 ### Total Score
 
 - **Total points:** 8 + 8 + 8 + 6 + 5 + 5 + 6 + 3 = **49 / 50**
+
+### Changes Made to Support Perfect Scores Where Applicable
+
+- **Code Elegance (already 8/8):** To align with a perfect Code Elegance Rubric score, two updates were made and are documented in `checkpoint_1_elegance_report.md`:
+  - **Pythonic idioms:** In `rules.py`, `evaluate_rules()` now builds the violations list using `itertools.chain.from_iterable()` and a generator expression instead of an explicit loop with `extend`, so the implementation is more idiomatic.
+  - **Error handling:** In `cli.py`, the CLI now catches `json.JSONDecodeError` and `OSError` explicitly with distinct messages, and the final `except Exception` calls `traceback.print_exc()` before exiting so unexpected errors are not silently swallowed.
+- **GitHub Practices (3/4):** No code change can raise this to 4/4; it depends on using pull requests and issues in your workflow. All other module rubric criteria are at full points.
 

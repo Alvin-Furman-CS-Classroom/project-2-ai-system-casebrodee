@@ -13,7 +13,9 @@ Example usage (from the project README):
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+import traceback
 from pathlib import Path
 
 from .module1 import classifier
@@ -66,7 +68,14 @@ def main(argv: list[str] | None = None) -> None:
     except io_module.CSVValidationError as e:
         print(f"[csv error] {e}", file=sys.stderr)
         sys.exit(1)
-    except Exception as e:  # Fallback for unexpected errors
+    except json.JSONDecodeError as e:
+        print(f"[json error] {e}", file=sys.stderr)
+        sys.exit(1)
+    except OSError as e:
+        print(f"[io error] {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        traceback.print_exc(file=sys.stderr)
         print(f"[unexpected error] {e}", file=sys.stderr)
         sys.exit(1)
 

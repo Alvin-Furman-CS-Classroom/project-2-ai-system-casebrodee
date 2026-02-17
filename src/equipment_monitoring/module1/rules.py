@@ -13,6 +13,7 @@ Rules are expressed as logical conditions:
 
 from __future__ import annotations
 
+from itertools import chain
 from typing import Any, Dict, List, Set
 
 
@@ -135,23 +136,18 @@ def evaluate_rules(
         - "vibration_high"
         - "missing_temperature"
     """
-    violations: List[str] = []
     equipment_id = reading.get("equipment_id")
-
-    # Determine which sensors to check based on config/specs.
-    # For Module 1 this will typically be {"temperature", "vibration", "pressure"},
-    # but this approach makes it easy to add more sensors later.
     sensors = _collect_sensors(config, equipment_specs)
-    for sensor_name in sensors:
-        # Parse the sensor value (CSV values are strings)
-        sensor_value = _parse_sensor_value(reading.get(sensor_name))
 
-        # Get thresholds (equipment-specific or global)
-        thresholds = _get_thresholds(sensor_name, equipment_id, config, equipment_specs)
-
-        # Evaluate rules for this sensor
-        sensor_violations = _check_sensor_rule(sensor_name, sensor_value, thresholds)
-        violations.extend(sensor_violations)
-
+    violations = list(
+        chain.from_iterable(
+            _check_sensor_rule(
+                sensor_name,
+                _parse_sensor_value(reading.get(sensor_name)),
+                _get_thresholds(sensor_name, equipment_id, config, equipment_specs),
+            )
+            for sensor_name in sensors
+        )
+    )
     return violations
 
