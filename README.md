@@ -108,6 +108,116 @@ These interfaces will be defined under `src/equipment_monitoring/module1/`:
 
 ---
 
+## Module 2: Failure Pattern Discovery
+
+- **Topic:** Uninformed Search (BFS, DFS), Informed Search (A*, Heuristics)
+- **Goal:** Discover sequences of sensor changes that precede failures using graph-based search algorithms. Produce failure sequences with frequency and timing statistics, optional visualizations of degradation over time, and a ranked list of warning signs sorted by predictive power.
+
+### Inputs
+
+- **Historical sensor data CSV** with known failure events
+  - **Primary dataset:** `machine_failure_data_timestamp.csv`
+    - Required columns: `Timestamp` (datetime), `Machine_ID`, `Failure_Status` (0/1), sensor columns (Temperature, Pressure, Vibration_Level, Humidity, Power_Consumption)
+    - **Note:** This dataset contains one record per machine (snapshot data), not time-series per machine. The graph connects states that differ by one sensor bin to enable pattern discovery.
+  - **Secondary datasets** (adapters will be added):
+    - `MAINTENANCE PREDICTIVE FOR INDUSTRIAL MACHINES.csv` (uses `Runtime` for ordering)
+    - `machine failure.csv` / `ai4i2020.csv` (uses row order or Product ID runs)
+  - Example structure:
+
+```text
+Machine_ID,Timestamp,Temperature,Pressure,Vibration_Level,Failure_Status
+MACHINE_001,2025-01-01 00:00:00,56.23,106.0,3.75,0
+MACHINE_002,2025-01-01 00:10:00,36.45,179.39,8.02,0
+MACHINE_003,2025-01-01 00:20:00,64.44,432.66,4.38,1
+```
+
+- **Graph configuration JSON** (defines how sensor readings are discretized into states)
+  - Example shape:
+
+```json
+{
+  "discretization": {
+    "temperature": { "bins": [0, 25, 50, 75, 100], "labels": ["low", "medium", "high", "very_high"] },
+    "vibration": { "bins": [0, 2.5, 5.0, 7.5], "labels": ["low", "medium", "high"] },
+    "pressure": { "bins": [0, 15, 30, 45], "labels": ["low", "medium", "high"] }
+  }
+}
+```
+
+- **Search parameters JSON** (controls search behavior)
+  - Example shape:
+
+```json
+{
+  "max_depth": 50,
+  "lookback_window": 50,
+  "min_pattern_length": 3,
+  "heuristic": "time_to_failure"
+}
+```
+
+### Outputs
+
+- **Discovered sequences JSON** (sequences that precede failures)
+  - Example structure:
+
+```json
+{
+  "sequences": [
+    {
+      "sequence": ["state_A", "state_B", "state_C"],
+      "frequency": 15,
+      "avg_time_to_failure": 2.5,
+      "machines": ["machine_001", "machine_005", "machine_012"]
+    }
+  ]
+}
+```
+
+- **Ranked warning signs JSON** (sorted by predictive power)
+  - Example structure:
+
+```json
+{
+  "warning_signs": [
+    {
+      "pattern": "vibration rising over 3 steps",
+      "predictive_score": 0.92,
+      "frequency": 23,
+      "false_positive_rate": 0.08
+    }
+  ]
+}
+```
+
+- **Optional visualizations** (degradation over time plots)
+  - One plot per machine showing state transitions over time with failure points marked
+  - Saved as PNG files in the output directory
+
+### Assumptions
+
+- Historical data contains at least some failure events (`Failure_Status=1`) to discover patterns
+- Sensor readings are numeric and can be discretized into bins
+- **Graph building approach**: Since the dataset has one record per machine (not time-series), the graph connects states that differ by exactly one sensor bin. This allows search algorithms to find paths from normal states to failure states by exploring similar sensor configurations.
+- Graph states are defined by discretized sensor combinations (binning approach)
+- Search algorithms explore paths leading to failure states using BFS/DFS from states adjacent to failures
+- A* heuristic uses time-to-failure or sensor-space distance to known failure regions
+
+### Public Interfaces (for later modules)
+
+These interfaces will be defined under `src/equipment_monitoring/module2/`:
+
+- `load_historical_data(csv_path, config) -> List[HistoricalRecord]`
+  - Load and normalize historical CSV into canonical record format
+- `build_graph(records, graph_config) -> Graph`
+  - Build graph structure from historical records with discretized states
+- `discover_patterns(graph, search_params) -> Tuple[List[Sequence], List[WarningSign]]`
+  - Run BFS/DFS and A* search to discover failure sequences and rank warning signs
+- `run_module2(data_path, graph_config_path, search_params_path, output_dir) -> None`
+  - End-to-end runner used by the CLI and integration tests
+
+---
+
 ## Repository Layout
 
 The repository is organized as follows:
@@ -153,12 +263,14 @@ Additional dependencies for future modules (e.g., plotting, ML libraries) can be
 
 ---
 
-## Running Module 1
+## Running Modules
 
-Once Module 1 is implemented, you will be able to run it via a small CLI:
+### Module 1
+
+Run Module 1 via the CLI:
 
 ```bash
-python -m equipment_monitoring.cli \
+python -m equipment_monitoring.cli --module 1 \
   --config data/module1/config.json \
   --specs data/module1/equipment_specs.json \
   --readings data/module1/readings.csv \
@@ -170,7 +282,22 @@ Expected outputs:
 - `outputs/module1/classifications.jsonl` — one JSON record per line.
 - `outputs/module1/alerts.txt` — human-readable alerts.
 
-The exact CLI options will be defined in `src/equipment_monitoring/cli.py`.
+### Module 2
+
+Run Module 2 via the CLI:
+
+```bash
+python -m equipment_monitoring.cli --module 2 \
+  --data src/data/machine_failure_data_timestamp.csv \
+  --graph-config src/data/module2/graph_config.json \
+  --search-params src/data/module2/search_params.json \
+  --output-dir outputs/module2
+```
+
+Expected outputs:
+
+- `outputs/module2/sequences.json` — discovered failure sequences with frequency statistics.
+- `outputs/module2/warning_signs.json` — ranked warning signs sorted by predictive power.
 
 ---
 
