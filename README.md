@@ -348,9 +348,9 @@ Progress tracking against course checkpoints:
 
 | Checkpoint | Date | Modules Included | Status | Evidence |
 | ---------- | ---- | ---------------- | ------ | -------- |
-| 1 | Completed | Module 1 | ✅ Complete | Module 1 fully implemented with unit and integration tests. CLI working, outputs generated. |
+| 1 | Completed: Wednesday, Feb 11, 2026 | Module 1 | ✅ Complete | Module 1 fully implemented with unit and integration tests. CLI working, outputs generated. |
 | 2 | Due: Thursday, Feb 26, 2026 | Module 2 | ✅ Complete | Module 2 fully implemented: graph building, BFS/DFS/A* search, pattern extraction, warning sign ranking. All tests passing. |
-| 3 | Due: Week 7 | Modules 1-2 | ⏳ Pending |  |
-| 4 | Due: Week 9 | Modules 1-3 | ⏳ Pending |  |
-| 5 | Due: Week 11 | Modules 1-4 | ⏳ Pending |  |
-| 6 | Due: Week 13 | Modules 1-5 | ⏳ Pending |  |
+| 3 | Due: Thursday, Mar 19, 2026 | Modules 1-2 | ⏳ Pending |  |
+| 4 | Due: Thursday, Apr 12, 2026 | Modules 1-3 | ⏳ Pending |  |
+| 5 | Due: Thursday, Apr 16, 2026 | Modules 1-4 | ⏳ Pending |  |
+| 6 | Due: Monday, Apr 20, 2026 | Modules 1-5 | ⏳ Pending |  |
