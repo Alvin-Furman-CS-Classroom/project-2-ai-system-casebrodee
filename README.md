@@ -232,7 +232,8 @@ project-2-ai-system-casebrodee/
 └── README.md                 # this file
 ```
 
-Module 1 code will live in `src/equipment_monitoring/module1/` with matching tests in `unit_tests/module1/`.
+Module 1 code lives in `src/equipment_monitoring/module1/` with matching tests in `unit_tests/module1/`.
+Module 2 code lives in `src/equipment_monitoring/module2/` with matching tests in `unit_tests/module2/`.
 
 ---
 
@@ -305,56 +306,51 @@ Expected outputs:
 
 ### Unit Tests (`unit_tests/`)
 
-Unit tests will mirror the structure of `src/`. For Module 1:
+Unit tests mirror the structure of `src/`. 
 
-- `unit_tests/module1/test_config.py`
-  - Loading configuration and equipment-spec JSON.
-  - Handling missing or malformed fields.
-  - Correctly applying equipment-specific overrides.
-  - Edge cases around threshold boundaries (exactly at `min`/`max`).
+**Module 1:**
+- `unit_tests/module1/test_config.py` - Configuration loading and validation
+- `unit_tests/module1/test_rules.py` - Rule detection and violation handling
+- `unit_tests/module1/test_classifier.py` - End-to-end classification
+- `unit_tests/module1/test_io.py` - CSV reading and output writing
 
-- `unit_tests/module1/test_rules.py`
-  - Correct detection of:
-    - `*_high` and `*_low` conditions at and beyond thresholds.
-    - Multiple simultaneous violations for one reading.
-    - No violations when readings are within range.
-  - Handling of missing values (e.g., `missing_temperature` rules).
-
-- `unit_tests/module1/test_classifier.py`
-  - End-to-end classification of synthetic readings using simple configs/specs.
-  - Asserting status, violated rules, and confidence values.
-  - Scenarios with:
-    - all-normal readings,
-    - clearly anomalous readings,
-    - mixed batches (normal + anomaly).
-
-- `unit_tests/module1/test_io.py`
-  - Reading well-formed CSVs into internal data structures.
-  - Writing JSONL classifications and alert text files.
-  - Basic round-trip behavior for a tiny synthetic CSV.
+**Module 2:**
+- `unit_tests/module2/test_io.py` - Historical data loading and canonical format
+- `unit_tests/module2/test_graph.py` - Graph building and state discretization
+- `unit_tests/module2/test_search.py` - BFS, DFS, and A* search algorithms
+- `unit_tests/module2/test_patterns.py` - Sequence extraction and warning sign ranking
 
 ### Integration Tests (`integration_tests/`)
 
-For Module 1, a basic smoke test will live in `integration_tests/module1/`:
+**Module 1:**
+- `integration_tests/module1/test_module1_smoke.py` - Full pipeline smoke test
 
-- Run the full Module 1 pipeline on a tiny synthetic dataset.
-- Assert that:
-  - Output files exist.
-  - The expected number of anomalies is detected.
-  - Specific `violated_rules` tags appear in the outputs.
+**Module 2:**
+- `integration_tests/module2/test_module2_smoke.py` - Full pipeline smoke test on timestamped dataset
+
+### Running Tests
+
+Run all tests:
+```bash
+pytest unit_tests/ integration_tests/ -v
+```
+
+Run Module 2 tests only:
+```bash
+pytest unit_tests/module2/ integration_tests/module2/ -v
+```
 
 ---
 
 ## Checkpoint Log
 
-Use this section to track progress against course checkpoints:
+Progress tracking against course checkpoints:
 
 | Checkpoint | Date | Modules Included | Status | Evidence |
 | ---------- | ---- | ---------------- | ------ | -------- |
-| 1 |  | Module 1 |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
-| 6 |  |  |  |  |
-
+| 1 | Completed | Module 1 | ✅ Complete | Module 1 fully implemented with unit and integration tests. CLI working, outputs generated. |
+| 2 | Due: Thursday, Feb 26, 2026 | Module 2 | ✅ Complete | Module 2 fully implemented: graph building, BFS/DFS/A* search, pattern extraction, warning sign ranking. All tests passing. |
+| 3 | Due: Week 7 | Modules 1-2 | ⏳ Pending |  |
+| 4 | Due: Week 9 | Modules 1-3 | ⏳ Pending |  |
+| 5 | Due: Week 11 | Modules 1-4 | ⏳ Pending |  |
+| 6 | Due: Week 13 | Modules 1-5 | ⏳ Pending |  |
