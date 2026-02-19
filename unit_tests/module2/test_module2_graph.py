@@ -16,24 +16,25 @@ from equipment_monitoring.module2 import io, graph, config
 
 def test_build_graph_simple_sequence(tmp_path: Path) -> None:
     """Test building a graph from a simple sequence of states."""
-    # Create synthetic records
+    # Create synthetic records with values that discretize to three distinct states
+    # (bins: temp [0,30,50,70,100], vib [0,3,6,10], pressure [0,200,350,500])
     records = [
         io.HistoricalRecord(
             machine_id="MACHINE_001",
             time_key=datetime(2025, 1, 1, 0, 0, 0),
-            sensors={"Temperature": 40.0, "Vibration_Level": 2.0, "Pressure": 150.0},
+            sensors={"Temperature": 25.0, "Vibration_Level": 1.0, "Pressure": 100.0},
             failure_label=False
         ),
         io.HistoricalRecord(
             machine_id="MACHINE_001",
             time_key=datetime(2025, 1, 1, 0, 10, 0),
-            sensors={"Temperature": 50.0, "Vibration_Level": 3.0, "Pressure": 200.0},
+            sensors={"Temperature": 45.0, "Vibration_Level": 4.0, "Pressure": 250.0},
             failure_label=False
         ),
         io.HistoricalRecord(
             machine_id="MACHINE_001",
             time_key=datetime(2025, 1, 1, 0, 20, 0),
-            sensors={"Temperature": 60.0, "Vibration_Level": 5.0, "Pressure": 300.0},
+            sensors={"Temperature": 65.0, "Vibration_Level": 7.0, "Pressure": 400.0},
             failure_label=True
         ),
     ]
