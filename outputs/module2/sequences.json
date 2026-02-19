@@ -1,0 +1,48 @@
+{
+  "sequences": [
+    {
+      "sequence": [
+        "State(machine=MACHINE_2876, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_1822, bins=('medium', 'low', 'high'))"
+      ],
+      "frequency": 2,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2876"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_190, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_677, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 2,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_190"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2139, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_677, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 2,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2139"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1962, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_677, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 2,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1962"
+      ]
+    }
+  ]
+}

@@ -11,11 +11,8 @@ Module 1:
       --output-dir outputs/module1
 
 Module 2:
-    python -m equipment_monitoring.cli --module 2 \\
-      --data src/data/machine_failure_data_timestamp.csv \\
-      --graph-config src/data/module2/graph_config.json \\
-      --search-params src/data/module2/search_params.json \\
-      --output-dir outputs/module2
+    cd <Path to project root>
+    PYTHONPATH=src python3 -m equipment_monitoring.cli --module 2 --data src/data/machine_failure_data_timestamp.csv --graph-config src/data/module2/graph_config.json --search-params src/data/module2/search_params.json --output-dir outputs/module2
 """
 
 from __future__ import annotations
@@ -83,32 +80,57 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
-    try:
-        classifier.run_module1(
-            config_path=Path(args.config),
-            specs_path=Path(args.specs),
-            csv_path=Path(args.readings),
-            output_dir=Path(args.output_dir),
-        )
-    except FileNotFoundError as e:
-        print(f"[error] {e}", file=sys.stderr)
-        sys.exit(1)
-    except config_module.ConfigValidationError as e:
-        print(f"[config error] {e}", file=sys.stderr)
-        sys.exit(1)
-    except io_module.CSVValidationError as e:
-        print(f"[csv error] {e}", file=sys.stderr)
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"[json error] {e}", file=sys.stderr)
-        sys.exit(1)
-    except OSError as e:
-        print(f"[io error] {e}", file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
-        traceback.print_exc(file=sys.stderr)
-        print(f"[unexpected error] {e}", file=sys.stderr)
-        sys.exit(1)
+
+    if args.module == 1:
+        if not args.config or not args.specs or not args.readings:
+            print("[error] Module 1 requires --config, --specs, and --readings", file=sys.stderr)
+            sys.exit(1)
+        try:
+            classifier.run_module1(
+                config_path=Path(args.config),
+                specs_path=Path(args.specs),
+                csv_path=Path(args.readings),
+                output_dir=Path(args.output_dir),
+            )
+        except FileNotFoundError as e:
+            print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except config_module.ConfigValidationError as e:
+            print(f"[config error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except io_module.CSVValidationError as e:
+            print(f"[csv error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except json.JSONDecodeError as e:
+            print(f"[json error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except OSError as e:
+            print(f"[io error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            print(f"[unexpected error] {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.module == 2:
+        if not args.data or not args.graph_config or not args.search_params:
+            print("[error] Module 2 requires --data, --graph-config, and --search-params", file=sys.stderr)
+            sys.exit(1)
+        try:
+            from .module2 import runner
+            runner.run_module2(
+                data_path=Path(args.data),
+                graph_config_path=Path(args.graph_config),
+                search_params_path=Path(args.search_params),
+                output_dir=Path(args.output_dir),
+            )
+        except FileNotFoundError as e:
+            print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            print(f"[unexpected error] {e}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
