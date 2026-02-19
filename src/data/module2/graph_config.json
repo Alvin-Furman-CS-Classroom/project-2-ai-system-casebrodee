@@ -1,0 +1,29 @@
+{
+  "discretization": {
+    "Temperature": {
+      "bins": [0, 30, 50, 70, 100],
+      "labels": ["low", "medium", "high", "very_high"]
+    },
+    "Pressure": {
+      "bins": [0, 200, 350, 500],
+      "labels": ["low", "medium", "high"]
+    },
+    "Vibration_Level": {
+      "bins": [0, 3.0, 6.0, 10.0],
+      "labels": ["low", "medium", "high"]
+    },
+    "Humidity": {
+      "bins": [0, 50, 70, 90],
+      "labels": ["low", "medium", "high"]
+    },
+    "Power_Consumption": {
+      "bins": [0, 30, 60, 100],
+      "labels": ["low", "medium", "high"]
+    }
+  },
+  "state_components": [
+    "Temperature",
+    "Vibration_Level",
+    "Pressure"
+  ]
+}
