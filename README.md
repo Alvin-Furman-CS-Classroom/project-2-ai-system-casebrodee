@@ -300,6 +300,35 @@ Expected outputs:
 - `outputs/module2/sequences.json` — discovered failure sequences with frequency statistics.
 - `outputs/module2/warning_signs.json` — ranked warning signs sorted by predictive power.
 
+**Module 1 → Module 2 pipeline (shared data):** Module 2 depends on Module 1. You can run both on the same dataset when the CSV uses Module 1’s schema plus a `failure_status` column:
+
+1. Use a CSV with columns: `timestamp`, `equipment_id`, `temperature`, `vibration`, `pressure`, `failure_status`.
+2. Run Module 1 (produces `classifications.jsonl` and `alerts.txt`).
+3. Run Module 2 with `--data-format module1` and optionally `--classifications` pointing to Module 1’s `classifications.jsonl`. Warning signs will include `module1_anomaly_rate` when classifications are provided.
+
+Example (from project root, with `PYTHONPATH=src`):
+
+```bash
+# Step 1: Run Module 1 on shared CSV
+python -m equipment_monitoring.cli --module 1 \
+  --config data/module1/config.json \
+  --specs data/module1/equipment_specs.json \
+  --readings data/readings_with_failures.csv \
+  --output-dir outputs/module1
+
+# Step 2: Run Module 2 on same CSV, using Module 1 classifications
+python -m equipment_monitoring.cli --module 2 \
+  --data data/readings_with_failures.csv \
+  --graph-config src/data/module2/graph_config.json \
+  --search-params src/data/module2/search_params.json \
+  --output-dir outputs/module2 \
+  --data-format module1 \
+  --classifications outputs/module1/classifications.jsonl
+```
+
+- `--data-format`: `timestamped` (default) or `module1`. Use `module1` when the CSV has Module 1 column names and optional `failure_status`.
+- `--classifications`: Optional path to Module 1’s `classifications.jsonl`; enriches warning signs with `module1_anomaly_rate`.
+
 ---
 
 ## Testing
@@ -327,6 +356,7 @@ Unit tests mirror the structure of `src/`.
 
 **Module 2:**
 - `integration_tests/module2/test_module2_smoke.py` - Full pipeline smoke test on timestamped dataset
+- `integration_tests/module2/test_module1_module2_integration.py` - Module 1 then Module 2 on same dataset; verifies Module 2 can use Module 1 schema CSV and classifications
 
 ### Running Tests
 

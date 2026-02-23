@@ -126,3 +126,17 @@ def test_a_star_no_path_returns_none() -> None:
     )
     
     assert path is None
+
+
+def test_discover_failure_sequences_empty_graph_returns_empty_list() -> None:
+    """Test that discover_failure_sequences returns empty list for empty graph."""
+    g = graph.Graph()
+    search_params = config.SearchParams(
+        max_depth=10,
+        lookback_window=50,
+        min_pattern_length=3,
+        heuristic="time_to_failure",
+        a_star_weight=1.0
+    )
+    sequences = search.discover_failure_sequences(g, search_params)
+    assert sequences == []

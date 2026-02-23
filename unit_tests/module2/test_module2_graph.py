@@ -110,3 +110,20 @@ def test_graph_mark_failure_state() -> None:
     g.mark_failure_state(state)
     assert g.is_failure_state(state)
     assert state in g.failure_states
+
+
+def test_build_graph_empty_records_returns_empty_graph() -> None:
+    """Test that building a graph from empty records returns an empty graph."""
+    graph_config = config.GraphConfig(
+        discretization={
+            "Temperature": config.DiscretizationConfig(
+                bins=[0, 50, 100],
+                labels=["low", "high"]
+            ),
+        },
+        state_components=["Temperature"]
+    )
+    g = graph.build_graph([], graph_config)
+    assert len(g.nodes) == 0
+    assert len(g.failure_states) == 0
+    assert g.edges == {}

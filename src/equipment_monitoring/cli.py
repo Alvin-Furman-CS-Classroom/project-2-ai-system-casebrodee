@@ -67,6 +67,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--search-params",
         help="Path to search parameters JSON (Module 2).",
     )
+    parser.add_argument(
+        "--data-format",
+        choices=["timestamped", "module1"],
+        default="timestamped",
+        help="CSV format: 'timestamped' (Machine_ID, Timestamp, Failure_Status) or 'module1' (timestamp, equipment_id, temperature, vibration, pressure, failure_status). Default: timestamped.",
+    )
+    parser.add_argument(
+        "--classifications",
+        help="Path to Module 1 classifications.jsonl (Module 2). When provided, warning signs include module1_anomaly_rate.",
+    )
     
     # Common argument
     parser.add_argument(
@@ -118,11 +128,14 @@ def main(argv: list[str] | None = None) -> None:
             sys.exit(1)
         try:
             from .module2 import runner
+            classifications_path = Path(args.classifications) if args.classifications else None
             runner.run_module2(
                 data_path=Path(args.data),
                 graph_config_path=Path(args.graph_config),
                 search_params_path=Path(args.search_params),
                 output_dir=Path(args.output_dir),
+                data_format=args.data_format,
+                classifications_path=classifications_path,
             )
         except FileNotFoundError as e:
             print(f"[error] {e}", file=sys.stderr)

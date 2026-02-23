@@ -5,9 +5,11 @@ This module processes paths discovered by search algorithms and:
 - Aggregates them into failure sequences with frequency statistics
 - Ranks warning signs by predictive power
 - Calculates timing statistics
+- Optionally incorporates Module 1 anomaly overlap (when classifications from Module 1 are provided)
 """
 
-from typing import List, Dict, Set
+from datetime import datetime
+from typing import List, Dict, Set, Optional
 from collections import Counter, defaultdict
 from .graph import Graph
 from .graph import State
@@ -50,34 +52,41 @@ class FailureSequence:
 class WarningSign:
     """
     Represents a ranked warning sign with predictive metrics.
-    
+
     Attributes:
         pattern: Human-readable description of the pattern
         predictive_score: Score indicating how predictive this pattern is (0-1)
         frequency: Number of times this pattern preceded a failure
         false_positive_rate: Rate of false positives (pattern occurred without failure)
+        module1_anomaly_rate: When Module 1 classifications are provided, fraction of
+            sequence states that were flagged as anomaly by Module 1 (0-1, or None if not computed)
     """
-    
+
     def __init__(
         self,
         pattern: str,
         predictive_score: float,
         frequency: int,
-        false_positive_rate: float = 0.0
+        false_positive_rate: float = 0.0,
+        module1_anomaly_rate: Optional[float] = None,
     ):
         self.pattern = pattern
         self.predictive_score = predictive_score
         self.frequency = frequency
         self.false_positive_rate = false_positive_rate
-    
+        self.module1_anomaly_rate = module1_anomaly_rate
+
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization."""
-        return {
+        out = {
             "pattern": self.pattern,
             "predictive_score": self.predictive_score,
             "frequency": self.frequency,
-            "false_positive_rate": self.false_positive_rate
+            "false_positive_rate": self.false_positive_rate,
         }
+        if self.module1_anomaly_rate is not None:
+            out["module1_anomaly_rate"] = self.module1_anomaly_rate
+        return out
 
 
 def extract_sequences(
@@ -130,22 +139,33 @@ def extract_sequences(
     return sequences
 
 
+def _normalize_time_key(time_key) -> str:
+    """Normalize time_key to string for matching with Module 1 classifications."""
+    if isinstance(time_key, datetime):
+        return time_key.isoformat()
+    return str(time_key)
+
+
 def rank_warning_signs(
     sequences: List[FailureSequence],
-    graph
+    graph: Graph,
+    module1_anomaly_set: Optional[set] = None,
 ) -> List[WarningSign]:
     """
     Rank warning signs by predictive power.
-    
+
     Args:
         sequences: List of failure sequences
-        graph: The state graph (for calculating false positive rates)
-    
+        graph: The state graph (for calculating false positive rates and record lookup)
+        module1_anomaly_set: Optional set of (equipment_id, timestamp_str) from Module 1
+            classifications (anomaly rows). When provided, each warning sign gets a
+            module1_anomaly_rate (fraction of sequence states that were Module 1 anomalies).
+
     Returns:
         List of WarningSign objects ranked by predictive_score
     """
     warning_signs = []
-    
+
     for seq in sequences:
         # Create human-readable pattern description
         if len(seq.sequence) > 0:
@@ -154,23 +174,38 @@ def rank_warning_signs(
             pattern = f"State transition: {first_state.sensor_bins} -> {last_state.sensor_bins} ({len(seq.sequence)} steps)"
         else:
             pattern = "Empty sequence"
-        
+
         # Calculate predictive score (simple: based on frequency)
         # More sophisticated: could use actual failure prediction accuracy
         predictive_score = min(seq.frequency / 10.0, 1.0)  # Normalize to 0-1
-        
+
         # TODO: Calculate false positive rate by checking how often this sequence
         # occurred without leading to failure
         false_positive_rate = 0.0
-        
+
+        module1_anomaly_rate = None
+        if module1_anomaly_set is not None and hasattr(graph, "state_to_records"):
+            # Count how many (machine_id, time_key) in this sequence were Module 1 anomalies
+            matches = 0
+            total = 0
+            for state in seq.sequence:
+                for rec in graph.state_to_records.get(state, []):
+                    total += 1
+                    key = (rec.machine_id, _normalize_time_key(rec.time_key))
+                    if key in module1_anomaly_set:
+                        matches += 1
+            if total > 0:
+                module1_anomaly_rate = round(matches / total, 4)
+
         warning_signs.append(WarningSign(
             pattern=pattern,
             predictive_score=predictive_score,
             frequency=seq.frequency,
-            false_positive_rate=false_positive_rate
+            false_positive_rate=false_positive_rate,
+            module1_anomaly_rate=module1_anomaly_rate,
         ))
-    
+
     # Sort by predictive score (highest first)
     warning_signs.sort(key=lambda w: w.predictive_score, reverse=True)
-    
+
     return warning_signs

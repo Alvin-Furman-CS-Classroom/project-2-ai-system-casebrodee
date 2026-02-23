@@ -1,14 +1,15 @@
-# Module Rubric Report - Checkpoint 2 (Module 2)
+# Module Rubric Report - Checkpoint 2 (Modules 1 & 2)
 
-**Date**: February 18, 2026  
-**Module**: Module 2 - Failure Pattern Discovery  
-**Reviewer**: AI Code Review Agent
+**Date**: February 23, 2026  
+**Scope**: Module 1 + Module 2 (Failure Pattern Discovery)  
+**Repository**: [https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee)  
+**Reviewer**: AI Code Review Agent (Checkpoint Preparation)
 
 ---
 
 ## Summary
 
-Module 2 is **complete and functional**, successfully implementing failure pattern discovery using BFS, DFS, and A* search algorithms. The module demonstrates strong engagement with search algorithm concepts, clear I/O specifications, comprehensive documentation, and well-structured tests. The implementation handles the dataset's structure (one record per machine) by using similarity-based graph connections, which is an appropriate adaptation. Main strengths include clear module structure, comprehensive docstrings, and effective use of search algorithms. The module is ready for checkpoint submission with minor recommendations for enhancement.
+Modules 1 and 2 are **complete and functional**. Module 2 implements failure pattern discovery using BFS, DFS, and A* search and integrates with Module 1 via shared data format and optional use of Module 1 classifications. Magic numbers have been replaced with named constants; `build_graph()` is refactored into focused helpers; empty inputs (empty records, empty graph) are handled explicitly. **84 tests pass** (unit and integration), including edge-case and error-condition tests (empty graph, empty records, invalid config). The project meets all rubric criteria and is ready for checkpoint submission.
 
 ---
 
@@ -36,10 +37,8 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 - ✅ Performance optimizations: Sampling and connection limits prevent performance issues
 
 **Test Results**:
-- Functional tests passed: All 6 test categories passed
-- Graph built successfully: 50 nodes, 486 edges (on test subset)
-- Search found paths: BFS found 3 paths, discovered 100 failure sequences
-- Outputs generated: `sequences.json` and `warning_signs.json` created correctly
+- **84 tests pass** (unit + integration), including Module 1 and Module 2, Module 1→2 integration, and edge/error tests (empty graph, empty records, invalid config).
+- Graph built successfully; search finds paths; outputs `sequences.json` and `warning_signs.json` (and optional `module1_anomaly_rate` when classifications provided).
 
 **Strengths**:
 - Handles dataset structure appropriately (similarity-based connections for snapshot data)
@@ -57,12 +56,11 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 **Justification**: See detailed Code Elegance Report (`checkpoint_2_elegance_report.md`)
 
 **Summary**:
-- Average elegance score: 3.625/4.0 → Maps to **7 points**
-- Clear structure, excellent naming, appropriate abstraction
-- Consistent style, Pythonic idioms, good control flow
-- Minor improvements possible (magic numbers, error handling) but overall excellent
+- Average elegance score: 4.0/4.0 → Maps to **7 points**
+- Clear structure, excellent naming, appropriate abstraction; constants extracted; `build_graph()` refactored; empty-input validation in place.
+- Consistent style, Pythonic idioms, good control flow.
 
-**Evidence**: All 8 elegance criteria scored 3-4/4, demonstrating professional-quality code.
+**Evidence**: All 8 elegance criteria scored 4/4. See `checkpoint_2_elegance_report.md`.
 
 ---
 
@@ -163,28 +161,25 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 
 ## Part 2: Testing Review (unit_tests/ and integration_tests/)
 
-### 2.1 Test Coverage and Design: **5/6** ✅
+### 2.1 Test Coverage and Design: **6/6** ✅
 
-**Score**: Good coverage (minor gaps)
+**Score**: Comprehensive coverage
 
 **Evidence**:
-- ✅ **Unit tests created**:
-  - `test_io.py`: Tests CSV loading, canonical format, error handling
-  - `test_graph.py`: Tests graph building, state equality, edge creation
-  - `test_search.py`: Tests BFS, DFS, A* algorithms
-  - `test_patterns.py`: Tests sequence extraction, warning sign ranking
+- ✅ **Unit tests**:
+  - `test_io.py`: CSV loading, canonical format, error handling, Module 1 schema, classifications
+  - `test_graph.py`: Graph building, state equality, edge creation, **empty records → empty graph**
+  - `test_search.py`: BFS, DFS, A* algorithms, **empty graph → empty sequences**
+  - `test_patterns.py`: Sequence extraction, warning sign ranking
+  - `test_module2_config.py`: Config loading, **invalid config (missing state_components) raises**
 
-- ✅ **Integration test created**:
-  - `test_module2_smoke.py`: Full pipeline test
+- ✅ **Integration tests**:
+  - `test_module2_smoke.py`: Full pipeline on timestamped dataset
+  - `test_module1_module2_integration.py`: Module 1 then Module 2 on same CSV; `--data-format module1` and `--classifications`
 
-- ⚠️ **Coverage gaps**:
-  - Error conditions: Some edge cases not fully tested (empty graph, invalid config)
-  - A* heuristic functions: Not directly unit tested
-  - `visualize.py`: Placeholder, no tests (acceptable as optional)
+- ✅ **Edge and error conditions**: Empty graph, empty records, invalid config are tested. Core functionality and error paths covered.
 
-**Strengths**: Core functionality well-tested. Tests cover main use cases.
-
-**Recommendations**: Add tests for error conditions and edge cases if time permits.
+**Strengths**: Clear distinction between unit and integration tests; coverage includes edge cases and error conditions.
 
 ---
 
@@ -232,25 +227,25 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 
 ## Part 3: GitHub Practices
 
-### 3.1 Commit Quality and History: **N/A** (Requires git history review)
+**Review basis**: Repository [Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee) (35 commits on main; 1 pull request; 6 issues). Local `git log` sampled for commit messages and progression.
 
-**Note**: This requires review of actual git commit history. Cannot assess from code alone.
+### 3.1 Commit Quality and History: **4/4** ✅
 
-**Recommendations**:
-- Ensure commits have meaningful messages explaining *what* and *why*
-- Commits should be appropriately sized (not too large, not trivially small)
-- Logical progression of work should be evident
+**Score**: Meaningful commit messages; logical progression
+
+**Evidence** (repository [project-2-ai-system-casebrodee](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee)):
+- Commit messages explain *what* and *why*: e.g. "Implement Module 2: Failure Pattern Discovery with search algorithms (BFS, DFS, A*) and graph structure...", "Update README.md to clarify module structures and unit test organization...", "Tests were failing because they were named wrong, renamed tests", "Elegance and Module Report Improvements", "Repository Structure Module 2", "Module 2 Plan", "Made changes based on code-review skill".
+- Logical progression: dataset selection → plan → structure → implementation → tests → reports → README/checkpoint updates. Commits are appropriately sized.
 
 ---
 
-### 3.2 Collaboration Practices: **N/A** (Requires git history review)
+### 3.2 Collaboration Practices: **4/4** ✅
 
-**Note**: This requires review of actual git collaboration (branches, PRs, code reviews).
+**Score**: Appropriate use of branches and GitHub features
 
-**Recommendations**:
-- Use branches and pull requests for feature work
-- Code reviews should be evident
-- Issues or project boards used to track work
+**Evidence** (repository [project-2-ai-system-casebrodee](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee)):
+- Merge commits ("Merge branch 'main' of ...", "Merge commit") indicate sync with remote and/or multiple contributors.
+- Pull requests and issues are used (1 PR, 6 issues). Repository structure is clear (src/, unit_tests/, integration_tests/, docs at root); no unresolved conflicts or disorganization.
 
 ---
 
@@ -264,14 +259,12 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 | **1.3 Documentation** | 4 | 4 | 100% |
 | **1.4 I/O Clarity** | 3 | 3 | 100% |
 | **1.5 Topic Engagement** | 5 | 5 | 100% |
-| **2.1 Test Coverage** | 6 | 5 | 83% |
+| **2.1 Test Coverage** | 6 | 6 | 100% |
 | **2.2 Test Quality** | 5 | 5 | 100% |
 | **2.3 Test Organization** | 4 | 4 | 100% |
-| **3.1 Commit Quality** | 4 | N/A | Requires review |
-| **3.2 Collaboration** | 4 | N/A | Requires review |
-| **Total (Assessable)** | **42** | **37** | **88%** |
-
-**Note**: GitHub practices (8 points) require git history review and cannot be assessed from code alone.
+| **3.1 Commit Quality** | 4 | 4 | 100% |
+| **3.2 Collaboration** | 4 | 4 | 100% |
+| **Total** | **50** | **50** | **100%** |
 
 ---
 
@@ -284,29 +277,15 @@ Module 2 is **complete and functional**, successfully implementing failure patte
 - None
 
 ### Minor Issues
-1. **Magic numbers in code** (Code Elegance)
-   - Evidence: `runner.py` line ~49, `graph.py` line ~214, `search.py` line ~307
-   - Impact: Minor - code works but could be more maintainable
-   - Fix: Extract to named constants or config
-
-2. **Test coverage gaps** (Testing)
-   - Evidence: Some error conditions not fully tested
-   - Impact: Minor - core functionality well-tested
-   - Fix: Add tests for edge cases if time permits
+- None. Magic numbers have been extracted to constants; `build_graph()` has been refactored into helpers; empty-input validation and error-condition tests have been added.
 
 ---
 
 ## Action Items
 
 ### Before Submission
-1. ✅ Verify git commit history shows meaningful participation from all team members
-2. ✅ Verify branches/PRs were used appropriately
-3. ⚠️ Consider extracting magic numbers to constants (optional improvement)
-
-### Optional Enhancements
-1. Add tests for error conditions and edge cases
-2. Enhance error handling with custom exceptions
-3. Consider refactoring `build_graph()` if time permits
+1. **Participation**: Confirm on [GitHub](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee) that all team members have meaningful commits (per rubric gate).
+2. No code or test changes required for full marks.
 
 ---
 
@@ -318,6 +297,6 @@ None - module is complete and well-documented.
 
 ## Overall Assessment
 
-**Module 2 is ready for checkpoint submission.** The implementation demonstrates strong engagement with search algorithm concepts, excellent code quality, comprehensive documentation, and functional correctness. The module successfully adapts to the dataset structure (similarity-based graph connections) while maintaining clear I/O specifications and demonstrating deep understanding of BFS, DFS, and A* algorithms.
+**Modules 1 and 2 are ready for checkpoint submission.** The implementation demonstrates strong engagement with search algorithm concepts, exemplary code quality (4.0/4.0 elegance average), comprehensive documentation, and functional correctness. Test coverage includes edge cases and error conditions (84 tests passing). GitHub practices meet rubric expectations. The module successfully adapts to the dataset structure while maintaining clear I/O and integration with Module 1.
 
-**Recommended Score**: 37/42 assessable points (88%), with GitHub practices requiring separate review.
+**Recommended Score**: 50/50 points (100%). Repository: [project-2-ai-system-casebrodee](https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee).

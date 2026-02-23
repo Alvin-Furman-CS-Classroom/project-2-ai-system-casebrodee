@@ -147,6 +147,130 @@ def load_timestamped_csv(
     return records
 
 
-# Placeholder for future adapters:
-# - load_runtime_csv() for Runtime-based datasets
-# - load_row_order_csv() for row-order datasets
+# Column name mapping from Module 1 schema to Module 2 graph sensor names
+MODULE1_TO_GRAPH_SENSORS = {
+    "temperature": "Temperature",
+    "vibration": "Vibration_Level",
+    "pressure": "Pressure",
+}
+
+
+def load_module1_schema_csv(
+    csv_path: Union[str, Path],
+    failure_column: str = "failure_status",
+) -> List[HistoricalRecord]:
+    """
+    Load a CSV that uses Module 1's column schema (timestamp, equipment_id, temperature,
+    vibration, pressure) with an optional failure_status column for ground-truth labels.
+
+    This allows the same dataset to be used by both Module 1 (rule-based classification)
+    and Module 2 (failure pattern discovery), satisfying the "Module 2 depends on Module 1"
+    integration: one pipeline runs Module 1 on this CSV, then Module 2 uses the same CSV
+    plus optional Module 1 classifications.
+
+    Args:
+        csv_path: Path to the CSV file.
+        failure_column: Name of the failure status column (default: "failure_status").
+                        If missing, all records are treated as non-failure.
+
+    Returns:
+        List of HistoricalRecord objects. Sensor dict uses graph-style keys
+        (Temperature, Vibration_Level, Pressure) so graph building works unchanged.
+
+    Raises:
+        FileNotFoundError: If csv_path doesn't exist.
+        ValueError: If required columns (timestamp, equipment_id, temperature, vibration, pressure) are missing.
+    """
+    csv_path = Path(csv_path)
+    if not csv_path.exists():
+        raise FileNotFoundError(f"CSV file not found: {csv_path}")
+
+    required = {"timestamp", "equipment_id", "temperature", "vibration", "pressure"}
+    records = []
+
+    with open(csv_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        if reader.fieldnames is None:
+            raise ValueError("CSV has no header row")
+        found = set(reader.fieldnames)
+        missing = required - found
+        if missing:
+            raise ValueError(f"Module 1 schema CSV missing columns: {missing}")
+
+        has_failure = failure_column in found
+
+        for row in reader:
+            ts_str = row["timestamp"].strip()
+            try:
+                ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+            except ValueError:
+                for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S"]:
+                    try:
+                        ts = datetime.strptime(ts_str, fmt)
+                        break
+                    except ValueError:
+                        continue
+                else:
+                    raise ValueError(f"Could not parse timestamp: {ts_str}")
+
+            machine_id = row["equipment_id"].strip()
+            failure_label = False
+            if has_failure:
+                failure_str = str(row[failure_column]).strip().lower()
+                failure_label = failure_str in ["1", "true", "yes"]
+
+            sensors = {}
+            for m1_key, graph_key in MODULE1_TO_GRAPH_SENSORS.items():
+                if m1_key in row:
+                    try:
+                        sensors[graph_key] = float(row[m1_key])
+                    except (ValueError, TypeError):
+                        continue
+
+            records.append(
+                HistoricalRecord(
+                    machine_id=machine_id,
+                    time_key=ts,
+                    sensors=sensors,
+                    failure_label=failure_label,
+                )
+            )
+
+    records.sort(key=lambda r: (r.machine_id, r.time_key))
+    return records
+
+
+def load_classifications_jsonl(
+    jsonl_path: Union[str, Path],
+) -> set:
+    """
+    Load Module 1 classifications.jsonl and return the set of (equipment_id, timestamp)
+    for rows classified as anomaly. Used by Module 2 to enrich warning signs with
+    Module 1 overlap (e.g. how often a pattern coincided with rule-based anomalies).
+
+    Args:
+        jsonl_path: Path to classifications.jsonl from Module 1.
+
+    Returns:
+        Set of (equipment_id, timestamp_str) for records with status == "anomaly".
+        Timestamps are normalized to ISO-style strings for matching.
+    """
+    import json
+    jsonl_path = Path(jsonl_path)
+    if not jsonl_path.exists():
+        raise FileNotFoundError(f"Classifications file not found: {jsonl_path}")
+
+    anomaly_set = set()
+    with open(jsonl_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            if rec.get("status") != "anomaly":
+                continue
+            eid = rec.get("equipment_id", "")
+            ts = rec.get("timestamp", "")
+            if eid is not None and ts is not None:
+                anomaly_set.add((str(eid), str(ts)))
+    return anomaly_set

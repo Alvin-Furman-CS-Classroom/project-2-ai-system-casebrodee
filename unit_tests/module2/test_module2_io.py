@@ -127,3 +127,49 @@ def test_historical_record_comparison() -> None:
     
     assert record1 < record2
     assert record2 > record1
+
+
+def test_load_module1_schema_csv_valid(tmp_path: Path) -> None:
+    """Test loading Module 1 schema CSV with failure_status."""
+    csv_path = tmp_path / "m1.csv"
+    csv_path.write_text(
+        "timestamp,equipment_id,temperature,vibration,pressure,failure_status\n"
+        "2026-01-01T00:00:00Z,pump_A,30,2.0,20,0\n"
+        "2026-01-01T00:01:00Z,pump_A,85,6.0,8,1\n",
+        encoding="utf-8",
+    )
+    records = io.load_module1_schema_csv(csv_path)
+    assert len(records) == 2
+    assert records[0].machine_id == "pump_A"
+    assert records[0].sensors["Temperature"] == 30.0
+    assert records[0].sensors["Vibration_Level"] == 2.0
+    assert records[0].sensors["Pressure"] == 20.0
+    assert records[0].failure_label is False
+    assert records[1].failure_label is True
+
+
+def test_load_module1_schema_csv_missing_columns(tmp_path: Path) -> None:
+    """Test that missing required columns raises ValueError."""
+    csv_path = tmp_path / "m1.csv"
+    csv_path.write_text(
+        "timestamp,equipment_id,temperature\n"
+        "2026-01-01T00:00:00Z,pump_A,30\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError) as exc_info:
+        io.load_module1_schema_csv(csv_path)
+    assert "missing" in str(exc_info.value).lower() or "vibration" in str(exc_info.value)
+
+
+def test_load_classifications_jsonl(tmp_path: Path) -> None:
+    """Test loading Module 1 classifications.jsonl for anomaly set."""
+    jsonl_path = tmp_path / "classifications.jsonl"
+    jsonl_path.write_text(
+        '{"timestamp":"2026-01-01T00:00:00Z","equipment_id":"pump_A","status":"normal","violated_rules":[],"confidence":1.0}\n'
+        '{"timestamp":"2026-01-01T00:01:00Z","equipment_id":"pump_A","status":"anomaly","violated_rules":["temperature_high"],"confidence":0.8}\n',
+        encoding="utf-8",
+    )
+    anomaly_set = io.load_classifications_jsonl(jsonl_path)
+    assert len(anomaly_set) == 1
+    assert ("pump_A", "2026-01-01T00:01:00Z") in anomaly_set
+    assert ("pump_A", "2026-01-01T00:00:00Z") not in anomaly_set

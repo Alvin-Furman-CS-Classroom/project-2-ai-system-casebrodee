@@ -13,6 +13,10 @@ import heapq
 from .graph import Graph, State
 from .config import SearchParams
 
+# Limits for discover_failure_sequences to keep runtime reasonable
+DEFAULT_MAX_PATHS_PER_START = 5
+DEFAULT_MAX_TOTAL_PATHS = 100
+
 
 class SearchNode:
     """
@@ -288,41 +292,31 @@ def discover_failure_sequences(
         List of sequences (paths) that lead to failure states
     """
     sequences: List[List[State]] = []
-    
+    if not graph.nodes:
+        return sequences
     # Goal test: state is a failure state
     def goal_test(state: State) -> bool:
         return graph.is_failure_state(state)
-    
     # For efficiency, start from states that are neighbors of failure states
-    # This finds paths leading TO failures rather than FROM every state
     start_states = set()
     for failure_state in graph.failure_states:
-        # Find neighbors (states that connect to this failure)
         neighbors = graph.get_neighbors(failure_state)
         for neighbor in neighbors:
             if not graph.is_failure_state(neighbor):
                 start_states.add(neighbor)
-    
-    # If no neighbors found (sparse graph), use a sample of non-failure states
     if not start_states:
-        non_failure_states = [s for s in graph.nodes if not graph.is_failure_state(s)]
-        # Limit to reasonable number for performance
         import random
+        non_failure_states = [s for s in graph.nodes if not graph.is_failure_state(s)]
         start_states = set(random.sample(non_failure_states, min(100, len(non_failure_states))))
-    
-    # Run BFS from each start state (limit to prevent explosion)
-    max_paths_per_start = 5  # Limit paths per start state
-    max_total_paths = 100  # Overall limit
     for start_state in start_states:
-        if len(sequences) >= max_total_paths:
+        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
             break
         paths = bfs(
             graph,
             start_state,
             goal_test,
-            max_depth=min(search_params.max_depth, 10),  # Limit depth for performance
-            max_paths=max_paths_per_start
+            max_depth=min(search_params.max_depth, 10),
+            max_paths=DEFAULT_MAX_PATHS_PER_START
         )
         sequences.extend(paths)
-    
     return sequences

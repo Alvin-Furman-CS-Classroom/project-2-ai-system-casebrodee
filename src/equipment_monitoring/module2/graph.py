@@ -11,6 +11,9 @@ from typing import Dict, List, Set, Tuple
 from .io import HistoricalRecord
 from .config import GraphConfig
 
+# Limit similarity edges per state to prevent graph explosion on large datasets
+MAX_NEIGHBORS_PER_STATE = 20
+
 
 class State:
     """
@@ -118,6 +121,73 @@ def states_differ_by_one(s1: State, s2: State, ignore_machine_id: bool = False) 
     return differences == 1
 
 
+def _add_records_to_graph(
+    graph: Graph,
+    machine_records: Dict[str, List[HistoricalRecord]],
+    graph_config: GraphConfig,
+) -> bool:
+    """
+    Add all records to the graph as states and mark failure states.
+    Returns True if any machine has multiple records (temporal data).
+    """
+    has_temporal_data = any(len(recs) > 1 for recs in machine_records.values())
+    for machine_id, machine_record_list in machine_records.items():
+        machine_record_list.sort(key=lambda r: r.time_key)
+        for record in machine_record_list:
+            discretized = graph_config.discretize_sensors(record.sensors)
+            sensor_bins = tuple(
+                discretized.get(sensor, "unknown")
+                for sensor in graph_config.state_components
+            )
+            state = State(machine_id, sensor_bins)
+            if state in graph.nodes:
+                state = next(s for s in graph.nodes if s == state)
+            else:
+                graph.add_node(state)
+            graph.state_to_records[state].append(record)
+            if record.failure_label:
+                graph.mark_failure_state(state)
+    return has_temporal_data
+
+
+def _build_temporal_edges(
+    graph: Graph,
+    machine_records: Dict[str, List[HistoricalRecord]],
+    graph_config: GraphConfig,
+) -> None:
+    """Add edges between consecutive states within each machine (time order)."""
+    for machine_id, machine_record_list in machine_records.items():
+        machine_record_list.sort(key=lambda r: r.time_key)
+        states: List[State] = []
+        for record in machine_record_list:
+            discretized = graph_config.discretize_sensors(record.sensors)
+            sensor_bins = tuple(
+                discretized.get(sensor, "unknown")
+                for sensor in graph_config.state_components
+            )
+            state = State(machine_id, sensor_bins)
+            if state in graph.nodes:
+                state = next(s for s in graph.nodes if s == state)
+            states.append(state)
+        for i in range(len(states) - 1):
+            graph.add_edge(states[i], states[i + 1])
+
+
+def _build_similarity_edges(graph: Graph) -> None:
+    """Add edges between states that differ by exactly one sensor bin (similarity mode)."""
+    states_list = list(graph.nodes)
+    for state1 in states_list:
+        neighbors_found = 0
+        for state2 in states_list:
+            if state1 == state2:
+                continue
+            if neighbors_found >= MAX_NEIGHBORS_PER_STATE:
+                break
+            if states_differ_by_one(state1, state2, ignore_machine_id=True):
+                graph.add_edge(state1, state2)
+                neighbors_found += 1
+
+
 def build_graph(
     records: List[HistoricalRecord],
     graph_config: GraphConfig
@@ -127,7 +197,7 @@ def build_graph(
     
     If records have temporal ordering (multiple records per machine), builds
     edges based on time sequence. Otherwise, builds edges based on state similarity
-    (states that differ by one sensor bin).
+    (states that differ by one sensor bin). Empty records produce an empty graph.
     
     Args:
         records: List of historical records (should be sorted by machine_id and time_key)
@@ -137,92 +207,16 @@ def build_graph(
         Graph object with nodes, edges, and failure states marked
     """
     graph = Graph()
-    
-    # Group records by machine_id
+    if not records:
+        return graph
     machine_records: Dict[str, List[HistoricalRecord]] = {}
     for record in records:
         if record.machine_id not in machine_records:
             machine_records[record.machine_id] = []
         machine_records[record.machine_id].append(record)
-    
-    # Check if we have temporal data (multiple records per machine)
-    has_temporal_data = any(len(recs) > 1 for recs in machine_records.values())
-    
-    # Convert all records to states first
-    all_states: List[State] = []
-    state_to_record: Dict[State, HistoricalRecord] = {}
-    
-    for machine_id, machine_record_list in machine_records.items():
-        # Sort by time_key to ensure correct ordering
-        machine_record_list.sort(key=lambda r: r.time_key)
-        
-        for record in machine_record_list:
-            # Discretize sensors
-            discretized = graph_config.discretize_sensors(record.sensors)
-            
-            # Build state from selected components
-            sensor_bins = tuple(
-                discretized.get(sensor, "unknown")
-                for sensor in graph_config.state_components
-            )
-            state = State(machine_id, sensor_bins)
-            
-            # Check if this state already exists in the graph (reuse it)
-            if state in graph.nodes:
-                # Find the existing state object
-                existing_state = next(s for s in graph.nodes if s == state)
-                state = existing_state
-            else:
-                # Add new state to graph
-                graph.add_node(state)
-            
-            # Add record to state mapping
-            graph.state_to_records[state].append(record)
-            state_to_record[state] = record
-            
-            # Mark failure states
-            if record.failure_label:
-                graph.mark_failure_state(state)
-            
-            all_states.append(state)
-    
-    # Build edges
+    has_temporal_data = _add_records_to_graph(graph, machine_records, graph_config)
     if has_temporal_data:
-        # Temporal mode: connect consecutive states within each machine
-        for machine_id, machine_record_list in machine_records.items():
-            machine_record_list.sort(key=lambda r: r.time_key)
-            states: List[State] = []
-            for record in machine_record_list:
-                discretized = graph_config.discretize_sensors(record.sensors)
-                sensor_bins = tuple(
-                    discretized.get(sensor, "unknown")
-                    for sensor in graph_config.state_components
-                )
-                state = State(machine_id, sensor_bins)
-                if state in graph.nodes:
-                    state = next(s for s in graph.nodes if s == state)
-                states.append(state)
-            
-            # Add edges between consecutive states
-            for i in range(len(states) - 1):
-                graph.add_edge(states[i], states[i + 1])
+        _build_temporal_edges(graph, machine_records, graph_config)
     else:
-        # Similarity mode: connect states that differ by one sensor bin
-        # OPTIMIZATION: Limit connections to prevent graph explosion
-        # Only connect each state to a limited number of similar states
-        states_list = list(graph.nodes)
-        max_neighbors_per_state = 20  # Limit connections per state
-        
-        # Build edges more efficiently: for each state, find its nearest neighbors
-        for state1 in states_list:
-            neighbors_found = 0
-            for state2 in states_list:
-                if state1 == state2:
-                    continue
-                if neighbors_found >= max_neighbors_per_state:
-                    break
-                if states_differ_by_one(state1, state2, ignore_machine_id=True):
-                    graph.add_edge(state1, state2)
-                    neighbors_found += 1
-    
+        _build_similarity_edges(graph)
     return graph
