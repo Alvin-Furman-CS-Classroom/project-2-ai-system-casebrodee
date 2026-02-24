@@ -109,54 +109,58 @@ def dfs(
     graph: Graph,
     start_state: State,
     goal_test: Callable[[State], bool],
-    max_depth: int = 50
+    max_depth: int = 50,
+    max_paths: Optional[int] = None
 ) -> List[List[State]]:
     """
     Depth-First Search to find paths from start to goal states.
-    
+
     Args:
         graph: The state graph to search
         start_state: Starting state
         goal_test: Function that returns True for goal states
         max_depth: Maximum depth to search
-    
+        max_paths: If set, stop after finding this many paths (None = no limit)
+
     Returns:
         List of paths (each path is a list of states) from start to goal
     """
     paths: List[List[State]] = []
     stack = [SearchNode(start_state, [start_state])]
     visited_in_path: Set[State] = set()  # Track visited states in current path
-    
+
     while stack:
+        if max_paths is not None and len(paths) >= max_paths:
+            break
         node = stack.pop()
         current_state = node.state
         depth = len(node.path) - 1
-        
+
         # Check depth limit
         if depth >= max_depth:
             continue
-        
+
         # Check if state already in current path (avoid cycles)
         if current_state in visited_in_path:
             continue
-        
+
         visited_in_path.add(current_state)
-        
+
         # Check if we reached a goal
         if goal_test(current_state):
             paths.append(node.path)
             visited_in_path.remove(current_state)
             continue
-        
+
         # Explore neighbors (reverse order for consistent behavior)
         neighbors = graph.get_neighbors(current_state)
         for neighbor in reversed(neighbors):
             new_path = node.path + [neighbor]
             stack.append(SearchNode(neighbor, new_path))
-        
+
         # Backtrack: remove from visited when done exploring
         visited_in_path.remove(current_state)
-    
+
     return paths
 
 
@@ -282,22 +286,26 @@ def discover_failure_sequences(
     search_params: SearchParams
 ) -> List[List[State]]:
     """
-    Discover sequences that lead to failures using BFS and DFS.
-    
+    Discover sequences that lead to failures using BFS, DFS, and A*.
+
+    Uses all three search strategies: BFS and DFS for path enumeration,
+    A* with the configured heuristic for informed optimal paths.
+
     Args:
         graph: The state graph
-        search_params: Search parameters
-    
+        search_params: Search parameters (max_depth, heuristic, a_star_weight)
+
     Returns:
         List of sequences (paths) that lead to failure states
     """
     sequences: List[List[State]] = []
     if not graph.nodes:
         return sequences
-    # Goal test: state is a failure state
+
     def goal_test(state: State) -> bool:
         return graph.is_failure_state(state)
-    # For efficiency, start from states that are neighbors of failure states
+
+    # Collect start states (neighbors of failure states, or random non-failure)
     start_states = set()
     for failure_state in graph.failure_states:
         neighbors = graph.get_neighbors(failure_state)
@@ -308,15 +316,60 @@ def discover_failure_sequences(
         import random
         non_failure_states = [s for s in graph.nodes if not graph.is_failure_state(s)]
         start_states = set(random.sample(non_failure_states, min(100, len(non_failure_states))))
-    for start_state in start_states:
+
+    start_states_list = list(start_states)
+    max_depth = min(search_params.max_depth, 10)
+
+    # Resolve heuristic function from config ("frequency" -> time_to_failure)
+    heuristic_name = getattr(search_params, "heuristic", "time_to_failure")
+    if heuristic_name == "sensor_distance":
+        heuristic_fn = heuristic_sensor_distance
+    else:
+        heuristic_fn = heuristic_time_to_failure
+
+    # 1. BFS: enumerate paths from each start
+    for start_state in start_states_list:
         if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
             break
         paths = bfs(
             graph,
             start_state,
             goal_test,
-            max_depth=min(search_params.max_depth, 10),
+            max_depth=max_depth,
             max_paths=DEFAULT_MAX_PATHS_PER_START
         )
         sequences.extend(paths)
+
+    # 2. DFS: add more paths (capped per start to balance diversity)
+    dfs_max_per_start = 5
+    for start_state in start_states_list:
+        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
+            break
+        paths = dfs(
+            graph,
+            start_state,
+            goal_test,
+            max_depth=max_depth,
+            max_paths=dfs_max_per_start
+        )
+        sequences.extend(paths)
+
+    # 3. A*: add optimal path from a subset of starts (informed search)
+    a_star_weight = getattr(search_params, "a_star_weight", 1.0)
+    num_a_star_starts = min(15, len(start_states_list))
+    for i in range(num_a_star_starts):
+        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
+            break
+        start_state = start_states_list[i]
+        path = a_star(
+            graph,
+            start_state,
+            goal_test,
+            heuristic_fn,
+            max_depth=max_depth,
+            weight=a_star_weight
+        )
+        if path is not None and path not in sequences:
+            sequences.append(path)
+
     return sequences
