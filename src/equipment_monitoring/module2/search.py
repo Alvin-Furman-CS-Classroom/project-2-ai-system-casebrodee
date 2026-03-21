@@ -13,10 +13,6 @@ import heapq
 from .graph import Graph, State
 from .config import SearchParams
 
-# Limits for discover_failure_sequences to keep runtime reasonable
-DEFAULT_MAX_PATHS_PER_START = 5
-DEFAULT_MAX_TOTAL_PATHS = 100
-
 
 class SearchNode:
     """
@@ -56,7 +52,7 @@ def bfs(
     start_state: State,
     goal_test: Callable[[State], bool],
     max_depth: int = 50,
-    max_paths: int = 10
+    max_paths: Optional[int] = None,
 ) -> List[List[State]]:
     """
     Breadth-First Search to find all paths from start to goal states.
@@ -66,7 +62,7 @@ def bfs(
         start_state: Starting state
         goal_test: Function that returns True for goal states
         max_depth: Maximum depth to search
-        max_paths: Maximum number of paths to find (early termination)
+        max_paths: Maximum number of paths to find, or None for no limit
     
     Returns:
         List of paths (each path is a list of states) from start to goal
@@ -75,7 +71,7 @@ def bfs(
     queue = deque([SearchNode(start_state, [start_state])])
     visited_at_depth: Dict[Tuple[State, int], bool] = {}  # (state, depth) -> visited
     
-    while queue and len(paths) < max_paths:
+    while queue and (max_paths is None or len(paths) < max_paths):
         node = queue.popleft()
         current_state = node.state
         depth = len(node.path) - 1
@@ -93,7 +89,7 @@ def bfs(
         # Check if we reached a goal
         if goal_test(current_state):
             paths.append(node.path)
-            if len(paths) >= max_paths:
+            if max_paths is not None and len(paths) >= max_paths:
                 break
             continue
         
@@ -281,6 +277,11 @@ def a_star(
     return None  # No path found
 
 
+def _path_fingerprint(path: List[State]) -> Tuple[State, ...]:
+    """Hashable key for deduplicating path lists (State is hashable)."""
+    return tuple(path)
+
+
 def discover_failure_sequences(
     graph: Graph,
     search_params: SearchParams
@@ -290,6 +291,7 @@ def discover_failure_sequences(
 
     Uses all three search strategies: BFS and DFS for path enumeration,
     A* with the configured heuristic for informed optimal paths.
+    Identical paths from different strategies are stored once (deduplicated).
 
     Args:
         graph: The state graph
@@ -302,10 +304,12 @@ def discover_failure_sequences(
     if not graph.nodes:
         return sequences
 
+    seen_paths: Set[Tuple[State, ...]] = set()
+
     def goal_test(state: State) -> bool:
         return graph.is_failure_state(state)
 
-    # Collect start states (neighbors of failure states, or random non-failure)
+    # Collect start states (neighbors of failure states, else all non-failure states)
     start_states = set()
     for failure_state in graph.failure_states:
         neighbors = graph.get_neighbors(failure_state)
@@ -313,12 +317,25 @@ def discover_failure_sequences(
             if not graph.is_failure_state(neighbor):
                 start_states.add(neighbor)
     if not start_states:
-        import random
         non_failure_states = [s for s in graph.nodes if not graph.is_failure_state(s)]
-        start_states = set(random.sample(non_failure_states, min(100, len(non_failure_states))))
+        start_states = set(non_failure_states)
 
     start_states_list = list(start_states)
-    max_depth = min(search_params.max_depth, 10)
+    max_depth = search_params.max_depth
+    max_total = search_params.max_total_paths
+    per_start = search_params.max_paths_per_start
+
+    def _room() -> bool:
+        return max_total is None or len(sequences) < max_total
+
+    def _add_unique_path(path: List[State]) -> None:
+        if not _room():
+            return
+        key = _path_fingerprint(path)
+        if key in seen_paths:
+            return
+        seen_paths.add(key)
+        sequences.append(path)
 
     # Resolve heuristic function from config ("frequency" -> time_to_failure)
     heuristic_name = getattr(search_params, "heuristic", "time_to_failure")
@@ -327,40 +344,43 @@ def discover_failure_sequences(
     else:
         heuristic_fn = heuristic_time_to_failure
 
-    # 1. BFS: enumerate paths from each start
+    # 1. BFS: enumerate paths from each start (optional per-start and total caps from SearchParams)
     for start_state in start_states_list:
-        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
+        if not _room():
             break
         paths = bfs(
             graph,
             start_state,
             goal_test,
             max_depth=max_depth,
-            max_paths=DEFAULT_MAX_PATHS_PER_START
+            max_paths=per_start,
         )
-        sequences.extend(paths)
+        for p in paths:
+            if not _room():
+                break
+            _add_unique_path(p)
 
-    # 2. DFS: add more paths (capped per start to balance diversity)
-    dfs_max_per_start = 5
+    # 2. DFS: additional paths (same caps)
     for start_state in start_states_list:
-        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
+        if not _room():
             break
         paths = dfs(
             graph,
             start_state,
             goal_test,
             max_depth=max_depth,
-            max_paths=dfs_max_per_start
+            max_paths=per_start,
         )
-        sequences.extend(paths)
+        for p in paths:
+            if not _room():
+                break
+            _add_unique_path(p)
 
-    # 3. A*: add optimal path from a subset of starts (informed search)
+    # 3. A*: optimal path from every start state (informed search)
     a_star_weight = getattr(search_params, "a_star_weight", 1.0)
-    num_a_star_starts = min(15, len(start_states_list))
-    for i in range(num_a_star_starts):
-        if len(sequences) >= DEFAULT_MAX_TOTAL_PATHS:
+    for start_state in start_states_list:
+        if not _room():
             break
-        start_state = start_states_list[i]
         path = a_star(
             graph,
             start_state,
@@ -369,7 +389,7 @@ def discover_failure_sequences(
             max_depth=max_depth,
             weight=a_star_weight
         )
-        if path is not None and path not in sequences:
-            sequences.append(path)
+        if path is not None:
+            _add_unique_path(path)
 
     return sequences

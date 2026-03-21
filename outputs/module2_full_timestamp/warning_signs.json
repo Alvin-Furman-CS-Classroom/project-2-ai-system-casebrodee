@@ -1,0 +1,1456 @@
+{
+  "warning_signs": [
+    {
+      "pattern": "State transition: ('very_high', 'low', 'low') -> ('very_high', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 48,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'low') -> ('very_high', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 48,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 40,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'low') -> ('medium', 'low', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 40,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 40,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 40,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'low') -> ('medium', 'low', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 40,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 36,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 36,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 36,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 36,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'low') -> ('medium', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 35,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'low') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 33,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'low', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 32,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'low') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 31,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'low') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 31,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'low') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 31,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'low') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 31,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'low') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 30,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'low', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 27,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'high') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 26,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 25,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'low') -> ('very_high', 'medium', 'low') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'high') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 23,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'high') -> ('very_high', 'medium', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 22,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'high') -> ('very_high', 'medium', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 22,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'high') -> ('very_high', 'medium', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 22,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'high') -> ('very_high', 'medium', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 22,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'high') -> ('very_high', 'medium', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 22,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'high') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 21,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 20,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 20,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'medium', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 20,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'medium', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'low') -> ('high', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 18,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'low') -> ('medium', 'high', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 17,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'low', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'low', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 16,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 13,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'high') -> ('high', 'low', 'high') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('very_high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 12,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'high', 'medium') -> ('low', 'high', 'medium') (2 steps)",
+      "predictive_score": 1.0,
+      "frequency": 10,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('low', 'high', 'medium') -> ('high', 'high', 'medium') (2 steps)",
+      "predictive_score": 0.9,
+      "frequency": 9,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'medium') -> ('medium', 'low', 'medium') (2 steps)",
+      "predictive_score": 0.7,
+      "frequency": 7,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'high', 'high') -> ('very_high', 'high', 'high') (2 steps)",
+      "predictive_score": 0.6,
+      "frequency": 6,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('medium', 'medium', 'high') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    },
+    {
+      "pattern": "State transition: ('high', 'medium', 'medium') -> ('medium', 'medium', 'medium') (2 steps)",
+      "predictive_score": 0.5,
+      "frequency": 5,
+      "false_positive_rate": 0.0
+    }
+  ]
+}

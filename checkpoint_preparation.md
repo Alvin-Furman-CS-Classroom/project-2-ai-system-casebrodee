@@ -61,11 +61,13 @@ Starting visuals early helps clarify your thinking and ensures your explanation 
 
 ## Checkpoint Readiness Checklist
 
-- [ ] Code elegance report generated and saved as `checkpoint_X_elegance_report.md`
-- [ ] Module rubric report generated and saved as `checkpoint_X_module_report.md`
-- [ ] Module input clearly documented with concrete example
-- [ ] Module output clearly documented with next-module feed specified
-- [ ] AI concepts explained with justification
+*(Example for Checkpoint 3 in this repo—adjust `X` for your checkpoint.)*
+
+- [x] Code elegance report generated and saved as `checkpoint_3_elegance_report.md`
+- [x] Module rubric report generated and saved as `checkpoint_3_module_report.md`
+- [x] Module input clearly documented with concrete example (`README.md` Module 3 + `checkpoint_3_module_explanation.md`)
+- [x] Module output clearly documented with next-module feed specified (`README.md`, `checkpoint_3_module_explanation.md`)
+- [x] AI concepts explained with justification (`checkpoint_3_module_explanation.md`)
 - [ ] PowerPoint presentation started with visual representations
 - [ ] All code changes pushed to repository
 - [ ] Team participation visible in commit history

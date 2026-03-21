@@ -126,13 +126,17 @@ class SearchParams:
         heuristic: Heuristic function for A* search
                    Options: "time_to_failure", "sensor_distance", "frequency"
         a_star_weight: Weight for A* heuristic (1.0 = standard A*, >1.0 = more greedy)
+        max_total_paths: Stop after this many paths total (None = no cap; can be large on dense graphs)
+        max_paths_per_start: Cap paths per start state for BFS/DFS (None = no cap)
     """
     max_depth: int = 50
     lookback_window: int = 50
     min_pattern_length: int = 3
     heuristic: Literal["time_to_failure", "sensor_distance", "frequency"] = "time_to_failure"
     a_star_weight: float = 1.0
-    
+    max_total_paths: Optional[int] = None
+    max_paths_per_start: Optional[int] = None
+
     @classmethod
     def from_json(cls, json_path: Union[str, Path]) -> 'SearchParams':
         """
@@ -144,17 +148,22 @@ class SearchParams:
           "lookback_window": 50,
           "min_pattern_length": 3,
           "heuristic": "time_to_failure",
-          "a_star_weight": 1.0
+          "a_star_weight": 1.0,
+          "max_total_paths": 10000,
+          "max_paths_per_start": 50
         }
+        Omit or set max_* keys to null for no limit (can be very slow on large graphs).
         """
         json_path = Path(json_path)
         with open(json_path, 'r') as f:
             data = json.load(f)
-        
+
         return cls(
             max_depth=data.get('max_depth', 50),
             lookback_window=data.get('lookback_window', 50),
             min_pattern_length=data.get('min_pattern_length', 3),
             heuristic=data.get('heuristic', 'time_to_failure'),
-            a_star_weight=data.get('a_star_weight', 1.0)
+            a_star_weight=data.get('a_star_weight', 1.0),
+            max_total_paths=data.get('max_total_paths'),
+            max_paths_per_start=data.get('max_paths_per_start'),
         )

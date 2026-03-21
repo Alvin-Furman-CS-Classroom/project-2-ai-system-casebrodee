@@ -1,0 +1,2666 @@
+{
+  "sequences": [
+    {
+      "sequence": [
+        "State(machine=MACHINE_2464, bins=('very_high', 'low', 'low'))",
+        "State(machine=MACHINE_1517, bins=('very_high', 'low', 'medium'))"
+      ],
+      "frequency": 48,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2464"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1718, bins=('very_high', 'low', 'low'))",
+        "State(machine=MACHINE_1517, bins=('very_high', 'low', 'medium'))"
+      ],
+      "frequency": 48,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1718"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2758, bins=('low', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 40,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2758"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1264, bins=('low', 'low', 'low'))",
+        "State(machine=MACHINE_1176, bins=('medium', 'low', 'low'))"
+      ],
+      "frequency": 40,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1264"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2569, bins=('low', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 40,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2569"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2349, bins=('low', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 40,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2349"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2772, bins=('low', 'low', 'low'))",
+        "State(machine=MACHINE_1176, bins=('medium', 'low', 'low'))"
+      ],
+      "frequency": 40,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2772"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1002, bins=('low', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 36,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1002"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2563, bins=('low', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 36,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2563"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_253, bins=('low', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 36,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_253"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1205, bins=('low', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 36,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1205"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1650"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_866, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_866"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_669, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_669"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_654, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_654"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_659, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_659"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_785, bins=('very_high', 'medium', 'low'))",
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))"
+      ],
+      "frequency": 35,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_785"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_294, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_294"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_439, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_439"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1785, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1785"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_560, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_560"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1423, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1423"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_912, bins=('low', 'high', 'low'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 33,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_912"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1517, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1517"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2222, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2222"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_876, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_876"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1176, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1176"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_383, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_383"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1062, bins=('very_high', 'low', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1062"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_807, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_807"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1405, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1405"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1432, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1432"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_592, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_592"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2865, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2865"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2722, bins=('medium', 'low', 'low'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2722"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1266, bins=('very_high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1266"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1109, bins=('very_high', 'low', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 32,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1109"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1712, bins=('very_high', 'high', 'low'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 31,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1712"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2600, bins=('very_high', 'high', 'low'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 31,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2600"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1151, bins=('very_high', 'high', 'low'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 31,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1151"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1747, bins=('very_high', 'high', 'low'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 31,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1747"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_131, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_131"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2168, bins=('very_high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2168"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1701, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1701"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_038, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_038"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1036, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1036"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1509, bins=('very_high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1509"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_128, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_128"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1541, bins=('high', 'low', 'low'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 30,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1541"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1700, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1700"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_203, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_203"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_990, bins=('low', 'low', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_990"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2264, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2264"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2151, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2151"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_644, bins=('low', 'low', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_644"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_157, bins=('low', 'low', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_157"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_893, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_893"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_713, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_713"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2061, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2061"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_265, bins=('medium', 'medium', 'low'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 27,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_265"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2640, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2640"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1822, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1822"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1076, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1076"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2839, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2839"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2372, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2372"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_703, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_703"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1367, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1367"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2688, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2688"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2597, bins=('medium', 'low', 'high'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 26,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2597"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1417"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_135, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_135"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2511, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2511"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1181, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1181"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1308, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1308"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_459, bins=('very_high', 'high', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 25,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_459"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2389"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_828, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_828"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2673, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2673"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1333, bins=('high', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1333"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2342, bins=('high', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2342"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_600, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_600"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2381, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2381"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2761, bins=('high', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2761"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2498, bins=('high', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2498"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1339, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1339"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2286, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2286"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2000, bins=('high', 'medium', 'low'))",
+        "State(machine=MACHINE_1650, bins=('very_high', 'medium', 'low'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2000"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1046, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1046"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1940, bins=('high', 'low', 'high'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 23,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1940"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_197, bins=('low', 'medium', 'high'))",
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))"
+      ],
+      "frequency": 22,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_197"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2733, bins=('low', 'medium', 'high'))",
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))"
+      ],
+      "frequency": 22,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2733"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_085, bins=('low', 'medium', 'high'))",
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))"
+      ],
+      "frequency": 22,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_085"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2073, bins=('low', 'medium', 'high'))",
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))"
+      ],
+      "frequency": 22,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2073"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_174, bins=('low', 'medium', 'high'))",
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))"
+      ],
+      "frequency": 22,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_174"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1182, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1182"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_873, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_873"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1882, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1882"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1335, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1335"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_117, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_117"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1184, bins=('low', 'high', 'high'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 21,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1184"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1074, bins=('low', 'medium', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 20,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1074"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1978, bins=('low', 'medium', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 20,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1978"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_987, bins=('low', 'medium', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 20,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_987"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_324, bins=('very_high', 'medium', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_324"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_652, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_652"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1807, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1807"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1693, bins=('very_high', 'medium', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1693"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2180, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2180"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_744, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_744"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2193, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2193"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2858, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2858"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2936, bins=('high', 'high', 'low'))",
+        "State(machine=MACHINE_839, bins=('high', 'high', 'high'))"
+      ],
+      "frequency": 18,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2936"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_611, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_611"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1834, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1834"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1119, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1119"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2456, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2456"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1879, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1879"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1924, bins=('medium', 'high', 'low'))",
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))"
+      ],
+      "frequency": 17,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1924"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2693"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2330, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2330"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_647, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_647"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2182, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2182"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2929, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2929"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2339, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2339"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_687, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_687"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_530, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_530"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_371, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_371"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2399, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2399"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2069, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2069"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_177, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_177"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_156, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_156"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_886, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_886"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_221, bins=('medium', 'low', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_221"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2090, bins=('high', 'low', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 16,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2090"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1957"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_215, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_215"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2757, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2757"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_667, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_667"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1538, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1538"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_057, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_057"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2724, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2724"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2908, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2908"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_638, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_638"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_756, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_756"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1124, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1124"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_754, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_754"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_349, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_349"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1518, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1518"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2418, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2418"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_590, bins=('medium', 'medium', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 13,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_590"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1799, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1799"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2601, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2601"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_891, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_891"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_954, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_954"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_003, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_003"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2096, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2096"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_909, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_909"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2825, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2825"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2833, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2833"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1740, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1740"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2934, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2934"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_405, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_405"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2607, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2607"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2610, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2610"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1846, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1846"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1232, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1232"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_902, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_902"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_993, bins=('high', 'medium', 'high'))",
+        "State(machine=MACHINE_2389, bins=('high', 'low', 'high'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_993"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2290, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2290"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_046, bins=('very_high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 12,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_046"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2068"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1960, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1960"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_454, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_454"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1619, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1619"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2764, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2764"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1434, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1434"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2933, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2933"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1230, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1230"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2785, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2785"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1543, bins=('high', 'high', 'medium'))",
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))"
+      ],
+      "frequency": 10,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1543"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1460, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1460"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1860, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1860"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1904, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1904"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1479, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1479"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2328, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2328"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1823, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1823"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_470, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_470"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_446, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_446"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_997, bins=('low', 'high', 'medium'))",
+        "State(machine=MACHINE_2068, bins=('high', 'high', 'medium'))"
+      ],
+      "frequency": 9,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_997"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1655, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1655"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_100, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_100"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_514, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_514"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_190, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_190"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1932, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1932"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_794, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_794"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2978, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2978"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_068, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_068"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1150, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1150"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2790, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2790"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2994, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2994"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1524, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1524"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1549, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1549"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2660, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2660"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_408, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_408"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2460, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2460"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2129, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2129"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1131, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1131"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_626, bins=('medium', 'high', 'medium'))",
+        "State(machine=MACHINE_2693, bins=('medium', 'low', 'medium'))"
+      ],
+      "frequency": 7,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_626"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1055, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1055"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1597, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1597"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_344, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_344"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2083, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2083"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_556, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_556"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1328, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1328"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2988, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2988"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_210, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_210"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2363, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2363"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_571, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_571"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1075, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1075"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1964, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1964"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1041, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1041"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1839, bins=('medium', 'high', 'high'))",
+        "State(machine=MACHINE_1417, bins=('very_high', 'high', 'high'))"
+      ],
+      "frequency": 6,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1839"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2020, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2020"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_673, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_673"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_949, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_949"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_896, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_896"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1965, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1965"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2969, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2969"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2525, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2525"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1651, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1651"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2126, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2126"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_201, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_201"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1250, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1250"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2570, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2570"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_919, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_919"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2518, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2518"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_894, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_894"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_093, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_093"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_821, bins=('medium', 'medium', 'high'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_821"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_082, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_082"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_1695, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_1695"
+      ]
+    },
+    {
+      "sequence": [
+        "State(machine=MACHINE_2742, bins=('high', 'medium', 'medium'))",
+        "State(machine=MACHINE_1957, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 5,
+      "avg_time_to_failure": 0.0,
+      "machines": [
+        "MACHINE_2742"
+      ]
+    }
+  ]
+}

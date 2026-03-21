@@ -152,9 +152,15 @@ MACHINE_003,2025-01-01 00:20:00,64.44,432.66,4.38,1
   "max_depth": 50,
   "lookback_window": 50,
   "min_pattern_length": 3,
-  "heuristic": "time_to_failure"
+  "heuristic": "time_to_failure",
+  "a_star_weight": 1.0,
+  "max_total_paths": 20000,
+  "max_paths_per_start": 80
 }
 ```
+
+- `heuristic`: `"time_to_failure"` or `"sensor_distance"`.
+- `max_total_paths` / `max_paths_per_start`: optional caps on path enumeration; set to `null` for no limit (can be very slow on large, dense graphs).
 
 ### Outputs
 
@@ -198,9 +204,9 @@ MACHINE_003,2025-01-01 00:20:00,64.44,432.66,4.38,1
 
 - Historical data contains at least some failure events (`Failure_Status=1`) to discover patterns
 - Sensor readings are numeric and can be discretized into bins
-- **Graph building approach**: Since the dataset has one record per machine (not time-series), the graph connects states that differ by exactly one sensor bin. This allows search algorithms to find paths from normal states to failure states by exploring similar sensor configurations.
+- **Graph building approach**: Since the dataset has one record per machine (not time-series), the graph connects states that differ by exactly one sensor bin (full pairwise similarity edges, bidirectional). **All** CSV rows are used—there is no record sampling in the runner.
 - Graph states are defined by discretized sensor combinations (binning approach)
-- Search algorithms explore paths leading to failure states using BFS/DFS from states adjacent to failures
+- Search algorithms explore paths leading to failure states using BFS/DFS from states adjacent to failures (or from all non-failure states if needed). Identical paths found by BFS, DFS, and A* are deduplicated before pattern extraction.
 - A* heuristic uses time-to-failure or sensor-space distance to known failure regions
 
 ### Public Interfaces (for later modules)
@@ -215,6 +221,69 @@ These interfaces will be defined under `src/equipment_monitoring/module2/`:
   - Run BFS/DFS and A* search to discover failure sequences and rank warning signs
 - `run_module2(data_path, graph_config_path, search_params_path, output_dir) -> None`
   - End-to-end runner used by the CLI and integration tests
+
+---
+
+## Module 3: Equipment Diagnosis (First-Order Style KB)
+
+- **Topic:** First-order logic themes—predicates, variables, **unification**, and **forward chaining** (Horn-style rules in JSON).
+- **Goal:** In **batch** per `equipment_id`, combine Module 1 classifications and **required** Module 2 outputs with an editable knowledge base to produce ranked hypotheses, heuristic confidence scores, explanation chains, and inspection text.
+
+### Inputs
+
+1. **Knowledge base JSON** (e.g. `src/data/module3/kb.json`)
+   - Top-level key `"rules"`: array of objects with:
+     - `id` (string), `priority` (int, higher fires first for provenance),
+     - `antecedents`: list of atoms (each atom is a JSON array: predicate string, then constants or variables),
+     - `consequent`: single atom array,
+     - `inspection` (optional string, shown when that rule derives a diagnosis).
+   - **Variables** are strings whose first character is `?` (e.g. `?e` for equipment). All other strings in atoms are constants.
+
+```json
+{
+  "rules": [
+    {
+      "id": "example_rule",
+      "priority": 70,
+      "antecedents": [
+        ["violated", "?e", "vibration_high"],
+        ["m2_on_failure_path", "?e"]
+      ],
+      "consequent": ["suggests", "?e", "rotating_component_stress"],
+      "inspection": "Inspect bearings and alignment."
+    }
+  ]
+}
+```
+
+2. **Module 1** `classifications.jsonl` (one JSON object per line), same shape as Module 1 output.
+
+3. **Module 2** (both required):
+   - `sequences.json` — object with `"sequences"` array (from `run_module2`).
+   - `warning_signs.json` — object with `"warning_signs"` array.
+
+The engine derives ground facts per equipment (e.g. `status`, `violated`, `m1_max_confidence`, `m2_on_failure_path`, `m2_top_predictive`) from these files; rule authors should align predicate names with Module 1 `violated_rules` strings and the built-in fact predicates.
+
+### Outputs
+
+- **`diagnosis.json`** — object with key `"equipment"`: array of blocks, one per `equipment_id` found in classifications. Each block includes:
+  - `equipment_id`, `diagnoses` (ranked list with `hypothesis`, `score`, `supporting_rule_ids`, `explanation`, `inspection`),
+  - `primitive_facts` (ground atoms fed to the engine),
+  - `meta` (summary fields for M1/M2 context).
+
+### Assumptions
+
+- `equipment_id` values are consistent between Module 1 rows and Module 2 `machines` lists so historical pattern facts line up.
+- Module 3 does not re-run Module 1 or 2; it reads their artifacts only.
+
+### Public Interfaces
+
+Under `src/equipment_monitoring/module3/`:
+
+- `infer_batch(kb_path, classifications_path, sequences_path, warning_signs_path) -> dict`
+  - Returns a JSON-serializable dict with `"equipment"` array.
+- `run_module3(kb_path, classifications_path, sequences_path, warning_signs_path, output_dir) -> None`
+  - Writes `output_dir / "diagnosis.json"`.
 
 ---
 
@@ -234,6 +303,7 @@ project-2-ai-system-casebrodee/
 
 Module 1 code lives in `src/equipment_monitoring/module1/` with matching tests in `unit_tests/module1/`.
 Module 2 code lives in `src/equipment_monitoring/module2/` with matching tests in `unit_tests/module2/`.
+Module 3 code lives in `src/equipment_monitoring/module3/` with matching tests in `unit_tests/module3/` and `integration_tests/module3/`.
 
 ---
 
@@ -329,6 +399,25 @@ python -m equipment_monitoring.cli --module 2 \
 - `--data-format`: `timestamped` (default) or `module1`. Use `module1` when the CSV has Module 1 column names and optional `failure_status`.
 - `--classifications`: Optional path to Module 1’s `classifications.jsonl`; enriches warning signs with `module1_anomaly_rate`.
 
+### Module 3
+
+Run Module 3 **after** Module 1 and Module 2 on the same logical dataset (Module 1 schema CSV recommended so M1 + M2 + M3 share one file).
+
+```bash
+python -m equipment_monitoring.cli --module 3 \
+  --kb src/data/module3/kb.json \
+  --classifications outputs/module1/classifications.jsonl \
+  --sequences outputs/module2/sequences.json \
+  --warning-signs outputs/module2/warning_signs.json \
+  --output-dir outputs/module3
+```
+
+Expected output:
+
+- `outputs/module3/diagnosis.json` — diagnoses, explanations, and inspection strings per equipment.
+
+**Full pipeline** (from project root, `PYTHONPATH=src`): run Module 1, then Module 2 with `--data-format module1` and `--classifications`, then Module 3 as above. Use the same readings CSV path for Module 1 and Module 2.
+
 ---
 
 ## Testing
@@ -348,6 +437,10 @@ Unit tests mirror the structure of `src/`.
 - `unit_tests/module2/test_graph.py` - Graph building and state discretization
 - `unit_tests/module2/test_search.py` - BFS, DFS, and A* search algorithms
 - `unit_tests/module2/test_patterns.py` - Sequence extraction and warning sign ranking
+- `unit_tests/module2/test_module2_config.py` - Graph and search JSON config loading
+
+**Module 3:**
+- `unit_tests/module3/test_logic.py` - Unification, substitution, matching, forward chaining
 
 ### Integration Tests (`integration_tests/`)
 
@@ -357,6 +450,9 @@ Unit tests mirror the structure of `src/`.
 **Module 2:**
 - `integration_tests/module2/test_module2_smoke.py` - Full pipeline smoke test on timestamped dataset
 - `integration_tests/module2/test_module1_module2_integration.py` - Module 1 then Module 2 on same dataset; verifies Module 2 can use Module 1 schema CSV and classifications
+
+**Module 3:**
+- `integration_tests/module3/test_module3_smoke.py` - Module 1 → Module 2 → Module 3 end-to-end on shared CSV
 
 ### Running Tests
 
@@ -370,6 +466,11 @@ Run Module 2 tests only:
 pytest unit_tests/module2/ integration_tests/module2/ -v
 ```
 
+Run Module 3 tests only:
+```bash
+pytest unit_tests/module3/ integration_tests/module3/ -v
+```
+
 ---
 
 ## Checkpoint Log
@@ -380,7 +481,7 @@ Progress tracking against course checkpoints:
 | ---------- | ---- | ---------------- | ------ | -------- |
 | 1 | Completed: Wednesday, Feb 11, 2026 | Module 1 | ✅ Complete | Module 1 fully implemented with unit and integration tests. CLI working, outputs generated. |
 | 2 | Due: Thursday, Feb 26, 2026 | Module 2 | ✅ Complete | Module 2 fully implemented: graph building, BFS/DFS/A* search, pattern extraction, warning sign ranking. All tests passing. |
-| 3 | Due: Thursday, Mar 19, 2026 | Modules 1-2 | ⏳ Pending |  |
-| 4 | Due: Thursday, Apr 12, 2026 | Modules 1-3 | ⏳ Pending |  |
+| 3 | Due: Thursday, Mar 19, 2026 | Modules 1-2 | ⏳ Pending | Confirm with instructor when submitted. |
+| 4 | Due: Thursday, Apr 12, 2026 | Modules 1-3 | ⏳ In progress | Module 3 implemented; `README.md` documents I/O and CLI; `checkpoint_3_*` reports; see `integration_tests/module3/`. |
 | 5 | Due: Thursday, Apr 16, 2026 | Modules 1-4 | ⏳ Pending |  |
 | 6 | Due: Monday, Apr 20, 2026 | Modules 1-5 | ⏳ Pending |  |

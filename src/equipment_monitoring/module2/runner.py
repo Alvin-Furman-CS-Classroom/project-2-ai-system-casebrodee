@@ -23,9 +23,6 @@ from .graph import build_graph, Graph
 from .search import discover_failure_sequences, a_star, heuristic_time_to_failure, heuristic_sensor_distance
 from .patterns import extract_sequences, rank_warning_signs, FailureSequence, WarningSign
 
-# Sampling limit for large datasets to keep pipeline performance reasonable
-DEFAULT_MAX_RECORDS = 1000
-
 
 def run_module2(
     data_path: Path,
@@ -54,6 +51,12 @@ def run_module2(
         - sequences.json: Discovered failure sequences
         - warning_signs.json: Ranked warning signs
         - Optional: visualization plots (if implemented)
+
+    Note:
+        The graph uses all loaded records (no sampling) and full similarity edges when
+        data is not time-series per machine. Path enumeration is bounded by optional
+        ``max_total_paths`` and ``max_paths_per_start`` in search params JSON; set them
+        to null for no cap (can be very slow on large, dense graphs).
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -66,26 +69,7 @@ def run_module2(
         records = load_module1_schema_csv(data_path)
     else:
         records = load_timestamped_csv(data_path)
-    
-    # OPTIMIZATION: For large datasets, sample to improve performance
-    # Prioritize records with failures to ensure we find patterns
-    if len(records) > DEFAULT_MAX_RECORDS:
-        import random
-        # Separate failure and non-failure records
-        failure_records = [r for r in records if r.failure_label]
-        normal_records = [r for r in records if not r.failure_label]
-        
-        # Keep all failures (or up to half of max), fill rest with normal records
-        failure_sample_size = min(len(failure_records), DEFAULT_MAX_RECORDS // 2)
-        normal_sample_size = DEFAULT_MAX_RECORDS - failure_sample_size
-        
-        sampled_failures = random.sample(failure_records, min(failure_sample_size, len(failure_records)))
-        sampled_normal = random.sample(normal_records, min(normal_sample_size, len(normal_records)))
-        
-        records = sampled_failures + sampled_normal
-        random.shuffle(records)  # Mix them up
-        print(f"Sampled {len(records)} records ({len(sampled_failures)} failures, {len(sampled_normal)} normal) from {len(failure_records) + len(normal_records)} total for performance...")
-    
+
     # 3. Build graph
     graph = build_graph(records, graph_config)
     

@@ -1,0 +1,268 @@
+{
+  "equipment": [
+    {
+      "equipment_id": "M1",
+      "diagnoses": [
+        {
+          "hypothesis": "rotating_component_stress",
+          "score": 0.63,
+          "supporting_rule_ids": [
+            "vibration_history_correlation"
+          ],
+          "explanation": {
+            "kind": "inference",
+            "rule_id": "vibration_history_correlation",
+            "conclusion": [
+              "suggests",
+              "M1",
+              "rotating_component_stress"
+            ],
+            "antecedents": [
+              {
+                "kind": "fact",
+                "atom": [
+                  "violated",
+                  "M1",
+                  "vibration_high"
+                ]
+              },
+              {
+                "kind": "fact",
+                "atom": [
+                  "m2_on_failure_path",
+                  "M1"
+                ]
+              }
+            ]
+          },
+          "inspection": "Inspect bearings, coupling alignment, and lubrication; compare vibration trends to baseline."
+        },
+        {
+          "hypothesis": "pressure_system_overload",
+          "score": 0.6075,
+          "supporting_rule_ids": [
+            "pressure_anomaly_with_history"
+          ],
+          "explanation": {
+            "kind": "inference",
+            "rule_id": "pressure_anomaly_with_history",
+            "conclusion": [
+              "suggests",
+              "M1",
+              "pressure_system_overload"
+            ],
+            "antecedents": [
+              {
+                "kind": "fact",
+                "atom": [
+                  "violated",
+                  "M1",
+                  "pressure_high"
+                ]
+              },
+              {
+                "kind": "fact",
+                "atom": [
+                  "m2_on_failure_path",
+                  "M1"
+                ]
+              }
+            ]
+          },
+          "inspection": "Verify relief valves, process setpoints, and line restrictions for blockage."
+        },
+        {
+          "hypothesis": "escalate_monitoring",
+          "score": 0.5175,
+          "supporting_rule_ids": [
+            "anomaly_with_historical_pattern"
+          ],
+          "explanation": {
+            "kind": "inference",
+            "rule_id": "anomaly_with_historical_pattern",
+            "conclusion": [
+              "suggests",
+              "M1",
+              "escalate_monitoring"
+            ],
+            "antecedents": [
+              {
+                "kind": "fact",
+                "atom": [
+                  "status",
+                  "M1",
+                  "anomaly"
+                ]
+              },
+              {
+                "kind": "fact",
+                "atom": [
+                  "m2_on_failure_path",
+                  "M1"
+                ]
+              }
+            ]
+          },
+          "inspection": "Increase sampling frequency and cross-check with maintenance history for this asset."
+        }
+      ],
+      "primitive_facts": [
+        [
+          "m1_max_confidence",
+          "M1",
+          "0.8"
+        ],
+        [
+          "m2_on_failure_path",
+          "M1"
+        ],
+        [
+          "m2_sequence_freq",
+          "M1",
+          "3"
+        ],
+        [
+          "m2_top_predictive",
+          "M1",
+          "0.3"
+        ],
+        [
+          "status",
+          "M1",
+          "anomaly"
+        ],
+        [
+          "violated",
+          "M1",
+          "pressure_high"
+        ],
+        [
+          "violated",
+          "M1",
+          "vibration_high"
+        ]
+      ],
+      "meta": {
+        "m1_max_confidence": 0.7999999999999999,
+        "m2_top_predictive": 0.3,
+        "m2_on_failure_path": true,
+        "violated_rules": [
+          "pressure_high",
+          "vibration_high"
+        ]
+      }
+    },
+    {
+      "equipment_id": "M2",
+      "diagnoses": [
+        {
+          "hypothesis": "pressure_system_overload",
+          "score": 0.5775,
+          "supporting_rule_ids": [
+            "pressure_anomaly_with_history"
+          ],
+          "explanation": {
+            "kind": "inference",
+            "rule_id": "pressure_anomaly_with_history",
+            "conclusion": [
+              "suggests",
+              "M2",
+              "pressure_system_overload"
+            ],
+            "antecedents": [
+              {
+                "kind": "fact",
+                "atom": [
+                  "violated",
+                  "M2",
+                  "pressure_high"
+                ]
+              },
+              {
+                "kind": "fact",
+                "atom": [
+                  "m2_on_failure_path",
+                  "M2"
+                ]
+              }
+            ]
+          },
+          "inspection": "Verify relief valves, process setpoints, and line restrictions for blockage."
+        },
+        {
+          "hypothesis": "escalate_monitoring",
+          "score": 0.4875,
+          "supporting_rule_ids": [
+            "anomaly_with_historical_pattern"
+          ],
+          "explanation": {
+            "kind": "inference",
+            "rule_id": "anomaly_with_historical_pattern",
+            "conclusion": [
+              "suggests",
+              "M2",
+              "escalate_monitoring"
+            ],
+            "antecedents": [
+              {
+                "kind": "fact",
+                "atom": [
+                  "status",
+                  "M2",
+                  "anomaly"
+                ]
+              },
+              {
+                "kind": "fact",
+                "atom": [
+                  "m2_on_failure_path",
+                  "M2"
+                ]
+              }
+            ]
+          },
+          "inspection": "Increase sampling frequency and cross-check with maintenance history for this asset."
+        }
+      ],
+      "primitive_facts": [
+        [
+          "m1_max_confidence",
+          "M2",
+          "0.7"
+        ],
+        [
+          "m2_on_failure_path",
+          "M2"
+        ],
+        [
+          "m2_sequence_freq",
+          "M2",
+          "3"
+        ],
+        [
+          "m2_top_predictive",
+          "M2",
+          "0.3"
+        ],
+        [
+          "status",
+          "M2",
+          "anomaly"
+        ],
+        [
+          "violated",
+          "M2",
+          "pressure_high"
+        ]
+      ],
+      "meta": {
+        "m1_max_confidence": 0.7,
+        "m2_top_predictive": 0.3,
+        "m2_on_failure_path": true,
+        "violated_rules": [
+          "pressure_high"
+        ]
+      }
+    }
+  ]
+}

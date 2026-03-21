@@ -11,9 +11,6 @@ from typing import Dict, List, Set, Tuple
 from .io import HistoricalRecord
 from .config import GraphConfig
 
-# Limit similarity edges per state to prevent graph explosion on large datasets
-MAX_NEIGHBORS_PER_STATE = 20
-
 
 class State:
     """
@@ -176,16 +173,11 @@ def _build_temporal_edges(
 def _build_similarity_edges(graph: Graph) -> None:
     """Add edges between states that differ by exactly one sensor bin (similarity mode)."""
     states_list = list(graph.nodes)
-    for state1 in states_list:
-        neighbors_found = 0
-        for state2 in states_list:
-            if state1 == state2:
-                continue
-            if neighbors_found >= MAX_NEIGHBORS_PER_STATE:
-                break
+    for i, state1 in enumerate(states_list):
+        for state2 in states_list[i + 1 :]:
             if states_differ_by_one(state1, state2, ignore_machine_id=True):
                 graph.add_edge(state1, state2)
-                neighbors_found += 1
+                graph.add_edge(state2, state1)
 
 
 def build_graph(
