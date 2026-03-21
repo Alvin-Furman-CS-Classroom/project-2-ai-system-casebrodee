@@ -13,6 +13,14 @@ Module 1:
 Module 2:
     cd <Path to project root>
     PYTHONPATH=src python3 -m equipment_monitoring.cli --module 2 --data src/data/machine_failure_data_timestamp.csv --graph-config src/data/module2/graph_config.json --search-params src/data/module2/search_params.json --output-dir outputs/module2
+
+Module 3 (after Module 1 + 2 on the same dataset):
+    PYTHONPATH=src python3 -m equipment_monitoring.cli --module 3 \\
+      --kb src/data/module3/kb.json \\
+      --classifications outputs/module1/classifications.jsonl \\
+      --sequences outputs/module2/sequences.json \\
+      --warning-signs outputs/module2/warning_signs.json \\
+      --output-dir outputs/module3
 """
 
 from __future__ import annotations
@@ -35,9 +43,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--module",
         type=int,
-        choices=[1, 2],
+        choices=[1, 2, 3],
         required=True,
-        help="Module number to run (1 or 2).",
+        help="Module number to run (1, 2, or 3).",
     )
     
     # Module 1 arguments
@@ -77,7 +85,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--classifications",
         help="Path to Module 1 classifications.jsonl (Module 2). When provided, warning signs include module1_anomaly_rate.",
     )
-    
+
+    # Module 3 arguments
+    parser.add_argument(
+        "--kb",
+        help="Path to Module 3 knowledge base JSON (rules).",
+    )
+    parser.add_argument(
+        "--sequences",
+        help="Path to Module 2 sequences.json (required for Module 3).",
+    )
+    parser.add_argument(
+        "--warning-signs",
+        help="Path to Module 2 warning_signs.json (required for Module 3).",
+    )
+
     # Common argument
     parser.add_argument(
         "--output-dir",
@@ -139,6 +161,35 @@ def main(argv: list[str] | None = None) -> None:
             )
         except FileNotFoundError as e:
             print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            print(f"[unexpected error] {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.module == 3:
+        if not args.kb or not args.classifications or not args.sequences or not args.warning_signs:
+            print(
+                "[error] Module 3 requires --kb, --classifications, --sequences, and --warning-signs",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        from .module3 import runner as module3_runner
+        from .module3.kb_loader import KnowledgeBaseError
+
+        try:
+            module3_runner.run_module3(
+                kb_path=Path(args.kb),
+                classifications_path=Path(args.classifications),
+                sequences_path=Path(args.sequences),
+                warning_signs_path=Path(args.warning_signs),
+                output_dir=Path(args.output_dir),
+            )
+        except FileNotFoundError as e:
+            print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except KnowledgeBaseError as e:
+            print(f"[kb error] {e}", file=sys.stderr)
             sys.exit(1)
         except Exception as e:
             traceback.print_exc(file=sys.stderr)

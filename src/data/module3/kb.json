@@ -1,0 +1,45 @@
+{
+  "rules": [
+    {
+      "id": "vibration_history_correlation",
+      "priority": 70,
+      "antecedents": [
+        ["violated", "?e", "vibration_high"],
+        ["m2_on_failure_path", "?e"]
+      ],
+      "consequent": ["suggests", "?e", "rotating_component_stress"],
+      "inspection": "Inspect bearings, coupling alignment, and lubrication; compare vibration trends to baseline."
+    },
+    {
+      "id": "pressure_anomaly_with_history",
+      "priority": 65,
+      "antecedents": [
+        ["violated", "?e", "pressure_high"],
+        ["m2_on_failure_path", "?e"]
+      ],
+      "consequent": ["suggests", "?e", "pressure_system_overload"],
+      "inspection": "Verify relief valves, process setpoints, and line restrictions for blockage."
+    },
+    {
+      "id": "multi_sensor_cooling_pattern",
+      "priority": 60,
+      "antecedents": [
+        ["status", "?e", "anomaly"],
+        ["violated", "?e", "temperature_high"],
+        ["violated", "?e", "pressure_low"]
+      ],
+      "consequent": ["suggests", "?e", "cooling_or_leak"],
+      "inspection": "Check coolant flow, heat exchanger fouling, and low-pressure side leaks."
+    },
+    {
+      "id": "anomaly_with_historical_pattern",
+      "priority": 45,
+      "antecedents": [
+        ["status", "?e", "anomaly"],
+        ["m2_on_failure_path", "?e"]
+      ],
+      "consequent": ["suggests", "?e", "escalate_monitoring"],
+      "inspection": "Increase sampling frequency and cross-check with maintenance history for this asset."
+    }
+  ]
+}
