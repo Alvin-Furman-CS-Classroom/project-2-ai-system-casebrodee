@@ -441,6 +441,10 @@ Unit tests mirror the structure of `src/`.
 
 **Module 3:**
 - `unit_tests/module3/test_logic.py` - Unification, substitution, matching, forward chaining
+- `unit_tests/module3/test_kb_loader.py` - KB JSON loading and validation errors
+- `unit_tests/module3/test_facts.py` - Ground facts from Module 1/2 artifacts
+- `unit_tests/module3/test_diagnosis.py` - Diagnosis scoring, explanations, `build_diagnosis_record`
+- `unit_tests/module3/test_runner.py` - `infer_batch` and `run_module3` output shape
 
 ### Integration Tests (`integration_tests/`)
 
