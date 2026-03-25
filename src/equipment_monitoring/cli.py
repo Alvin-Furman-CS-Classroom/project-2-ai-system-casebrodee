@@ -21,6 +21,12 @@ Module 3 (after Module 1 + 2 on the same dataset):
       --sequences outputs/module2/sequences.json \\
       --warning-signs outputs/module2/warning_signs.json \\
       --output-dir outputs/module3
+
+Module 4 (after Module 3):
+    PYTHONPATH=src python3 -m equipment_monitoring.cli --module 4 \\
+      --diagnosis outputs/module3/diagnosis.json \\
+      --production-schedule src/data/module4/production_schedule.json \\
+      --output-dir outputs/module4
 """
 
 from __future__ import annotations
@@ -43,9 +49,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--module",
         type=int,
-        choices=[1, 2, 3],
+        choices=[1, 2, 3, 4],
         required=True,
-        help="Module number to run (1, 2, or 3).",
+        help="Module number to run (1–4).",
     )
     
     # Module 1 arguments
@@ -98,6 +104,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--warning-signs",
         help="Path to Module 2 warning_signs.json (required for Module 3).",
+    )
+
+    # Module 4 arguments
+    parser.add_argument(
+        "--diagnosis",
+        help="Path to Module 3 diagnosis.json (required for Module 4).",
+    )
+    parser.add_argument(
+        "--module4-config",
+        help="Path to Module 4 maintenance optimization JSON (default: src/data/module4/module4_config.json).",
+    )
+    parser.add_argument(
+        "--production-schedule",
+        help="Optional JSON: label/notes and max_total_downtime_hours cap (min with base config).",
     )
 
     # Common argument
@@ -190,6 +210,34 @@ def main(argv: list[str] | None = None) -> None:
             sys.exit(1)
         except KnowledgeBaseError as e:
             print(f"[kb error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            print(f"[unexpected error] {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.module == 4:
+        if not args.diagnosis:
+            print("[error] Module 4 requires --diagnosis", file=sys.stderr)
+            sys.exit(1)
+        repo_default = Path(__file__).resolve().parent.parent / "data" / "module4" / "module4_config.json"
+        config_path = Path(args.module4_config) if args.module4_config else repo_default
+        from .module4 import runner as module4_runner
+        from .module4.loader import Module4ConfigError
+
+        try:
+            prod_path = Path(args.production_schedule) if args.production_schedule else None
+            module4_runner.run_module4(
+                diagnosis_path=Path(args.diagnosis),
+                config_path=config_path,
+                output_dir=Path(args.output_dir),
+                production_schedule_path=prod_path,
+            )
+        except FileNotFoundError as e:
+            print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Module4ConfigError as e:
+            print(f"[module4 config error] {e}", file=sys.stderr)
             sys.exit(1)
         except Exception as e:
             traceback.print_exc(file=sys.stderr)

@@ -5,23 +5,18 @@ This module provides the run_module2() function that orchestrates:
 1. Loading historical data (timestamped CSV or Module 1–schema CSV)
 2. Building the graph
 3. Running search algorithms
-4. Extracting patterns and ranking warning signs (optionally using Module 1 classifications)
+4. Extracting patterns and ranking warning signs
 5. Writing outputs
 """
 
 import json
 from pathlib import Path
-from typing import List, Optional
-from .io import (
-    load_timestamped_csv,
-    load_module1_schema_csv,
-    load_classifications_jsonl,
-    HistoricalRecord,
-)
+from typing import Optional
+from .io import load_timestamped_csv, load_module1_schema_csv
 from .config import GraphConfig, SearchParams
 from .graph import build_graph, Graph
-from .search import discover_failure_sequences, a_star, heuristic_time_to_failure, heuristic_sensor_distance
-from .patterns import extract_sequences, rank_warning_signs, FailureSequence, WarningSign
+from .search import discover_failure_sequences
+from .patterns import extract_sequences, rank_warning_signs
 
 
 def run_module2(
@@ -44,8 +39,8 @@ def run_module2(
         data_format: "timestamped" (default) for Machine_ID/Timestamp/Failure_Status CSV,
             or "module1" for timestamp/equipment_id/temperature/vibration/pressure/failure_status CSV
             (same schema Module 1 uses; allows one dataset to feed both modules).
-        classifications_path: Optional path to Module 1 classifications.jsonl. When provided,
-            warning signs are enriched with module1_anomaly_rate (overlap with Module 1 anomalies).
+        classifications_path: Optional path kept for CLI compatibility with the Module 1 pipeline;
+            reserved for future warning-sign enrichment (not used by the current ranker).
 
     Outputs:
         - sequences.json: Discovered failure sequences
@@ -77,13 +72,10 @@ def run_module2(
     paths = discover_failure_sequences(graph, search_params)
     
     # 5. Extract and aggregate sequences
-    sequences = extract_sequences(paths, search_params.min_pattern_length)
+    sequences = extract_sequences(paths, graph, search_params.min_pattern_length)
 
-    # 6. Optionally load Module 1 classifications and rank warning signs
-    module1_anomaly_set = None
-    if classifications_path is not None and classifications_path.exists():
-        module1_anomaly_set = load_classifications_jsonl(classifications_path)
-    warning_signs = rank_warning_signs(sequences, graph, module1_anomaly_set=module1_anomaly_set)
+    # 6. Rank warning signs (classifications_path reserved; see docstring)
+    warning_signs = rank_warning_signs(sequences, graph)
     
     # 7. Write outputs
     sequences_output = {

@@ -15,7 +15,7 @@ The overall module plan is adapted from `PROPOSAL.md`:
 | 1 | Propositional Logic | Configuration file (JSON), Sensor readings CSV, Equipment specifications (JSON) | Per-reading classification (JSON), Alert messages (text) | None | Checkpoint 1 (Week 3) |
 | 2 | Uninformed Search (BFS, DFS), Informed Search (A*, Heuristics) | Historical sensor data with failure events, Graph structure, Search parameters | Discovered failure sequences, Visualizations, Ranked warning signs | Module 1 | Checkpoint 2 (Week 5) |
 | 3 | First-Order Logic (Quantifiers, Unification, Inference) | Knowledge base, Equipment state and sensor readings, Detected anomalies | Inferred diagnosis with confidence, Explanation chains, Priority ranking, Inspection recommendations | Modules 1-2 | Checkpoint 3 (Week 7) |
-| 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Equipment health assessments, Maintenance actions, Production schedule, Cost parameters | Optimized maintenance schedule, Trade-off analysis, Contingency plans | Modules 1-3 | Checkpoint 4 (Week 9) |
+| 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Module 3 `diagnosis.json`, maintenance actions + budget (JSON) | `maintenance_plan.json` (assignments, tradeoffs, minimax contingency, 2×2 Nash scan) | Modules 1-3 | Checkpoint 4 (Week 9) |
 | 5 | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | Labeled dataset, Feature engineering pipeline, Training parameters | Trained model with metrics, Confusion matrix, Real-time predictions, Performance comparison | Modules 1-4 | Checkpoint 5 (Week 11) |
 | 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Environment state, Reward function, Historical feedback data | Learned policy, Adaptation history, Performance metrics | Modules 1-5 | Checkpoint 6 (Week 13) |
 
@@ -287,6 +287,33 @@ Under `src/equipment_monitoring/module3/`:
 
 ---
 
+## Module 4: Maintenance Schedule Optimizer
+
+- **Topic:** **Hill climbing**, **simulated annealing** over discrete maintenance assignments; small **minimax** (one full repair vs worst-case failure target) and **pure Nash** enumeration on a 2×2 operator–environment game built from schedule costs.
+- **Goal:** Turn Module 3 risk signals into a feasible per-equipment action plan under budget and downtime caps, report tradeoffs across budget scales, and attach a short game-theoretic contingency summary for demos and reports.
+
+### Inputs
+
+1. **Module 3** `diagnosis.json` (same shape as Module 3 output). Per-equipment **risk** is derived as the max diagnosis `score`, or from `meta` (`m1_max_confidence` / `m2_top_predictive`) when there are no `suggests`-style diagnoses.
+2. **Module 4 config JSON** (e.g. `src/data/module4/module4_config.json`):
+   - `actions`: list of `{ "id", "cost", "downtime_hours", "risk_multiplier" }` (multiplier scales residual failure penalty for that equipment).
+   - `budget`, `max_total_downtime_hours`, `failure_cost_scale` (weights failure-risk term in the objective).
+   - Optional `hill_climbing` / `simulated_annealing` blocks for iteration limits.
+3. **Optional production schedule JSON** (e.g. `src/data/module4/production_schedule.json`): `label`, `notes`, and optional `max_total_downtime_hours`. When set, the optimizer uses `min(base max_total_downtime_hours, schedule value)` so peak production can tighten the aggregate downtime cap without editing the main config.
+
+### Outputs
+
+- **`maintenance_plan.json`** — includes `assignments`, `totals` (maintenance vs failure penalty), `meta` (production-schedule merge details and effective downtime cap), `optimization` (hill climbing vs simulated annealing objectives), `tradeoffs` (objective vs scaled budget), `contingency` (single-repair minimax), and `game_analysis` (2×2 payoffs, **pure** Nash equilibria, and a **mixed-strategy** Nash for the operator payoff matrix under a **zero-sum** proxy). See `game_analysis.mixed_nash_zero_sum_row_matrix.equilibrium` for probabilities and game value.
+
+### Public interfaces
+
+Under `src/equipment_monitoring/module4/`:
+
+- `optimize_maintenance_plan(diagnosis_path, config_path, *, production_schedule_path=None) -> dict`
+- `run_module4(diagnosis_path, config_path, output_dir, *, production_schedule_path=None) -> None` — writes `maintenance_plan.json`.
+
+---
+
 ## Repository Layout
 
 The repository is organized as follows:
@@ -298,12 +325,14 @@ project-2-ai-system-casebrodee/
 ├── integration_tests/        # integration / end-to-end tests
 ├── .claude/                  # agent skills
 ├── AGENTS.md                 # LLM agent instructions
+├── CONTRIBUTING.md           # team workflow (commits, PRs, tests)
 └── README.md                 # this file
 ```
 
 Module 1 code lives in `src/equipment_monitoring/module1/` with matching tests in `unit_tests/module1/`.
 Module 2 code lives in `src/equipment_monitoring/module2/` with matching tests in `unit_tests/module2/`.
 Module 3 code lives in `src/equipment_monitoring/module3/` with matching tests in `unit_tests/module3/` and `integration_tests/module3/`.
+Module 4 code lives in `src/equipment_monitoring/module4/` with tests in `unit_tests/module4/` and `integration_tests/module4/`.
 
 ---
 
@@ -418,6 +447,24 @@ Expected output:
 
 **Full pipeline** (from project root, `PYTHONPATH=src`): run Module 1, then Module 2 with `--data-format module1` and `--classifications`, then Module 3 as above. Use the same readings CSV path for Module 1 and Module 2.
 
+### Module 4
+
+Run after Module 3 (reads `diagnosis.json` only):
+
+```bash
+python -m equipment_monitoring.cli --module 4 \
+  --diagnosis outputs/module3/diagnosis.json \
+  --module4-config src/data/module4/module4_config.json \
+  --production-schedule src/data/module4/production_schedule.json \
+  --output-dir outputs/module4
+```
+
+If `--module4-config` is omitted, the CLI defaults to `src/data/module4/module4_config.json` relative to the `equipment_monitoring` package (run from project root with `PYTHONPATH=src`). `--production-schedule` is optional.
+
+Expected output:
+
+- `outputs/module4/maintenance_plan.json`
+
 ---
 
 ## Testing
@@ -446,6 +493,15 @@ Unit tests mirror the structure of `src/`.
 - `unit_tests/module3/test_diagnosis.py` - Diagnosis scoring, explanations, `build_diagnosis_record`
 - `unit_tests/module3/test_runner.py` - `infer_batch` and `run_module3` output shape
 
+**Module 4:**
+- `unit_tests/module4/test_loader.py` - config and diagnosis parsing
+- `unit_tests/module4/test_objective.py` - feasibility and objective
+- `unit_tests/module4/test_optimize.py` - hill climbing
+- `unit_tests/module4/test_game_theory.py` - minimax and Nash helpers
+- `unit_tests/module4/test_module4_runner.py` - `optimize_maintenance_plan` / `run_module4`
+- `unit_tests/module4/test_production_schedule.py` - production JSON and downtime cap merge
+- Invalid JSON for Module 4 / diagnosis / production loaders raises `Module4ConfigError` (see `test_loader.py`).
+
 ### Integration Tests (`integration_tests/`)
 
 **Module 1:**
@@ -457,6 +513,9 @@ Unit tests mirror the structure of `src/`.
 
 **Module 3:**
 - `integration_tests/module3/test_module3_smoke.py` - Module 1 → Module 2 → Module 3 end-to-end on shared CSV
+
+**Module 4:**
+- `integration_tests/module4/test_module4_smoke.py` - Module 1 → Module 4 on shared CSV; optional production cap (zero downtime → all defer)
 
 ### Running Tests
 
