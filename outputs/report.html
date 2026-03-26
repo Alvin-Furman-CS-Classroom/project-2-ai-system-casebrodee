@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Industrial Monitoring Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.4; }
+    h1, h2 { margin-top: 24px; }
+    nav a { margin-right: 12px; }
+    table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f5f5f5; }
+    .subtle { color: #555; }
+    .warning { background: #fff8e1; padding: 8px; border: 1px solid #f0d98c; }
+  </style>
+</head>
+<body>
+  <h1>Industrial Equipment Monitoring Report</h1>
+  <p class="subtle">Source root: outputs</p>
+  <nav>
+    <a href="#module1">Module 1</a>
+    <a href="#module2">Module 2</a>
+    <a href="#module3">Module 3</a>
+    <a href="#module4">Module 4 (optional)</a>
+  </nav>
+  <div class="warning"><strong>Data loading notes:</strong><ul><li>No data loading warnings.</li></ul></div>
+
+  <section id="module1">
+    <h2>Module 1 - Rule-Based Monitoring</h2>
+    <p>Total readings: 7 | Anomalies: 7 (100.0%)</p>
+    <details open>
+      <summary>Top violated rules</summary>
+      <table>
+        <thead><tr><th>Rule</th><th>Count</th></tr></thead>
+        <tbody><tr><td>pressure_high</td><td>7</td></tr>
+<tr><td>vibration_high</td><td>1</td></tr></tbody>
+      </table>
+    </details>
+    <details>
+      <summary>Recent classifications (max 50 rows)</summary>
+      <table>
+        <thead><tr><th>Timestamp</th><th>Equipment</th><th>Status</th><th>Violated rules</th><th>Confidence</th></tr></thead>
+        <tbody><tr><td>2026-01-01T00:00:00Z</td><td>M1</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr>
+<tr><td>2026-01-01T00:01:00Z</td><td>M1</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr>
+<tr><td>2026-01-01T00:02:00Z</td><td>M1</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr>
+<tr><td>2026-01-01T00:03:00Z</td><td>M1</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high, vibration_high</td><td>0.8</td></tr>
+<tr><td>2026-01-01T00:00:00Z</td><td>M2</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr>
+<tr><td>2026-01-01T00:01:00Z</td><td>M2</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr>
+<tr><td>2026-01-01T00:02:00Z</td><td>M2</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr></tbody>
+      </table>
+    </details>
+  </section>
+
+  <section id="module2">
+    <h2>Module 2 - Failure Pattern Discovery</h2>
+    <details open>
+      <summary>Top sequences</summary>
+      <table>
+        <thead><tr><th>Sequence</th><th>Frequency</th><th>Avg time to failure</th></tr></thead>
+        <tbody><tr><td>State(machine=M2, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M2, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
+<tr><td>State(machine=M1, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
+<tr><td>State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr></tbody>
+      </table>
+    </details>
+    <details>
+      <summary>Warning sign ranking</summary>
+      <table>
+        <thead><tr><th>Pattern</th><th>Predictive score</th><th>Frequency</th><th>False positive rate</th></tr></thead>
+        <tbody><tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
+<tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (3 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
+<tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
+      </table>
+    </details>
+  </section>
+
+  <section id="module3">
+    <h2>Module 3 - Diagnosis and Recommendations</h2>
+    <details><summary><strong>M1</strong> (3 diagnoses)</summary><ul><li><strong>rotating_component_stress</strong> (score=0.7375) - Inspect bearings, coupling alignment, and lubrication; compare vibration trends to baseline.</li><li><strong>pressure_system_overload</strong> (score=0.715) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.625) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
+<details><summary><strong>M2</strong> (2 diagnoses)</summary><ul><li><strong>pressure_system_overload</strong> (score=0.685) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.595) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
+  </section>
+  
+<section id="module4">
+  <h2>Module 4 - Maintenance Plan (optional)</h2>
+  <p>Objective: 2653.5 | Maintenance cost: 1800.0 | Failure penalty: 853.5</p>
+  <table>
+    <thead><tr><th>Equipment</th><th>Action</th><th>Cost</th><th>Downtime (h)</th></tr></thead>
+    <tbody><tr><td>M1</td><td>repair</td><td>900.0</td><td>10.0</td></tr>
+<tr><td>M2</td><td>repair</td><td>900.0</td><td>10.0</td></tr></tbody>
+  </table>
+</section>
+
+</body>
+</html>
