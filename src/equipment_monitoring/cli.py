@@ -40,6 +40,7 @@ from pathlib import Path
 from .module1 import classifier
 from .module1 import config as config_module
 from .module1 import io as io_module
+from . import reporting
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -126,12 +127,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         required=True,
         help="Directory to write outputs into.",
     )
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="Generate/update static HTML report from outputs after module run.",
+    )
+    parser.add_argument(
+        "--report-path",
+        help="Optional explicit path for generated HTML report.",
+    )
     
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
+    report_path = Path(args.report_path) if args.report_path else None
 
     if args.module == 1:
         if not args.config or not args.specs or not args.readings:
@@ -163,6 +174,13 @@ def main(argv: list[str] | None = None) -> None:
             traceback.print_exc(file=sys.stderr)
             print(f"[unexpected error] {e}", file=sys.stderr)
             sys.exit(1)
+        if args.report:
+            out = reporting.generate_report_from_run(
+                output_dir=Path(args.output_dir),
+                module_number=1,
+                report_path=report_path,
+            )
+            print(f"Report wrote {out}")
 
     elif args.module == 2:
         if not args.data or not args.graph_config or not args.search_params:
@@ -186,6 +204,13 @@ def main(argv: list[str] | None = None) -> None:
             traceback.print_exc(file=sys.stderr)
             print(f"[unexpected error] {e}", file=sys.stderr)
             sys.exit(1)
+        if args.report:
+            out = reporting.generate_report_from_run(
+                output_dir=Path(args.output_dir),
+                module_number=2,
+                report_path=report_path,
+            )
+            print(f"Report wrote {out}")
 
     elif args.module == 3:
         if not args.kb or not args.classifications or not args.sequences or not args.warning_signs:
@@ -215,6 +240,13 @@ def main(argv: list[str] | None = None) -> None:
             traceback.print_exc(file=sys.stderr)
             print(f"[unexpected error] {e}", file=sys.stderr)
             sys.exit(1)
+        if args.report:
+            out = reporting.generate_report_from_run(
+                output_dir=Path(args.output_dir),
+                module_number=3,
+                report_path=report_path,
+            )
+            print(f"Report wrote {out}")
 
     elif args.module == 4:
         if not args.diagnosis:
@@ -243,6 +275,13 @@ def main(argv: list[str] | None = None) -> None:
             traceback.print_exc(file=sys.stderr)
             print(f"[unexpected error] {e}", file=sys.stderr)
             sys.exit(1)
+        if args.report:
+            out = reporting.generate_report_from_run(
+                output_dir=Path(args.output_dir),
+                module_number=4,
+                report_path=report_path,
+            )
+            print(f"Report wrote {out}")
 
 
 if __name__ == "__main__":

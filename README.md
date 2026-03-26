@@ -465,6 +465,39 @@ Expected output:
 
 - `outputs/module4/maintenance_plan.json`
 
+### Static HTML Report (`--report`)
+
+Any module run can also generate/update a static report by adding `--report`.
+By default, the report is written to `report.html` under the inferred outputs root.
+If `--output-dir` is `outputs/moduleN`, the inferred root is `outputs/`.
+
+```bash
+python -m equipment_monitoring.cli --module 3 \
+  --kb src/data/module3/kb.json \
+  --classifications outputs/module1/classifications.jsonl \
+  --sequences outputs/module2/sequences.json \
+  --warning-signs outputs/module2/warning_signs.json \
+  --output-dir outputs/module3 \
+  --report
+```
+
+To write to a custom location, pass `--report-path`:
+
+```bash
+python -m equipment_monitoring.cli --module 4 \
+  --diagnosis outputs/module3/diagnosis.json \
+  --module4-config src/data/module4/module4_config.json \
+  --output-dir outputs/module4 \
+  --report \
+  --report-path outputs/my_report.html
+```
+
+Report content includes:
+- Module 1 summary/anomaly tables (when `classifications.jsonl` exists)
+- Module 2 top sequences and warning signs
+- Module 3 diagnosis cards and inspection recommendations
+- Optional Module 4 plan summary when `maintenance_plan.json` exists
+
 ---
 
 ## Testing
