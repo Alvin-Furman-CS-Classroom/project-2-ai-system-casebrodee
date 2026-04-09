@@ -4,30 +4,125 @@
   <meta charset="utf-8" />
   <title>Industrial Monitoring Report</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.4; }
-    h1, h2 { margin-top: 24px; }
-    nav a { margin-right: 12px; }
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --border: #dde3ee;
+      --text: #1f2937;
+      --muted: #5f6b7a;
+      --accent: #234a8f;
+      --accent-soft: #e7efff;
+      --ok: #2a9d8f;
+      --warn: #e76f51;
+      --shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 0; line-height: 1.45; color: var(--text); background: var(--bg); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin-top: 0; color: #12213f; }
+    h2 { margin-bottom: 6px; }
+    section { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 14px 0; box-shadow: var(--shadow); }
+    nav { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 12px 0 14px; display: flex; gap: 12px; flex-wrap: wrap; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
     table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
-    th { background: #f5f5f5; }
-    .subtle { color: #555; }
-    .warning { background: #fff8e1; padding: 8px; border: 1px solid #f0d98c; }
+    th, td { border: 1px solid var(--border); padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f4fa; }
+    .subtle { color: var(--muted); margin-top: 4px; }
+    .warning { background: #fff8e1; padding: 8px; border: 1px solid #f0d98c; border-radius: 8px; }
+    .module-intro { color: var(--muted); margin: 4px 0 12px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 10px 0 12px; }
+    .metric-card { background: #f8fbff; border: 1px solid #d6e3ff; border-radius: 8px; padding: 10px; }
+    .metric-label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #52627a; font-weight: 700; }
+    .metric-value { font-size: 24px; font-weight: 700; color: #123f88; margin-top: 2px; }
+    .metric-help { font-size: 12px; color: #586983; margin-top: 6px; }
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+    .flow-box { background: var(--panel); border: 1px solid #bfd0f5; border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 2px rgba(35, 74, 143, 0.08); }
+    .flow-arrow { color: #6a7da6; font-weight: 700; }
+    .howto { background: var(--accent-soft); border: 1px solid #c3d5ff; border-radius: 8px; padding: 10px; margin-top: 8px; }
+    .howto p { margin: 6px 0; }
+    .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+    .blueprint-card { border: 1px solid #d4def1; border-radius: 8px; background: #fbfcff; padding: 10px; }
+    .blueprint-card h3 { margin: 0 0 8px; font-size: 16px; color: #16346d; }
+    .blueprint-card p { margin: 5px 0; font-size: 13px; color: #30445f; }
+    .connector { margin-top: 8px; padding: 8px 10px; border-left: 4px solid #7aa2f7; background: #f6f9ff; color: #2b4266; border-radius: 6px; }
   </style>
 </head>
 <body>
-  <h1>Industrial Equipment Monitoring Report</h1>
-  <p class="subtle">Source root: outputs</p>
-  <nav>
-    <a href="#module1">Module 1</a>
-    <a href="#module2">Module 2</a>
-    <a href="#module3">Module 3</a>
-    <a href="#module4">Module 4 (optional)</a>
-  </nav>
-  <div class="warning"><strong>Data loading notes:</strong><ul><li>No data loading warnings.</li></ul></div>
+  <div class="container">
+    <h1>Industrial Equipment Monitoring Report</h1>
+    <p class="subtle">Source root: outputs</p>
 
-  <section id="module1">
+    <section>
+      <h2>System Overview</h2>
+      <p class="module-intro">This report connects all modules so a reader can move from raw sensor observations to final maintenance actions.</p>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">Module 1 readings</div><div class="metric-value">7</div><div class="metric-help">Rows classified as normal/anomaly.</div></div>
+        <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">3</div><div class="metric-help">Failure-path patterns discovered.</div></div>
+        <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">2</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
+        <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">2</div><div class="metric-help">Final action decisions (if available).</div></div>
+      </div>
+      <div class="flow">
+        <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
+        <div class="flow-arrow">-></div>
+        <div class="flow-box">Module 2<br><span class="subtle">Discover warning sequences</span></div>
+        <div class="flow-arrow">-></div>
+        <div class="flow-box">Module 3<br><span class="subtle">Infer diagnoses</span></div>
+        <div class="flow-arrow">-></div>
+        <div class="flow-box">Module 4<br><span class="subtle">Optimize maintenance plan</span></div>
+      </div>
+      <div class="howto">
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), then pattern strength (Module 2), then diagnosis confidence (Module 3), then whether Module 4 actions reduce risk at acceptable cost.</p>
+      </div>
+      
+    <div class="blueprint-grid">
+      <div class="blueprint-card">
+        <h3>Module 1 blueprint</h3>
+        <p><strong>Input:</strong> sensor readings + threshold config</p>
+        <p><strong>Processing:</strong> rule checks classify each row as normal or anomaly</p>
+        <p><strong>Output:</strong> `classifications.jsonl` + alerts</p>
+        <p><strong>Feeds into:</strong> Module 2 pattern mining and Module 3 fact extraction</p>
+      </div>
+      <div class="blueprint-card">
+        <h3>Module 2 blueprint</h3>
+        <p><strong>Input:</strong> time-ordered records (+ optional Module 1 labels)</p>
+        <p><strong>Processing:</strong> graph search (BFS/DFS/A*) to find pre-failure paths</p>
+        <p><strong>Output:</strong> `sequences.json` + `warning_signs.json`</p>
+        <p><strong>Feeds into:</strong> Module 3 diagnostic inference</p>
+      </div>
+      <div class="blueprint-card">
+        <h3>Module 3 blueprint</h3>
+        <p><strong>Input:</strong> KB rules + Module 1/2 artifacts</p>
+        <p><strong>Processing:</strong> inference builds ranked hypotheses and inspections</p>
+        <p><strong>Output:</strong> `diagnosis.json` with per-equipment scores</p>
+        <p><strong>Feeds into:</strong> Module 4 maintenance optimization</p>
+      </div>
+      <div class="blueprint-card">
+        <h3>Module 4 blueprint</h3>
+        <p><strong>Input:</strong> diagnosis risks + action/cost constraints (+ optional production cap)</p>
+        <p><strong>Processing:</strong> greedy seed, hill climbing, simulated annealing, contingency analysis</p>
+        <p><strong>Output:</strong> `maintenance_plan.json` with actions, totals, and strategic summaries</p>
+        <p><strong>Feeds into:</strong> operational planning and checkpoint reporting</p>
+      </div>
+    </div>
+    
+    </section>
+
+    <nav>
+      <a href="#module1">Module 1</a>
+      <a href="#module2">Module 2</a>
+      <a href="#module3">Module 3</a>
+      <a href="#module4">Module 4 (optional)</a>
+    </nav>
+    <div class="warning"><strong>Data loading notes:</strong><ul><li>No data loading warnings.</li></ul></div>
+
+    <section id="module1">
     <h2>Module 1 - Rule-Based Monitoring</h2>
-    <p>Total readings: 7 | Anomalies: 7 (100.0%)</p>
+    <p class="module-intro">Module 1 flags readings that violate thresholds. A higher anomaly rate usually means higher operational instability.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Total readings</div><div class="metric-value">7</div></div>
+      <div class="metric-card"><div class="metric-label">Anomalies</div><div class="metric-value">7</div></div>
+      <div class="metric-card"><div class="metric-label">Anomaly rate</div><div class="metric-value">100.0%</div></div>
+    </div>
     <details open>
       <summary>Top violated rules</summary>
       <table>
@@ -49,10 +144,15 @@
 <tr><td>2026-01-01T00:02:00Z</td><td>M2</td><td><span style="background:#e76f51;color:#fff;padding:2px 8px;border-radius:10px">anomaly</span></td><td>pressure_high</td><td>0.7</td></tr></tbody>
       </table>
     </details>
-  </section>
+    <div class="connector"><strong>Connection:</strong> Anomaly labels and violated-rule patterns become structured facts used by Module 2 and Module 3.</div>
+    </section>
 
-  <section id="module2">
+    <section id="module2">
     <h2>Module 2 - Failure Pattern Discovery</h2>
+    <p class="module-intro">Module 2 searches historical transitions for recurring paths that appear before failures.</p>
+    <div class="howto">
+      <p><strong>Interpretation tip:</strong> prioritize sequences with high frequency and short average time-to-failure, then validate with warning-sign predictive score and false-positive rate.</p>
+    </div>
     <details open>
       <summary>Top sequences</summary>
       <table>
@@ -71,17 +171,41 @@
 <tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
       </table>
     </details>
-  </section>
+    <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
+    </section>
 
-  <section id="module3">
-    <h2>Module 3 - Diagnosis and Recommendations</h2>
-    <details><summary><strong>M1</strong> (3 diagnoses)</summary><ul><li><strong>rotating_component_stress</strong> (score=0.7375) - Inspect bearings, coupling alignment, and lubrication; compare vibration trends to baseline.</li><li><strong>pressure_system_overload</strong> (score=0.715) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.625) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
+    <section id="module3">
+      <h2>Module 3 - Diagnosis and Recommendations</h2>
+      <p class="module-intro">Module 3 combines facts and rules to produce hypotheses, confidence scores, and inspection guidance.</p>
+      <div class="howto">
+        <p><strong>Interpretation tip:</strong> look for repeated high-score hypotheses across machines to identify fleet-wide issues vs isolated failures.</p>
+      </div>
+      <details><summary><strong>M1</strong> (3 diagnoses)</summary><ul><li><strong>rotating_component_stress</strong> (score=0.7375) - Inspect bearings, coupling alignment, and lubrication; compare vibration trends to baseline.</li><li><strong>pressure_system_overload</strong> (score=0.715) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.625) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
 <details><summary><strong>M2</strong> (2 diagnoses)</summary><ul><li><strong>pressure_system_overload</strong> (score=0.685) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.595) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
-  </section>
-  
+      <div class="connector"><strong>Connection:</strong> The highest-confidence risk signals from this section directly drive Module 4 action selection and budget tradeoffs.</div>
+    </section>
+    
 <section id="module4">
   <h2>Module 4 - Maintenance Plan (optional)</h2>
-  <p>Objective: 2653.5 | Maintenance cost: 1800.0 | Failure penalty: 853.5</p>
+  <p class="module-intro">This module turns Module 3 risk estimates into concrete actions that balance maintenance spend and residual failure risk under constraints.</p>
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="metric-label">Objective</div>
+      <div class="metric-value">2653.5</div>
+      <div class="metric-help">Lower is better. This combines maintenance cost and predicted failure penalty.</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Maintenance cost</div>
+      <div class="metric-value">1800.0</div>
+      <div class="metric-help">Direct spend from selected actions.</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Failure penalty</div>
+      <div class="metric-value">853.5</div>
+      <div class="metric-help">Expected risk cost after actions are applied.</div>
+    </div>
+  </div>
+  <p><strong>Action mix:</strong> repair: 2</p>
   <table>
     <thead><tr><th>Equipment</th><th>Action</th><th>Cost</th><th>Downtime (h)</th></tr></thead>
     <tbody><tr><td>M1</td><td>repair</td><td>900.0</td><td>10.0</td></tr>
@@ -89,5 +213,6 @@
   </table>
 </section>
 
+  </div>
 </body>
 </html>
