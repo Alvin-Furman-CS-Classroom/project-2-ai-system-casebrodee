@@ -53,6 +53,8 @@ def load_module_outputs(outputs_root: Path) -> Dict[str, Any]:
     module2_warnings, m2_warn_err = _read_json(outputs_root / "module2" / "warning_signs.json")
     module3_diag, m3_err = _read_json(outputs_root / "module3" / "diagnosis.json")
     module4_plan, m4_err = _read_json(outputs_root / "module4" / "maintenance_plan.json")
+    module6_policy, m6_err = _read_json(outputs_root / "module6" / "rl_policy.json")
+    module6_metrics, m6m_err = _read_json(outputs_root / "module6" / "rl_metrics.json")
 
     return {
         "module1_rows": module1_rows or [],
@@ -61,7 +63,10 @@ def load_module_outputs(outputs_root: Path) -> Dict[str, Any]:
         "module3_equipment": (module3_diag or {}).get("equipment", []),
         "module4_assignments": (module4_plan or {}).get("assignments", []),
         "module4_totals": (module4_plan or {}).get("totals", {}),
-        "errors": [e for e in [m1_err, m2_seq_err, m2_warn_err, m3_err, m4_err] if e],
+        "module6_policy": (module6_policy or {}).get("policy") or {},
+        "module6_q_meta": (module6_policy or {}).get("meta") or {},
+        "module6_metrics": module6_metrics or {},
+        "errors": [e for e in [m1_err, m2_seq_err, m2_warn_err, m3_err, m4_err, m6_err, m6m_err] if e],
         "outputs_root": str(outputs_root),
     }
 
@@ -92,6 +97,17 @@ def build_report_context(data: Dict[str, Any]) -> Dict[str, Any]:
         action = str(row.get("action_id", "unknown"))
         action_counts[action] = action_counts.get(action, 0) + 1
 
+    m6_policy = data.get("module6_policy") or {}
+    m6_action_counts: Dict[str, int] = {}
+    if isinstance(m6_policy, dict):
+        for _state, act in m6_policy.items():
+            a = str(act)
+            m6_action_counts[a] = m6_action_counts.get(a, 0) + 1
+
+    m6_metrics = data.get("module6_metrics") or {}
+    trained = m6_metrics.get("trained_policy_last_window") or {}
+    m6_mean_ret = trained.get("mean_return")
+
     return {
         **data,
         "m1_total": len(m1_rows),
@@ -105,6 +121,9 @@ def build_report_context(data: Dict[str, Any]) -> Dict[str, Any]:
         "m3_equipment_count": len(data["module3_equipment"]),
         "m4_action_counts": action_counts,
         "m4_total_assignments": len(m4_assignments),
+        "m6_policy_state_count": len(m6_policy) if isinstance(m6_policy, dict) else 0,
+        "m6_action_counts": m6_action_counts,
+        "m6_mean_return_window": m6_mean_ret,
     }
 
 
@@ -137,7 +156,14 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <p><strong>Input:</strong> diagnosis risks + action/cost constraints (+ optional production cap)</p>
         <p><strong>Processing:</strong> greedy seed, hill climbing, simulated annealing, contingency analysis</p>
         <p><strong>Output:</strong> `maintenance_plan.json` with actions, totals, and strategic summaries</p>
-        <p><strong>Feeds into:</strong> operational planning and checkpoint reporting</p>
+        <p><strong>Feeds into:</strong> operational planning; Module 6 can reuse the same action vocabulary</p>
+      </div>
+      <div class="blueprint-card">
+        <h3>Module 6 blueprint</h3>
+        <p><strong>Input:</strong> diagnosis-derived risk buckets + JSON MDP (transitions/rewards)</p>
+        <p><strong>Processing:</strong> tabular Q-learning on simulated rollouts (epsilon-greedy exploration)</p>
+        <p><strong>Output:</strong> `rl_policy.json`, `rl_training.json`, `rl_metrics.json`</p>
+        <p><strong>Note:</strong> Module 5 (supervised learning) is not required for this path</p>
       </div>
     </div>
     """
@@ -201,6 +227,36 @@ def render_report_html(context: Dict[str, Any]) -> str:
         )
         for eq in context["module3_equipment"]
     ) or "<p>No Module 3 diagnosis data yet.</p>"
+
+    module6_section = ""
+    if context.get("m6_policy_state_count", 0):
+        m6_mix = " | ".join(
+            f"{escape(action)}: {count}"
+            for action, count in sorted(context.get("m6_action_counts", {}).items())
+        )
+        m6_ret = context.get("m6_mean_return_window")
+        ret_line = (
+            f"<p><strong>Mean return (training tail window):</strong> {escape(str(m6_ret))}</p>"
+            if m6_ret is not None
+            else ""
+        )
+        policy_items = context.get("module6_policy") or {}
+        pol_rows = "\n".join(
+            f"<tr><td>{escape(str(st))}</td><td>{escape(str(ac))}</td></tr>"
+            for st, ac in sorted(policy_items.items())
+        ) or "<tr><td colspan='2'>No policy rows.</td></tr>"
+        module6_section = f"""
+<section id="module6">
+  <h2>Module 6 - RL policy (optional)</h2>
+  <p class="module-intro">Q-learning over discrete risk states with a JSON-defined MDP. Compare greedy policy actions to Module 4's plan for demos.</p>
+  {ret_line}
+  <p><strong>Greedy policy action mix:</strong> {m6_mix or "N/A"}</p>
+  <table>
+    <thead><tr><th>Risk state</th><th>Action</th></tr></thead>
+    <tbody>{pol_rows}</tbody>
+  </table>
+</section>
+"""
 
     module4_section = ""
     if context["module4_assignments"]:
@@ -314,6 +370,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">{context["m2_sequence_count"]}</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">{context["m3_equipment_count"]}</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">{context["m4_total_assignments"]}</div><div class="metric-help">Final action decisions (if available).</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 RL states</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">Greedy policy entries (if trained).</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -323,9 +380,11 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="flow-box">Module 3<br><span class="subtle">Infer diagnoses</span></div>
         <div class="flow-arrow">-></div>
         <div class="flow-box">Module 4<br><span class="subtle">Optimize maintenance plan</span></div>
+        <div class="flow-arrow">-></div>
+        <div class="flow-box">Module 6<br><span class="subtle">RL policy (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), then pattern strength (Module 2), then diagnosis confidence (Module 3), then whether Module 4 actions reduce risk at acceptable cost.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), then pattern strength (Module 2), then diagnosis confidence (Module 3), then whether Module 4 actions reduce risk at acceptable cost. Module 6 (optional) summarizes a Q-learning policy over risk states.</p>
       </div>
       {module_blueprints}
     </section>
@@ -335,6 +394,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
       <a href="#module2">Module 2</a>
       <a href="#module3">Module 3</a>
       <a href="#module4">Module 4 (optional)</a>
+      <a href="#module6">Module 6 (optional)</a>
     </nav>
     <div class="warning"><strong>Data loading notes:</strong><ul>{errors_html}</ul></div>
 
@@ -396,6 +456,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
       <div class="connector"><strong>Connection:</strong> The highest-confidence risk signals from this section directly drive Module 4 action selection and budget tradeoffs.</div>
     </section>
     {module4_section}
+    {module6_section}
   </div>
 </body>
 </html>

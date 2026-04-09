@@ -27,6 +27,11 @@ Module 4 (after Module 3):
       --diagnosis outputs/module3/diagnosis.json \\
       --production-schedule src/data/module4/production_schedule.json \\
       --output-dir outputs/module4
+
+Module 6 (after Module 3; Module 5 optional):
+    PYTHONPATH=src python3 -m equipment_monitoring.cli --module 6 \\
+      --diagnosis outputs/module3/diagnosis.json \\
+      --output-dir outputs/module6
 """
 
 from __future__ import annotations
@@ -50,9 +55,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--module",
         type=int,
-        choices=[1, 2, 3, 4],
+        choices=[1, 2, 3, 4, 6],
         required=True,
-        help="Module number to run (1–4).",
+        help="Module number to run (1–4, 6).",
     )
     
     # Module 1 arguments
@@ -110,7 +115,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     # Module 4 arguments
     parser.add_argument(
         "--diagnosis",
-        help="Path to Module 3 diagnosis.json (required for Module 4).",
+        help="Path to Module 3 diagnosis.json (required for Module 4 and Module 6).",
     )
     parser.add_argument(
         "--module4-config",
@@ -119,6 +124,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--production-schedule",
         help="Optional JSON: label/notes and max_total_downtime_hours cap (min with base config).",
+    )
+
+    # Module 6 arguments
+    parser.add_argument(
+        "--module6-config",
+        help="Path to Module 6 JSON (default: src/data/module6/module6_config.json).",
+    )
+    parser.add_argument(
+        "--mdp",
+        help="Override MDP JSON path (default: mdp_path inside Module 6 config).",
     )
 
     # Common argument
@@ -279,6 +294,43 @@ def main(argv: list[str] | None = None) -> None:
             out = reporting.generate_report_from_run(
                 output_dir=Path(args.output_dir),
                 module_number=4,
+                report_path=report_path,
+            )
+            print(f"Report wrote {out}")
+
+    elif args.module == 6:
+        if not args.diagnosis:
+            print("[error] Module 6 requires --diagnosis", file=sys.stderr)
+            sys.exit(1)
+        repo_default_m6 = Path(__file__).resolve().parent.parent / "data" / "module6" / "module6_config.json"
+        m6_cfg = Path(args.module6_config) if args.module6_config else repo_default_m6
+        from .module6 import runner as module6_runner
+        from .module6.loader import Module6ConfigError
+
+        try:
+            mdp_override = Path(args.mdp) if args.mdp else None
+            m4_override = Path(args.module4_config) if args.module4_config else None
+            module6_runner.run_module6(
+                diagnosis_path=Path(args.diagnosis),
+                module6_config_path=m6_cfg,
+                output_dir=Path(args.output_dir),
+                mdp_path=mdp_override,
+                module4_config_path=m4_override,
+            )
+        except FileNotFoundError as e:
+            print(f"[error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Module6ConfigError as e:
+            print(f"[module6 error] {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            print(f"[unexpected error] {e}", file=sys.stderr)
+            sys.exit(1)
+        if args.report:
+            out = reporting.generate_report_from_run(
+                output_dir=Path(args.output_dir),
+                module_number=6,
                 report_path=report_path,
             )
             print(f"Report wrote {out}")

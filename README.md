@@ -17,7 +17,7 @@ The overall module plan is adapted from `PROPOSAL.md`:
 | 3 | First-Order Logic (Quantifiers, Unification, Inference) | Knowledge base, Equipment state and sensor readings, Detected anomalies | Inferred diagnosis with confidence, Explanation chains, Priority ranking, Inspection recommendations | Modules 1-2 | Checkpoint 3 (Week 7) |
 | 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Module 3 `diagnosis.json`, maintenance actions + budget (JSON) | `maintenance_plan.json` (assignments, tradeoffs, minimax contingency, 2×2 Nash scan) | Modules 1-3 | Checkpoint 4 (Week 9) |
 | 5 | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | Labeled dataset, Feature engineering pipeline, Training parameters | Trained model with metrics, Confusion matrix, Real-time predictions, Performance comparison | Modules 1-4 | Checkpoint 5 (Week 11) |
-| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Environment state, Reward function, Historical feedback data | Learned policy, Adaptation history, Performance metrics | Modules 1-5 | Checkpoint 6 (Week 13) |
+| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Module 3 `diagnosis.json`, JSON MDP (`mdp.json`), training config | `rl_policy.json`, `rl_training.json`, `rl_metrics.json` | Modules 1–4 (Module 5 optional extension) | Checkpoint 6 (Week 13) |
 
 ---
 
@@ -333,6 +333,7 @@ Module 1 code lives in `src/equipment_monitoring/module1/` with matching tests i
 Module 2 code lives in `src/equipment_monitoring/module2/` with matching tests in `unit_tests/module2/`.
 Module 3 code lives in `src/equipment_monitoring/module3/` with matching tests in `unit_tests/module3/` and `integration_tests/module3/`.
 Module 4 code lives in `src/equipment_monitoring/module4/` with tests in `unit_tests/module4/` and `integration_tests/module4/`.
+Module 6 code lives in `src/equipment_monitoring/module6/` with tests in `unit_tests/module6/` and `integration_tests/module6/`.
 
 ---
 
@@ -465,6 +466,33 @@ Expected output:
 
 - `outputs/module4/maintenance_plan.json`
 
+### Module 6
+
+- **Topic:** MDP from JSON, tabular Q-learning, ε-greedy exploration, greedy policy export, baselines (always-defer, random).
+- **Goal:** Learn a policy over **risk buckets** (`risk_low`, `risk_mid`, `risk_high`) using the same action ids as Module 4 (`defer`, `inspect`, `repair`). Training samples transitions from **`mdp.json`**. **Module 5 is not required.**
+
+**Inputs:** Module 3 `diagnosis.json` (risk = max diagnosis score or meta blend, same as Module 4), `src/data/module6/module6_config.json`, and `src/data/module6/mdp.json` (states, actions, stochastic transitions as `[p, next_state, reward]` lists summing to 1; optional `initial_state_weights` if diagnosis has no equipment rows).
+
+**Outputs:**
+
+| File | Top-level keys (summary) |
+|------|---------------------------|
+| `rl_policy.json` | `policy` (state → action), `q_table` (state → action → Q), `meta` (paths, hyperparameters, `module5_required`) |
+| `rl_training.json` | `episodes` (list of `episode`, `return`, `steps`, `epsilon`, `return_mean_so_far`), `meta` (`mean_return_last_window`, `window_size`) |
+| `rl_metrics.json` | `trained_policy_last_window`, `baseline_always_defer`, `baseline_random` (each: mean/std + episode counts), `mdp` (state/action lists) |
+
+**Code:** `run_module6(diagnosis_path, module6_config_path, output_dir, *, mdp_path=None, module4_config_path=None, random_seed=None)`.
+
+Run after Module 3 (Module 4 optional):
+
+```bash
+PYTHONPATH=src python3 -m equipment_monitoring.cli --module 6 \
+  --diagnosis outputs/module3/diagnosis.json \
+  --output-dir outputs/module6
+```
+
+Defaults: `--module6-config` → `src/data/module6/module6_config.json`. Use `--mdp` to override the MDP path. Use `--module4-config` to override action validation (otherwise uses `module4_config_path` from the Module 6 config when set).
+
 ### Static HTML Report (`--report`)
 
 Any module run can also generate/update a static report by adding `--report`.
@@ -497,6 +525,7 @@ Report content includes:
 - Module 2 top sequences and warning signs
 - Module 3 diagnosis cards and inspection recommendations
 - Optional Module 4 plan summary when `maintenance_plan.json` exists
+- Optional Module 6 RL policy summary when `module6/rl_policy.json` exists
 
 ---
 
@@ -526,6 +555,12 @@ Unit tests mirror the structure of `src/`.
 - `unit_tests/module3/test_diagnosis.py` - Diagnosis scoring, explanations, `build_diagnosis_record`
 - `unit_tests/module3/test_runner.py` - `infer_batch` and `run_module3` output shape
 
+**Module 6:**
+- `unit_tests/module6/test_mdp_loader.py` - MDP / config validation
+- `unit_tests/module6/test_q_learning.py` - ε schedule, Q-update, short training run
+- `unit_tests/module6/test_state.py` - risk buckets from `diagnosis.json`; invalid/missing diagnosis → `Module6ConfigError`
+- `unit_tests/module6/test_module6_runner.py` - output files and policy shape
+
 **Module 4:**
 - `unit_tests/module4/test_loader.py` - config and diagnosis parsing
 - `unit_tests/module4/test_objective.py` - feasibility and objective
@@ -549,6 +584,9 @@ Unit tests mirror the structure of `src/`.
 
 **Module 4:**
 - `integration_tests/module4/test_module4_smoke.py` - Module 1 → Module 4 on shared CSV; optional production cap (zero downtime → all defer)
+
+**Module 6:**
+- `integration_tests/module6/test_module6_smoke.py` - Module 6 on `outputs/full_pipeline/module3/diagnosis.json` when present
 
 ### Running Tests
 

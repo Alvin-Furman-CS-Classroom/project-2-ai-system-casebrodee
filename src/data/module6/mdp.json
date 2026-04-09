@@ -1,0 +1,26 @@
+{
+  "states": ["risk_low", "risk_mid", "risk_high"],
+  "actions": ["defer", "inspect", "repair"],
+  "initial_state_weights": {
+    "risk_low": 0.34,
+    "risk_mid": 0.33,
+    "risk_high": 0.33
+  },
+  "transitions": {
+    "risk_low": {
+      "defer": [[0.85, "risk_low", -10.0], [0.15, "risk_mid", -10.0]],
+      "inspect": [[0.75, "risk_low", -210.0], [0.25, "risk_mid", -210.0]],
+      "repair": [[0.95, "risk_low", -910.0], [0.05, "risk_mid", -910.0]]
+    },
+    "risk_mid": {
+      "defer": [[0.55, "risk_mid", -80.0], [0.35, "risk_high", -80.0], [0.1, "risk_low", -80.0]],
+      "inspect": [[0.5, "risk_mid", -280.0], [0.4, "risk_low", -280.0], [0.1, "risk_high", -280.0]],
+      "repair": [[0.55, "risk_low", -980.0], [0.35, "risk_mid", -980.0], [0.1, "risk_high", -980.0]]
+    },
+    "risk_high": {
+      "defer": [[0.5, "risk_high", -400.0], [0.4, "risk_mid", -400.0], [0.1, "risk_low", -400.0]],
+      "inspect": [[0.35, "risk_high", -550.0], [0.4, "risk_mid", -550.0], [0.25, "risk_low", -550.0]],
+      "repair": [[0.6, "risk_low", -1250.0], [0.3, "risk_mid", -1250.0], [0.1, "risk_high", -1250.0]]
+    }
+  }
+}
