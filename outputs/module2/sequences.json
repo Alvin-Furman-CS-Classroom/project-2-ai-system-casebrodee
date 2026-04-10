@@ -2,6 +2,17 @@
   "sequences": [
     {
       "sequence": [
+        "State(machine=M1, bins=('medium', 'low', 'low'))",
+        "State(machine=M1, bins=('medium', 'medium', 'medium'))"
+      ],
+      "frequency": 1,
+      "avg_time_to_failure": 60.0,
+      "machines": [
+        "M1"
+      ]
+    },
+    {
+      "sequence": [
         "State(machine=M2, bins=('low', 'low', 'low'))",
         "State(machine=M2, bins=('medium', 'medium', 'medium'))"
       ],
@@ -14,17 +25,6 @@
     {
       "sequence": [
         "State(machine=M1, bins=('low', 'low', 'low'))",
-        "State(machine=M1, bins=('medium', 'low', 'low'))",
-        "State(machine=M1, bins=('medium', 'medium', 'medium'))"
-      ],
-      "frequency": 1,
-      "avg_time_to_failure": 60.0,
-      "machines": [
-        "M1"
-      ]
-    },
-    {
-      "sequence": [
         "State(machine=M1, bins=('medium', 'low', 'low'))",
         "State(machine=M1, bins=('medium', 'medium', 'medium'))"
       ],

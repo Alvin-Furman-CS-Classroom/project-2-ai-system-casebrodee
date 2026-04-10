@@ -106,6 +106,63 @@ def test_generate_report_includes_module6_detail_when_rl_outputs_exist(tmp_path:
     assert "Fleet risk band" in html
 
 
+def test_generate_report_module6_rich_states_and_training_note(tmp_path: Path) -> None:
+    """Six-state policy + meta.training_note → richer copy and M1-hot explanation."""
+    outputs = tmp_path / "outputs"
+    (outputs / "module1").mkdir(parents=True, exist_ok=True)
+    (outputs / "module1" / "classifications.jsonl").write_text(
+        '{"timestamp":"t1","equipment_id":"M1","status":"normal","violated_rules":[],"confidence":0.1}\n',
+        encoding="utf-8",
+    )
+    _write_json(outputs / "module2" / "sequences.json", {"sequences": []})
+    _write_json(outputs / "module2" / "warning_signs.json", {"warning_signs": []})
+    _write_json(outputs / "module3" / "diagnosis.json", {"equipment": []})
+    _write_json(
+        outputs / "module6" / "rl_policy.json",
+        {
+            "policy": {
+                "risk_low": "defer",
+                "risk_low_m1hot": "inspect",
+                "risk_mid": "inspect",
+                "risk_mid_m1hot": "inspect",
+                "risk_high": "repair",
+                "risk_high_m1hot": "repair",
+            },
+            "q_table": {},
+            "meta": {
+                "random_seed": 1,
+                "module5_required": False,
+                "training_note": "Test narrative: episodes start from equipment-derived states.",
+                "m1_alert": {
+                    "classifications_path": None,
+                    "anomaly_rate_threshold": 0.35,
+                    "confidence_fallback_threshold": 0.55,
+                },
+            },
+        },
+    )
+    _write_json(
+        outputs / "module6" / "rl_metrics.json",
+        {
+            "trained_policy_last_window": {"mean_return": -50.0, "std_return": 1.0, "window_episodes": 10},
+            "baseline_always_defer": {"mean_return": -60.0, "std_return": 1.0, "eval_episodes": 200},
+            "baseline_random": {"mean_return": -55.0, "std_return": 2.0, "eval_episodes": 200},
+            "mdp": {"num_states": 6, "num_actions": 3, "states": [], "actions": []},
+        },
+    )
+
+    report_path = outputs / "report.html"
+    reporting.generate_report(outputs, report_path)
+    html = report_path.read_text(encoding="utf-8")
+
+    assert "What RL is training on:" in html
+    assert "Test narrative: episodes start from equipment-derived states." in html
+    assert "MDP state (diagnosis risk × M1 signal)" in html
+    assert "risk_mid_m1hot" in html
+    assert "rl_training.json" in html
+    assert "M1-hot signal" in html
+
+
 def test_generate_report_handles_invalid_json(tmp_path: Path) -> None:
     outputs = tmp_path / "outputs"
     (outputs / "module2").mkdir(parents=True, exist_ok=True)

@@ -108,6 +108,17 @@ def build_report_context(data: Dict[str, Any]) -> Dict[str, Any]:
     trained = m6_metrics.get("trained_policy_last_window") or {}
     m6_mean_ret = trained.get("mean_return")
 
+    m6_meta = data.get("module6_q_meta") or {}
+    m6_mdp_n = (m6_metrics.get("mdp") or {}).get("num_states")
+    m6_rich_states = bool(m6_meta.get("m1_alert")) or (
+        isinstance(m6_policy, dict) and any(str(k).endswith("_m1hot") for k in m6_policy)
+    )
+    if isinstance(m6_mdp_n, int) and m6_mdp_n > 3:
+        m6_rich_states = True
+    m6_training_note = m6_meta.get("training_note")
+    if not isinstance(m6_training_note, str):
+        m6_training_note = None
+
     return {
         **data,
         "m1_total": len(m1_rows),
@@ -124,11 +135,20 @@ def build_report_context(data: Dict[str, Any]) -> Dict[str, Any]:
         "m6_policy_state_count": len(m6_policy) if isinstance(m6_policy, dict) else 0,
         "m6_action_counts": m6_action_counts,
         "m6_mean_return_window": m6_mean_ret,
+        "m6_rich_states": m6_rich_states,
+        "m6_training_note": m6_training_note,
+        "m6_m1_alert_meta": m6_meta.get("m1_alert") if isinstance(m6_meta.get("m1_alert"), dict) else None,
     }
 
 
 def render_report_html(context: Dict[str, Any]) -> str:
-    module_blueprints = """
+    m6_blueprint_body = """
+        <p><strong>Input:</strong> per-equipment risk from <code>diagnosis.json</code> (same bucketing rule as Module 4), optionally crossed with a Module 1 &ldquo;alert&rdquo; signal from <code>classifications.jsonl</code> anomaly rate or diagnosis <code>meta.m1_max_confidence</code>; plus <code>mdp.json</code> (a <em>toy</em> stochastic world: next risk level and cost after each action)</p>
+        <p><strong>Processing:</strong> Q-learning runs many episodes; each episode picks a random fleet unit, starts in that unit&rsquo;s derived MDP state, and rolls the simulator for several steps</p>
+        <p><strong>Output:</strong> <code>rl_policy.json</code> (greedy action per state), <code>rl_training.json</code> (per-episode return and ε schedule), <code>rl_metrics.json</code> (trained policy vs always-defer and random baselines)</p>
+        <p><strong>Note:</strong> no neural nets or Module 5—tabular RL over explicit JSON dynamics. A 3-state-only MDP (risk bands only) is still supported if <code>mdp.json</code> defines only <code>risk_low</code> / <code>risk_mid</code> / <code>risk_high</code>.</p>
+"""
+    module_blueprints = f"""
     <div class="blueprint-grid">
       <div class="blueprint-card">
         <h3>Module 1 blueprint</h3>
@@ -160,10 +180,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
       </div>
       <div class="blueprint-card">
         <h3>Module 6 blueprint</h3>
-        <p><strong>Input:</strong> the same diagnosis summary Module 4 uses, collapsed into three fleet-wide risk bands (low / mid / high), plus a small <code>mdp.json</code> file that describes a <em>toy</em> world: likely next risk level and cost after each action</p>
-        <p><strong>Processing:</strong> the computer runs many <em>imaginary</em> maintenance episodes in that toy world and learns a table of &ldquo;best action so far&rdquo; per band (Q-learning)</p>
-        <p><strong>Output:</strong> <code>rl_policy.json</code> (the table), <code>rl_training.json</code> (learning curve), <code>rl_metrics.json</code> (scores vs simple baselines)</p>
-        <p><strong>Note:</strong> no neural nets or Module 5 classifier—just explicit rules in JSON + textbook RL for the course demo</p>
+{m6_blueprint_body}
       </div>
     </div>
     """
@@ -230,6 +247,8 @@ def render_report_html(context: Dict[str, Any]) -> str:
 
     module6_section = ""
     if context.get("m6_policy_state_count", 0):
+        m6_rich = bool(context.get("m6_rich_states"))
+        m6_n = int(context.get("m6_policy_state_count", 0))
         m6_mix = " | ".join(
             f"{escape(action)}: {count}"
             for action, count in sorted(context.get("m6_action_counts", {}).items())
@@ -237,27 +256,76 @@ def render_report_html(context: Dict[str, Any]) -> str:
         m6_ret = context.get("m6_mean_return_window")
         ret_line = ""
         if m6_ret is not None:
-            ret_line = f"""<p><strong>Recent training score (average return, last training episodes):</strong> {escape(str(m6_ret))}</p>
-  <p class="subtle">Returns add up simulator rewards each episode; in this project rewards are usually negative (costs). <strong>Higher numbers (closer to zero) mean better</strong> simulated performance. See <code>rl_metrics.json</code> next to the outputs for comparison to &ldquo;always defer&rdquo; and random baselines.</p>"""
+            ret_line = f"""<p><strong>Recent training score (mean return, last window of training episodes):</strong> {escape(str(m6_ret))}</p>
+  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Higher (closer to zero) is better.</strong> Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>. Baseline comparisons → <code>module6/rl_metrics.json</code>.</p>"""
+        tn = context.get("m6_training_note")
+        training_narrative = ""
+        if isinstance(tn, str) and tn.strip():
+            training_narrative = f"""  <div class="howto">
+    <p><strong>What RL is training on:</strong> {escape(tn)}</p>
+  </div>
+"""
+        m1a = context.get("m6_m1_alert_meta")
+        m1_extra = ""
+        if m6_rich and isinstance(m1a, dict):
+            cp = m1a.get("classifications_path")
+            ar = m1a.get("anomaly_rate_threshold")
+            cf = m1a.get("confidence_fallback_threshold")
+            m1_extra = f"""  <p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold {escape(str(ar))} when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ {escape(str(cf))}. Classifications file: {escape(str(cp) if cp else "none (config/CLI)")}.</p>
+"""
+        if m6_rich:
+            intro = (
+                "Module 6 runs tabular Q-learning on <code>mdp.json</code>. States combine a diagnosis risk band "
+                "(<code>risk_low</code>, <code>risk_mid</code>, <code>risk_high</code>) with whether Module 1 style "
+                "evidence is &ldquo;hot&rdquo; (<code>_m1hot</code> suffix), so the policy can treat, for example, "
+                "<code>risk_mid</code> differently from <code>risk_mid_m1hot</code>."
+            )
+            howto_read = (
+                "<p><strong>Reading the table:</strong> Each row is one MDP state key. The suffix <code>_m1hot</code> "
+                "means the run marked elevated Module 1 activity for that risk level. The action is what the agent "
+                "would pick <em>in the simulator</em> after training (defer / inspect / repair — same ids as Module 4).</p>"
+            )
+            state_th = "MDP state (diagnosis risk × M1 signal)"
+            summary_hint = f"(action counts summed over all {m6_n} learned states)"
+        else:
+            intro = (
+                "Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick defer, inspect, or repair "
+                "for each coarse fleet risk band from diagnosis."
+            )
+            howto_read = (
+                "<p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent "
+                "would pick <em>in the simulator</em> after training. Action names match Module 4.</p>"
+            )
+            state_th = "Fleet risk band (from diagnosis)"
+            summary_hint = "(counts how many bands pick defer, inspect, or repair)"
         policy_items = context.get("module6_policy") or {}
         pol_rows = "\n".join(
-            f"<tr><td>{escape(str(st))}</td><td>{escape(str(ac))}</td></tr>"
+            f"<tr><td><code>{escape(str(st))}</code></td><td><code>{escape(str(ac))}</code></td></tr>"
             for st, ac in sorted(policy_items.items())
         ) or "<tr><td colspan='2'>No policy rows.</td></tr>"
+        m4_compare = (
+            "If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on "
+            "<code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule "
+            "while Module 6 optimizes the toy MDP—different objectives."
+            if m6_rich
+            else "If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for "
+            "<code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes "
+            "the toy MDP—different problems, both valid as coursework artifacts."
+        )
         module6_section = f"""
 <section id="module6">
   <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
-  <p class="module-intro">Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick a default defer, inspect, or repair for each coarse fleet risk band from diagnosis.</p>
-  <div class="howto">
-    <p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent would pick <em>in the simulator</em> after training (defer = wait, inspect = cheaper check, repair = major work). Action names match Module 4 so you can compare vocabulary side by side.</p>
+  <p class="module-intro">{intro}</p>
+{training_narrative}  <div class="howto">
+    {howto_read}
   </div>
-  {ret_line}
-  <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">(counts how many of the three bands pick defer, inspect, or repair)</span></p>
+{m1_extra}{ret_line}
+  <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">{summary_hint}</span></p>
   <table>
-    <thead><tr><th>Fleet risk band (from diagnosis)</th><th>Learned action (simulator)</th></tr></thead>
+    <thead><tr><th>{state_th}</th><th>Learned action (simulator)</th></tr></thead>
     <tbody>{pol_rows}</tbody>
   </table>
-  <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for <code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different problems, both valid as coursework artifacts.</div>
+  <div class="connector"><strong>Compare with Module 4:</strong> {m4_compare}</div>
 </section>
 """
 
@@ -373,7 +441,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">{context["m2_sequence_count"]}</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">{context["m3_equipment_count"]}</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">{context["m4_total_assignments"]}</div><div class="metric-help">Final action decisions (if available).</div></div>
-        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">Risk bands with a learned action after RL training (usually 3: low, mid, high).</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">{"MDP states with a greedy action after Q-learning (default mdp.json: six, risk × M1-hot)." if context.get("m6_rich_states") else "MDP states with a learned action (often three risk bands only)."}</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -387,7 +455,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="flow-box">Module 6<br><span class="subtle">Learn policy in a simulator (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a separate RL demo: a policy learned in a toy simulator from three risk bands—see that section for details.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a tabular RL demo on <code>mdp.json</code>{"—states pair diagnosis risk with a Module 1 &ldquo;hot&rdquo; flag when using the default six-state MDP." if context.get("m6_rich_states") else "—usually one row per risk band when the MDP has only three states."} See that section for the policy table and training narrative.</p>
       </div>
       {module_blueprints}
     </section>

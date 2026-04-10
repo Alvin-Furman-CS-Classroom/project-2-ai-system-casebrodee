@@ -1,26 +1,29 @@
 {
   "trained_policy_last_window": {
-    "mean_return": -2249.38,
-    "std_return": 913.1781,
+    "mean_return": -1581.066,
+    "std_return": 688.7018,
     "window_episodes": 500
   },
   "baseline_always_defer": {
-    "mean_return": -2148.38,
-    "std_return": 903.6524,
+    "mean_return": -3582.555,
+    "std_return": 1304.9099,
     "eval_episodes": 2000
   },
   "baseline_random": {
-    "mean_return": -5445.08,
-    "std_return": 1297.6482,
+    "mean_return": -5523.447,
+    "std_return": 1263.929,
     "eval_episodes": 2000
   },
   "mdp": {
-    "num_states": 3,
+    "num_states": 6,
     "num_actions": 3,
     "states": [
       "risk_low",
+      "risk_low_m1hot",
       "risk_mid",
-      "risk_high"
+      "risk_mid_m1hot",
+      "risk_high",
+      "risk_high_m1hot"
     ],
     "actions": [
       "defer",

@@ -1,24 +1,42 @@
 {
   "policy": {
     "risk_low": "defer",
-    "risk_mid": "inspect",
-    "risk_high": "defer"
+    "risk_low_m1hot": "defer",
+    "risk_mid": "defer",
+    "risk_mid_m1hot": "inspect",
+    "risk_high": "inspect",
+    "risk_high_m1hot": "inspect"
   },
   "q_table": {
     "risk_low": {
-      "defer": -1487.361532,
-      "inspect": -1706.749166,
-      "repair": -2480.151249
+      "defer": -1270.741992,
+      "inspect": -1422.88879,
+      "repair": -2018.65636
+    },
+    "risk_low_m1hot": {
+      "defer": 0.0,
+      "inspect": 0.0,
+      "repair": 0.0
     },
     "risk_mid": {
-      "defer": -2196.710181,
-      "inspect": -1939.34315,
-      "repair": -3017.169254
+      "defer": -1639.286161,
+      "inspect": -1743.844033,
+      "repair": -2069.601239
+    },
+    "risk_mid_m1hot": {
+      "defer": -1688.266365,
+      "inspect": -1588.338275,
+      "repair": -1719.402673
     },
     "risk_high": {
-      "defer": -2408.627147,
-      "inspect": -2913.287135,
-      "repair": -3069.262827
+      "defer": -2065.527482,
+      "inspect": -1838.946159,
+      "repair": -2176.778672
+    },
+    "risk_high_m1hot": {
+      "defer": -2178.446005,
+      "inspect": -1912.943645,
+      "repair": -2240.956048
     }
   },
   "meta": {
@@ -27,21 +45,26 @@
     "mdp_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module6/mdp.json",
     "random_seed": 42,
     "module5_required": false,
-    "training_note": "Global Q-table over risk buckets; each episode starts from a random equipment's bucket from diagnosis.json.",
+    "training_note": "Global Q-table over risk \u00d7 Module-1-alert states (e.g. risk_mid vs risk_mid_m1hot); each episode starts from a random equipment's derived start state using diagnosis risk and classifications anomaly rate (when provided) or diagnosis meta m1_max_confidence.",
     "hyperparameters": {
       "gamma": 0.95,
       "alpha": 0.12,
       "epsilon_start": 0.35,
       "epsilon_end": 0.05,
       "epsilon_decay_episodes": 2500,
-      "num_episodes": 6000,
-      "max_steps_per_episode": 12
+      "num_episodes": 8000,
+      "max_steps_per_episode": 14
     },
     "equipment_count": 2,
     "risk_thresholds": [
       0.33,
       0.66
     ],
-    "module4_config_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module4/module4_config.json"
+    "module4_config_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module4/module4_config.json",
+    "m1_alert": {
+      "classifications_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/outputs/module1/classifications.jsonl",
+      "anomaly_rate_threshold": 0.35,
+      "confidence_fallback_threshold": 0.55
+    }
   }
 }

@@ -9,32 +9,38 @@
     },
     {
       "equipment_id": "M2",
-      "action_id": "repair",
-      "cost": 900.0,
-      "downtime_hours": 10.0,
-      "residual_risk_weighted": 0.0822
+      "action_id": "inspect",
+      "cost": 200.0,
+      "downtime_hours": 2.0,
+      "residual_risk_weighted": 0.44525
     }
   ],
   "totals": {
-    "maintenance_cost": 1800.0,
-    "failure_penalty": 853.5,
-    "objective": 2653.5
+    "maintenance_cost": 1100.0,
+    "failure_penalty": 2668.75,
+    "objective": 3768.75
   },
   "meta": {
     "production_schedule": {
-      "applied": false
+      "applied": true,
+      "label": "example_peak_season",
+      "notes": "Optional file for Module 4: caps total maintenance downtime when production is tight. Pass --production-schedule to the CLI. The effective cap is min(base config max_total_downtime_hours, this value).",
+      "cap_source": "production_schedule",
+      "base_max_total_downtime_hours": 40.0,
+      "schedule_max_total_downtime_hours": 16.0,
+      "effective_max_total_downtime_hours": 16.0
     },
-    "effective_max_total_downtime_hours": 40.0
+    "effective_max_total_downtime_hours": 16.0
   },
   "optimization": {
     "recommended_method": "hill_climbing",
     "hill_climbing": {
-      "objective": 2653.5,
+      "objective": 3768.75,
       "restarts_used": 5,
-      "iterations": 32
+      "iterations": 29
     },
     "simulated_annealing": {
-      "objective": 2653.5,
+      "objective": 3768.75,
       "iterations": 4000
     }
   },
@@ -47,17 +53,17 @@
     {
       "budget_multiplier": 0.75,
       "effective_budget": 2250.0,
-      "best_objective": 2653.5
+      "best_objective": 3768.75
     },
     {
       "budget_multiplier": 1.0,
       "effective_budget": 3000.0,
-      "best_objective": 2653.5
+      "best_objective": 3768.75
     },
     {
       "budget_multiplier": 1.25,
       "effective_budget": 3750.0,
-      "best_objective": 2653.5
+      "best_objective": 3768.75
     }
   ],
   "contingency": {
@@ -73,8 +79,8 @@
     "description": "2x2 scan: row = optimized schedule vs all-defer; col = baseline risk vs stressed risks (factor 1.15). Row utility is negative total objective (minimize cost); column utility is failure penalty. mixed_nash_zero_sum uses the row payoff matrix only, zero-sum (column minimizes row).",
     "payoff_row_operator_utility": [
       [
-        -2653.5,
-        -2781.525
+        -3768.75,
+        -4169.0625
       ],
       [
         -7112.5,
@@ -83,8 +89,8 @@
     ],
     "payoff_col_environment_utility": [
       [
-        853.5,
-        981.525
+        2668.75,
+        3069.0625
       ],
       [
         7112.5,
@@ -95,15 +101,15 @@
       {
         "row_strategy_index": 0,
         "col_strategy_index": 1,
-        "payoff_row": -2781.525,
-        "payoff_col": 981.525
+        "payoff_row": -4169.0625,
+        "payoff_col": 3069.0625
       }
     ],
     "mixed_nash_zero_sum_row_matrix": {
       "matrix": [
         [
-          -2653.5,
-          -2781.525
+          -3768.75,
+          -4169.0625
         ],
         [
           -7112.5,
@@ -114,8 +120,8 @@
         "degenerate": false,
         "row_probability_strategy_0": 1.0,
         "col_probability_strategy_0": 1.0,
-        "value_to_row": -2045.454545,
-        "delta_denominator": -938.85
+        "value_to_row": -1760.618847,
+        "delta_denominator": -666.5625
       }
     }
   }

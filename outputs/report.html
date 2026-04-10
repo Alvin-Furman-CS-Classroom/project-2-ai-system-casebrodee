@@ -60,7 +60,7 @@
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">3</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">2</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">2</div><div class="metric-help">Final action decisions (if available).</div></div>
-        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">3</div><div class="metric-help">Risk bands with a learned action after RL training (usually 3: low, mid, high).</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">6</div><div class="metric-help">MDP states with a greedy action after Q-learning (default mdp.json: six, risk × M1-hot).</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -74,7 +74,7 @@
         <div class="flow-box">Module 6<br><span class="subtle">Learn policy in a simulator (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a separate RL demo: a policy learned in a toy simulator from three risk bands—see that section for details.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a tabular RL demo on <code>mdp.json</code>—states pair diagnosis risk with a Module 1 &ldquo;hot&rdquo; flag when using the default six-state MDP. See that section for the policy table and training narrative.</p>
       </div>
       
     <div class="blueprint-grid">
@@ -108,10 +108,12 @@
       </div>
       <div class="blueprint-card">
         <h3>Module 6 blueprint</h3>
-        <p><strong>Input:</strong> the same diagnosis summary Module 4 uses, collapsed into three fleet-wide risk bands (low / mid / high), plus a small <code>mdp.json</code> file that describes a <em>toy</em> world: likely next risk level and cost after each action</p>
-        <p><strong>Processing:</strong> the computer runs many <em>imaginary</em> maintenance episodes in that toy world and learns a table of &ldquo;best action so far&rdquo; per band (Q-learning)</p>
-        <p><strong>Output:</strong> <code>rl_policy.json</code> (the table), <code>rl_training.json</code> (learning curve), <code>rl_metrics.json</code> (scores vs simple baselines)</p>
-        <p><strong>Note:</strong> no neural nets or Module 5 classifier—just explicit rules in JSON + textbook RL for the course demo</p>
+
+        <p><strong>Input:</strong> per-equipment risk from <code>diagnosis.json</code> (same bucketing rule as Module 4), optionally crossed with a Module 1 &ldquo;alert&rdquo; signal from <code>classifications.jsonl</code> anomaly rate or diagnosis <code>meta.m1_max_confidence</code>; plus <code>mdp.json</code> (a <em>toy</em> stochastic world: next risk level and cost after each action)</p>
+        <p><strong>Processing:</strong> Q-learning runs many episodes; each episode picks a random fleet unit, starts in that unit&rsquo;s derived MDP state, and rolls the simulator for several steps</p>
+        <p><strong>Output:</strong> <code>rl_policy.json</code> (greedy action per state), <code>rl_training.json</code> (per-episode return and ε schedule), <code>rl_metrics.json</code> (trained policy vs always-defer and random baselines)</p>
+        <p><strong>Note:</strong> no neural nets or Module 5—tabular RL over explicit JSON dynamics. A 3-state-only MDP (risk bands only) is still supported if <code>mdp.json</code> defines only <code>risk_low</code> / <code>risk_mid</code> / <code>risk_high</code>.</p>
+
       </div>
     </div>
     
@@ -168,18 +170,18 @@
       <summary>Top sequences</summary>
       <table>
         <thead><tr><th>Sequence</th><th>Frequency</th><th>Avg time to failure</th></tr></thead>
-        <tbody><tr><td>State(machine=M2, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M2, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
-<tr><td>State(machine=M1, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
-<tr><td>State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr></tbody>
+        <tbody><tr><td>State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
+<tr><td>State(machine=M2, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M2, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
+<tr><td>State(machine=M1, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr></tbody>
       </table>
     </details>
     <details>
       <summary>Warning sign ranking</summary>
       <table>
         <thead><tr><th>Pattern</th><th>Predictive score</th><th>Frequency</th><th>False positive rate</th></tr></thead>
-        <tbody><tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
-<tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (3 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
-<tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
+        <tbody><tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
+<tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
+<tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (3 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
       </table>
     </details>
     <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
@@ -202,45 +204,52 @@
   <div class="metric-grid">
     <div class="metric-card">
       <div class="metric-label">Objective</div>
-      <div class="metric-value">2653.5</div>
+      <div class="metric-value">3768.75</div>
       <div class="metric-help">Lower is better. This combines maintenance cost and predicted failure penalty.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Maintenance cost</div>
-      <div class="metric-value">1800.0</div>
+      <div class="metric-value">1100.0</div>
       <div class="metric-help">Direct spend from selected actions.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Failure penalty</div>
-      <div class="metric-value">853.5</div>
+      <div class="metric-value">2668.75</div>
       <div class="metric-help">Expected risk cost after actions are applied.</div>
     </div>
   </div>
-  <p><strong>Action mix:</strong> repair: 2</p>
+  <p><strong>Action mix:</strong> inspect: 1 | repair: 1</p>
   <table>
     <thead><tr><th>Equipment</th><th>Action</th><th>Cost</th><th>Downtime (h)</th></tr></thead>
     <tbody><tr><td>M1</td><td>repair</td><td>900.0</td><td>10.0</td></tr>
-<tr><td>M2</td><td>repair</td><td>900.0</td><td>10.0</td></tr></tbody>
+<tr><td>M2</td><td>inspect</td><td>200.0</td><td>2.0</td></tr></tbody>
   </table>
 </section>
 
     
 <section id="module6">
   <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
-  <p class="module-intro">Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick a default defer, inspect, or repair for each coarse fleet risk band from diagnosis.</p>
+  <p class="module-intro">Module 6 runs tabular Q-learning on <code>mdp.json</code>. States combine a diagnosis risk band (<code>risk_low</code>, <code>risk_mid</code>, <code>risk_high</code>) with whether Module 1 style evidence is &ldquo;hot&rdquo; (<code>_m1hot</code> suffix), so the policy can treat, for example, <code>risk_mid</code> differently from <code>risk_mid_m1hot</code>.</p>
   <div class="howto">
-    <p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent would pick <em>in the simulator</em> after training (defer = wait, inspect = cheaper check, repair = major work). Action names match Module 4 so you can compare vocabulary side by side.</p>
+    <p><strong>What RL is training on:</strong> Global Q-table over risk × Module-1-alert states (e.g. risk_mid vs risk_mid_m1hot); each episode starts from a random equipment&#x27;s derived start state using diagnosis risk and classifications anomaly rate (when provided) or diagnosis meta m1_max_confidence.</p>
   </div>
-  <p><strong>Recent training score (average return, last training episodes):</strong> -2249.38</p>
-  <p class="subtle">Returns add up simulator rewards each episode; in this project rewards are usually negative (costs). <strong>Higher numbers (closer to zero) mean better</strong> simulated performance. See <code>rl_metrics.json</code> next to the outputs for comparison to &ldquo;always defer&rdquo; and random baselines.</p>
-  <p><strong>Summary of learned choices:</strong> defer: 2 | inspect: 1 <span class="subtle">(counts how many of the three bands pick defer, inspect, or repair)</span></p>
+  <div class="howto">
+    <p><strong>Reading the table:</strong> Each row is one MDP state key. The suffix <code>_m1hot</code> means the run marked elevated Module 1 activity for that risk level. The action is what the agent would pick <em>in the simulator</em> after training (defer / inspect / repair — same ids as Module 4).</p>
+  </div>
+  <p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold 0.35 when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ 0.55. Classifications file: /Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/outputs/module1/classifications.jsonl.</p>
+<p><strong>Recent training score (mean return, last window of training episodes):</strong> -1581.066</p>
+  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Higher (closer to zero) is better.</strong> Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>. Baseline comparisons → <code>module6/rl_metrics.json</code>.</p>
+  <p><strong>Summary of learned choices:</strong> defer: 3 | inspect: 3 <span class="subtle">(action counts summed over all 6 learned states)</span></p>
   <table>
-    <thead><tr><th>Fleet risk band (from diagnosis)</th><th>Learned action (simulator)</th></tr></thead>
-    <tbody><tr><td>risk_high</td><td>defer</td></tr>
-<tr><td>risk_low</td><td>defer</td></tr>
-<tr><td>risk_mid</td><td>inspect</td></tr></tbody>
+    <thead><tr><th>MDP state (diagnosis risk × M1 signal)</th><th>Learned action (simulator)</th></tr></thead>
+    <tbody><tr><td><code>risk_high</code></td><td><code>inspect</code></td></tr>
+<tr><td><code>risk_high_m1hot</code></td><td><code>inspect</code></td></tr>
+<tr><td><code>risk_low</code></td><td><code>defer</code></td></tr>
+<tr><td><code>risk_low_m1hot</code></td><td><code>defer</code></td></tr>
+<tr><td><code>risk_mid</code></td><td><code>defer</code></td></tr>
+<tr><td><code>risk_mid_m1hot</code></td><td><code>inspect</code></td></tr></tbody>
   </table>
-  <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for <code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different problems, both valid as coursework artifacts.</div>
+  <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on <code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different objectives.</div>
 </section>
 
   </div>
