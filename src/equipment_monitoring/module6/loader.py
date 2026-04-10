@@ -44,6 +44,9 @@ class Module6Config:
     risk_thresholds: Tuple[float, float]
     mdp_path: Path
     module4_config_path: Path | None
+    classifications_path: Path | None
+    m1_anomaly_rate_alert: float
+    m1_confidence_alert_fallback: float
 
 
 def _load_json(path: Path, label: str) -> Any:
@@ -115,6 +118,21 @@ def load_module6_config(path: str | Path) -> Module6Config:
     else:
         module4_config_path = None
 
+    c_raw = data.get("classifications_path")
+    classifications_path: Path | None
+    if c_raw:
+        classifications_path = _resolve_path(base_dir, str(c_raw), "")
+    else:
+        classifications_path = None
+
+    try:
+        m1_anomaly_rate_alert = float(data.get("m1_anomaly_rate_alert", 0.35))
+        m1_confidence_alert_fallback = float(data.get("m1_confidence_alert_fallback", 0.55))
+    except (TypeError, ValueError) as e:
+        raise Module6ConfigError(f"m1 alert thresholds invalid: {e}") from e
+    if not (0.0 <= m1_anomaly_rate_alert <= 1.0) or not (0.0 <= m1_confidence_alert_fallback <= 1.0):
+        raise Module6ConfigError("m1_anomaly_rate_alert and m1_confidence_alert_fallback must be in [0, 1]")
+
     if not (0.0 <= gamma <= 1.0):
         raise Module6ConfigError("gamma must be in [0, 1]")
     if alpha <= 0.0 or alpha > 1.0:
@@ -140,6 +158,9 @@ def load_module6_config(path: str | Path) -> Module6Config:
         risk_thresholds=(t0, t1),
         mdp_path=mdp_path,
         module4_config_path=module4_config_path,
+        classifications_path=classifications_path,
+        m1_anomaly_rate_alert=m1_anomaly_rate_alert,
+        m1_confidence_alert_fallback=m1_confidence_alert_fallback,
     )
 
 

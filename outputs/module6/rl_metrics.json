@@ -1,0 +1,31 @@
+{
+  "trained_policy_last_window": {
+    "mean_return": -2249.38,
+    "std_return": 913.1781,
+    "window_episodes": 500
+  },
+  "baseline_always_defer": {
+    "mean_return": -2148.38,
+    "std_return": 903.6524,
+    "eval_episodes": 2000
+  },
+  "baseline_random": {
+    "mean_return": -5445.08,
+    "std_return": 1297.6482,
+    "eval_episodes": 2000
+  },
+  "mdp": {
+    "num_states": 3,
+    "num_actions": 3,
+    "states": [
+      "risk_low",
+      "risk_mid",
+      "risk_high"
+    ],
+    "actions": [
+      "defer",
+      "inspect",
+      "repair"
+    ]
+  }
+}

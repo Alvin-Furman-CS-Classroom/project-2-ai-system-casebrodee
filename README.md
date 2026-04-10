@@ -527,6 +527,12 @@ Report content includes:
 - Optional Module 4 plan summary when `maintenance_plan.json` exists
 - Optional Module 6 RL policy summary when `module6/rl_policy.json` exists
 
+To refresh the report after adding Module 6 outputs, from the project root:
+
+```bash
+PYTHONPATH=src python3 -c "from pathlib import Path; from equipment_monitoring.reporting import generate_report; generate_report(Path('outputs'), Path('outputs/report.html'))"
+```
+
 ---
 
 ## Testing
@@ -534,6 +540,9 @@ Report content includes:
 ### Unit Tests (`unit_tests/`)
 
 Unit tests mirror the structure of `src/`. 
+
+**Reporting:**
+- `unit_tests/reporting/test_reporting.py` - Static HTML report (Module 6 overview + `#module6` when `rl_policy.json` present)
 
 **Module 1:**
 - `unit_tests/module1/test_config.py` - Configuration loading and validation

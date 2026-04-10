@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Tuple
 
 from .loader import JsonMDP, Module6Config, Module6ConfigError, load_mdp_json, load_module6_config, validate_actions_against_module4
 from .q_learning import EpisodeRecord, evaluate_fixed_policy, greedy_policy_from_q, train_q_learning
-from .state import equipment_risk_buckets
+from .state import equipment_mdp_start_states, mdp_supports_m1hot_rich_states
 
 # --- Tunables (reported in meta / metrics; avoid magic numbers in logic below) ---
 
@@ -39,7 +39,8 @@ def _prepare_mdp_and_buckets(
     module6_config_path: str | Path,
     mdp_path: str | Path | None,
     module4_config_path: str | Path | None,
-) -> Tuple[Module6Config, JsonMDP, Path, Path | None, List[str]]:
+    classifications_path: str | Path | None,
+) -> Tuple[Module6Config, JsonMDP, Path, Path | None, List[str], Path | None]:
     cfg = load_module6_config(module6_config_path)
     mdp_file = Path(mdp_path) if mdp_path else cfg.mdp_path
     mdp = load_mdp_json(mdp_file)
@@ -48,23 +49,30 @@ def _prepare_mdp_and_buckets(
     if m4_path is not None:
         validate_actions_against_module4(mdp, m4_path)
 
+    cls_effective: Path | None
+    if classifications_path is not None:
+        cls_effective = Path(classifications_path)
+    else:
+        cls_effective = cfg.classifications_path
+
     try:
-        buckets = equipment_risk_buckets(diagnosis_path, cfg.risk_thresholds)
+        buckets = equipment_mdp_start_states(
+            diagnosis_path,
+            cfg.risk_thresholds,
+            mdp.states,
+            classifications_path=cls_effective,
+            m1_anomaly_rate_alert=cfg.m1_anomaly_rate_alert,
+            m1_confidence_alert_fallback=cfg.m1_confidence_alert_fallback,
+        )
     except FileNotFoundError as e:
         raise Module6ConfigError(str(e)) from e
-
-    for b in buckets:
-        if b not in mdp.states:
-            raise Module6ConfigError(
-                f"equipment bucket {b!r} is not an MDP state; check risk_thresholds vs mdp.states"
-            )
 
     if not buckets and not mdp.initial_state_weights:
         raise Module6ConfigError(
             "diagnosis has no equipment rows and MDP has no initial_state_weights; cannot start episodes"
         )
 
-    return cfg, mdp, mdp_file, m4_path, buckets
+    return cfg, mdp, mdp_file, m4_path, buckets, cls_effective
 
 
 def _tail_return_stats(
@@ -124,17 +132,29 @@ def _build_meta(
     cfg: Module6Config,
     buckets: List[str],
     m4_path: Path | None,
+    mdp: JsonMDP,
+    classifications_effective: Path | None,
 ) -> Dict[str, Any]:
+    rich = mdp_supports_m1hot_rich_states(mdp.states)
+    if rich:
+        training_note = (
+            "Global Q-table over risk × Module-1-alert states (e.g. risk_mid vs risk_mid_m1hot); "
+            "each episode starts from a random equipment's derived start state using diagnosis risk "
+            "and classifications anomaly rate (when provided) or diagnosis meta m1_max_confidence."
+        )
+    else:
+        training_note = (
+            "Global Q-table over risk buckets; each episode starts from a random "
+            "equipment's bucket from diagnosis.json."
+        )
+
     meta: Dict[str, Any] = {
         "diagnosis_path": str(Path(diagnosis_path).resolve()),
         "module6_config_path": str(Path(module6_config_path).resolve()),
         "mdp_path": str(mdp_file.resolve()),
         "random_seed": seed,
         "module5_required": False,
-        "training_note": (
-            "Global Q-table over risk buckets; each episode starts from a random "
-            "equipment's bucket from diagnosis.json."
-        ),
+        "training_note": training_note,
         "hyperparameters": {
             "gamma": cfg.gamma,
             "alpha": cfg.alpha,
@@ -149,6 +169,14 @@ def _build_meta(
     }
     if m4_path is not None:
         meta["module4_config_path"] = str(m4_path.resolve())
+    if rich:
+        meta["m1_alert"] = {
+            "classifications_path": str(classifications_effective.resolve())
+            if classifications_effective is not None
+            else None,
+            "anomaly_rate_threshold": cfg.m1_anomaly_rate_alert,
+            "confidence_fallback_threshold": cfg.m1_confidence_alert_fallback,
+        }
     return meta
 
 
@@ -240,16 +268,21 @@ def run_module6(
     output_dir: str | Path,
     mdp_path: str | Path | None = None,
     module4_config_path: str | Path | None = None,
+    classifications_path: str | Path | None = None,
     random_seed: int | None = None,
 ) -> None:
     """
     Train tabular Q-learning on a JSON MDP.
 
-    **Training narrative (v1):** One global Q-table over risk buckets ``risk_low`` /
-    ``risk_mid`` / ``risk_high``. Each episode picks a random equipment from
-    ``diagnosis.json``, starts in that equipment's bucket (from max diagnosis score
-    or meta fallback, same rule as Module 4), then rolls the MDP for
-    ``max_steps_per_episode`` steps. Module 5 is not used.
+    **Training narrative:** One global Q-table over MDP states. With the default
+    6-state MDP, each state pairs a diagnosis risk bucket (``risk_low`` /
+    ``risk_mid`` / ``risk_high``) with whether Module 1 style signals are "hot"
+    (``*_m1hot``), using classifications anomaly rate when a classifications file
+    is configured or passed, else ``meta.m1_max_confidence`` on each equipment block.
+    Each episode picks a random equipment and starts in that equipment's derived
+    state, then rolls the MDP for ``max_steps_per_episode`` steps. Module 5 is not used.
+
+    With a 3-state MDP JSON, behavior matches the original risk-bucket-only mapping.
 
     If diagnosis lists no equipment, initial states are drawn from
     ``initial_state_weights`` in the MDP JSON (must be present).
@@ -260,6 +293,7 @@ def run_module6(
         output_dir: Directory for ``rl_policy.json``, ``rl_training.json``, ``rl_metrics.json``.
         mdp_path: Optional override for MDP JSON (default from config).
         module4_config_path: Optional override for Module 4 config when validating actions.
+        classifications_path: Optional override for Module 1 ``classifications.jsonl`` (M1-hot states).
         random_seed: Optional RNG seed override (default from config).
 
     Raises:
@@ -269,8 +303,8 @@ def run_module6(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    cfg, mdp, mdp_file, m4_path, buckets = _prepare_mdp_and_buckets(
-        diagnosis_path, module6_config_path, mdp_path, module4_config_path
+    cfg, mdp, mdp_file, m4_path, buckets, cls_effective = _prepare_mdp_and_buckets(
+        diagnosis_path, module6_config_path, mdp_path, module4_config_path, classifications_path
     )
 
     seed = int(random_seed) if random_seed is not None else cfg.random_seed
@@ -286,7 +320,17 @@ def run_module6(
     )
 
     q_json = _q_table_to_nested_dict(q, mdp)
-    meta = _build_meta(diagnosis_path, module6_config_path, mdp_file, seed, cfg, buckets, m4_path)
+    meta = _build_meta(
+        diagnosis_path,
+        module6_config_path,
+        mdp_file,
+        seed,
+        cfg,
+        buckets,
+        m4_path,
+        mdp,
+        cls_effective,
+    )
 
     _write_rl_policy(output_dir, policy, q_json, meta)
     _write_rl_training(output_dir, history, cfg, last_n, mean_tail)

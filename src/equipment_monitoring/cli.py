@@ -95,7 +95,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--classifications",
-        help="Path to Module 1 classifications.jsonl (Module 2). When provided, warning signs include module1_anomaly_rate.",
+        help="Path to Module 1 classifications.jsonl (Module 2/6). Module 2: anomaly rate in warning signs. Module 6: optional override for risk×M1-hot start states.",
     )
 
     # Module 3 arguments
@@ -310,12 +310,14 @@ def main(argv: list[str] | None = None) -> None:
         try:
             mdp_override = Path(args.mdp) if args.mdp else None
             m4_override = Path(args.module4_config) if args.module4_config else None
+            cls_m6 = Path(args.classifications) if args.classifications else None
             module6_runner.run_module6(
                 diagnosis_path=Path(args.diagnosis),
                 module6_config_path=m6_cfg,
                 output_dir=Path(args.output_dir),
                 mdp_path=mdp_override,
                 module4_config_path=m4_override,
+                classifications_path=cls_m6,
             )
         except FileNotFoundError as e:
             print(f"[error] {e}", file=sys.stderr)

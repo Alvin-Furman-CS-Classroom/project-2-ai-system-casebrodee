@@ -42,4 +42,4 @@ def test_module6_on_full_pipeline_diagnosis(tmp_path: Path, full_pipeline_diagno
     )
     metrics = json.loads((out / "rl_metrics.json").read_text(encoding="utf-8"))
     assert "baseline_always_defer" in metrics
-    assert metrics["mdp"]["num_states"] == 3
+    assert metrics["mdp"]["num_states"] == 6

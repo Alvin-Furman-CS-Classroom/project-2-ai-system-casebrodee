@@ -160,10 +160,10 @@ def render_report_html(context: Dict[str, Any]) -> str:
       </div>
       <div class="blueprint-card">
         <h3>Module 6 blueprint</h3>
-        <p><strong>Input:</strong> diagnosis-derived risk buckets + JSON MDP (transitions/rewards)</p>
-        <p><strong>Processing:</strong> tabular Q-learning on simulated rollouts (epsilon-greedy exploration)</p>
-        <p><strong>Output:</strong> `rl_policy.json`, `rl_training.json`, `rl_metrics.json`</p>
-        <p><strong>Note:</strong> Module 5 (supervised learning) is not required for this path</p>
+        <p><strong>Input:</strong> the same diagnosis summary Module 4 uses, collapsed into three fleet-wide risk bands (low / mid / high), plus a small <code>mdp.json</code> file that describes a <em>toy</em> world: likely next risk level and cost after each action</p>
+        <p><strong>Processing:</strong> the computer runs many <em>imaginary</em> maintenance episodes in that toy world and learns a table of &ldquo;best action so far&rdquo; per band (Q-learning)</p>
+        <p><strong>Output:</strong> <code>rl_policy.json</code> (the table), <code>rl_training.json</code> (learning curve), <code>rl_metrics.json</code> (scores vs simple baselines)</p>
+        <p><strong>Note:</strong> no neural nets or Module 5 classifier—just explicit rules in JSON + textbook RL for the course demo</p>
       </div>
     </div>
     """
@@ -235,11 +235,10 @@ def render_report_html(context: Dict[str, Any]) -> str:
             for action, count in sorted(context.get("m6_action_counts", {}).items())
         )
         m6_ret = context.get("m6_mean_return_window")
-        ret_line = (
-            f"<p><strong>Mean return (training tail window):</strong> {escape(str(m6_ret))}</p>"
-            if m6_ret is not None
-            else ""
-        )
+        ret_line = ""
+        if m6_ret is not None:
+            ret_line = f"""<p><strong>Recent training score (average return, last training episodes):</strong> {escape(str(m6_ret))}</p>
+  <p class="subtle">Returns add up simulator rewards each episode; in this project rewards are usually negative (costs). <strong>Higher numbers (closer to zero) mean better</strong> simulated performance. See <code>rl_metrics.json</code> next to the outputs for comparison to &ldquo;always defer&rdquo; and random baselines.</p>"""
         policy_items = context.get("module6_policy") or {}
         pol_rows = "\n".join(
             f"<tr><td>{escape(str(st))}</td><td>{escape(str(ac))}</td></tr>"
@@ -247,14 +246,18 @@ def render_report_html(context: Dict[str, Any]) -> str:
         ) or "<tr><td colspan='2'>No policy rows.</td></tr>"
         module6_section = f"""
 <section id="module6">
-  <h2>Module 6 - RL policy (optional)</h2>
-  <p class="module-intro">Q-learning over discrete risk states with a JSON-defined MDP. Compare greedy policy actions to Module 4's plan for demos.</p>
+  <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
+  <p class="module-intro">Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick a default defer, inspect, or repair for each coarse fleet risk band from diagnosis.</p>
+  <div class="howto">
+    <p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent would pick <em>in the simulator</em> after training (defer = wait, inspect = cheaper check, repair = major work). Action names match Module 4 so you can compare vocabulary side by side.</p>
+  </div>
   {ret_line}
-  <p><strong>Greedy policy action mix:</strong> {m6_mix or "N/A"}</p>
+  <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">(counts how many of the three bands pick defer, inspect, or repair)</span></p>
   <table>
-    <thead><tr><th>Risk state</th><th>Action</th></tr></thead>
+    <thead><tr><th>Fleet risk band (from diagnosis)</th><th>Learned action (simulator)</th></tr></thead>
     <tbody>{pol_rows}</tbody>
   </table>
+  <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for <code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different problems, both valid as coursework artifacts.</div>
 </section>
 """
 
@@ -370,7 +373,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">{context["m2_sequence_count"]}</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">{context["m3_equipment_count"]}</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">{context["m4_total_assignments"]}</div><div class="metric-help">Final action decisions (if available).</div></div>
-        <div class="metric-card"><div class="metric-label">Module 6 RL states</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">Greedy policy entries (if trained).</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">Risk bands with a learned action after RL training (usually 3: low, mid, high).</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -381,10 +384,10 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="flow-arrow">-></div>
         <div class="flow-box">Module 4<br><span class="subtle">Optimize maintenance plan</span></div>
         <div class="flow-arrow">-></div>
-        <div class="flow-box">Module 6<br><span class="subtle">RL policy (optional)</span></div>
+        <div class="flow-box">Module 6<br><span class="subtle">Learn policy in a simulator (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), then pattern strength (Module 2), then diagnosis confidence (Module 3), then whether Module 4 actions reduce risk at acceptable cost. Module 6 (optional) summarizes a Q-learning policy over risk states.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a separate RL demo: a policy learned in a toy simulator from three risk bands—see that section for details.</p>
       </div>
       {module_blueprints}
     </section>
@@ -394,7 +397,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
       <a href="#module2">Module 2</a>
       <a href="#module3">Module 3</a>
       <a href="#module4">Module 4 (optional)</a>
-      <a href="#module6">Module 6 (optional)</a>
+      <a href="#module6">Module 6 — learned policy (optional)</a>
     </nav>
     <div class="warning"><strong>Data loading notes:</strong><ul>{errors_html}</ul></div>
 

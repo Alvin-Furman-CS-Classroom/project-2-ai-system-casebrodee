@@ -1,0 +1,47 @@
+{
+  "policy": {
+    "risk_low": "defer",
+    "risk_mid": "inspect",
+    "risk_high": "defer"
+  },
+  "q_table": {
+    "risk_low": {
+      "defer": -1487.361532,
+      "inspect": -1706.749166,
+      "repair": -2480.151249
+    },
+    "risk_mid": {
+      "defer": -2196.710181,
+      "inspect": -1939.34315,
+      "repair": -3017.169254
+    },
+    "risk_high": {
+      "defer": -2408.627147,
+      "inspect": -2913.287135,
+      "repair": -3069.262827
+    }
+  },
+  "meta": {
+    "diagnosis_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/outputs/module3/diagnosis.json",
+    "module6_config_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module6/module6_config.json",
+    "mdp_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module6/mdp.json",
+    "random_seed": 42,
+    "module5_required": false,
+    "training_note": "Global Q-table over risk buckets; each episode starts from a random equipment's bucket from diagnosis.json.",
+    "hyperparameters": {
+      "gamma": 0.95,
+      "alpha": 0.12,
+      "epsilon_start": 0.35,
+      "epsilon_end": 0.05,
+      "epsilon_decay_episodes": 2500,
+      "num_episodes": 6000,
+      "max_steps_per_episode": 12
+    },
+    "equipment_count": 2,
+    "risk_thresholds": [
+      0.33,
+      0.66
+    ],
+    "module4_config_path": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/src/data/module4/module4_config.json"
+  }
+}

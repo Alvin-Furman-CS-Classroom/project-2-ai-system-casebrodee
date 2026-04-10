@@ -41,6 +41,9 @@ def test_epsilon_linear_decay() -> None:
         risk_thresholds=(0.33, 0.66),
         mdp_path=Path("x"),
         module4_config_path=None,
+        classifications_path=None,
+        m1_anomaly_rate_alert=0.35,
+        m1_confidence_alert_fallback=0.55,
     )
     assert abs(epsilon_at_episode(0, cfg) - 0.3) < 1e-9
     assert abs(epsilon_at_episode(5, cfg) - 0.2) < 1e-9
@@ -78,6 +81,9 @@ def test_train_reduces_cost_on_toy_mdp() -> None:
         risk_thresholds=(0.33, 0.66),
         mdp_path=Path("x"),
         module4_config_path=None,
+        classifications_path=None,
+        m1_anomaly_rate_alert=0.35,
+        m1_confidence_alert_fallback=0.55,
     )
     rng = random.Random(cfg.random_seed)
     q, _hist = train_q_learning(mdp, cfg, ["risk_low"], rng)

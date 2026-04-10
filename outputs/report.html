@@ -60,6 +60,7 @@
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">3</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">2</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">2</div><div class="metric-help">Final action decisions (if available).</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">3</div><div class="metric-help">Risk bands with a learned action after RL training (usually 3: low, mid, high).</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -69,9 +70,11 @@
         <div class="flow-box">Module 3<br><span class="subtle">Infer diagnoses</span></div>
         <div class="flow-arrow">-></div>
         <div class="flow-box">Module 4<br><span class="subtle">Optimize maintenance plan</span></div>
+        <div class="flow-arrow">-></div>
+        <div class="flow-box">Module 6<br><span class="subtle">Learn policy in a simulator (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), then pattern strength (Module 2), then diagnosis confidence (Module 3), then whether Module 4 actions reduce risk at acceptable cost.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a separate RL demo: a policy learned in a toy simulator from three risk bands—see that section for details.</p>
       </div>
       
     <div class="blueprint-grid">
@@ -101,7 +104,14 @@
         <p><strong>Input:</strong> diagnosis risks + action/cost constraints (+ optional production cap)</p>
         <p><strong>Processing:</strong> greedy seed, hill climbing, simulated annealing, contingency analysis</p>
         <p><strong>Output:</strong> `maintenance_plan.json` with actions, totals, and strategic summaries</p>
-        <p><strong>Feeds into:</strong> operational planning and checkpoint reporting</p>
+        <p><strong>Feeds into:</strong> operational planning; Module 6 can reuse the same action vocabulary</p>
+      </div>
+      <div class="blueprint-card">
+        <h3>Module 6 blueprint</h3>
+        <p><strong>Input:</strong> the same diagnosis summary Module 4 uses, collapsed into three fleet-wide risk bands (low / mid / high), plus a small <code>mdp.json</code> file that describes a <em>toy</em> world: likely next risk level and cost after each action</p>
+        <p><strong>Processing:</strong> the computer runs many <em>imaginary</em> maintenance episodes in that toy world and learns a table of &ldquo;best action so far&rdquo; per band (Q-learning)</p>
+        <p><strong>Output:</strong> <code>rl_policy.json</code> (the table), <code>rl_training.json</code> (learning curve), <code>rl_metrics.json</code> (scores vs simple baselines)</p>
+        <p><strong>Note:</strong> no neural nets or Module 5 classifier—just explicit rules in JSON + textbook RL for the course demo</p>
       </div>
     </div>
     
@@ -112,6 +122,7 @@
       <a href="#module2">Module 2</a>
       <a href="#module3">Module 3</a>
       <a href="#module4">Module 4 (optional)</a>
+      <a href="#module6">Module 6 — learned policy (optional)</a>
     </nav>
     <div class="warning"><strong>Data loading notes:</strong><ul><li>No data loading warnings.</li></ul></div>
 
@@ -211,6 +222,25 @@
     <tbody><tr><td>M1</td><td>repair</td><td>900.0</td><td>10.0</td></tr>
 <tr><td>M2</td><td>repair</td><td>900.0</td><td>10.0</td></tr></tbody>
   </table>
+</section>
+
+    
+<section id="module6">
+  <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
+  <p class="module-intro">Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick a default defer, inspect, or repair for each coarse fleet risk band from diagnosis.</p>
+  <div class="howto">
+    <p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent would pick <em>in the simulator</em> after training (defer = wait, inspect = cheaper check, repair = major work). Action names match Module 4 so you can compare vocabulary side by side.</p>
+  </div>
+  <p><strong>Recent training score (average return, last training episodes):</strong> -2249.38</p>
+  <p class="subtle">Returns add up simulator rewards each episode; in this project rewards are usually negative (costs). <strong>Higher numbers (closer to zero) mean better</strong> simulated performance. See <code>rl_metrics.json</code> next to the outputs for comparison to &ldquo;always defer&rdquo; and random baselines.</p>
+  <p><strong>Summary of learned choices:</strong> defer: 2 | inspect: 1 <span class="subtle">(counts how many of the three bands pick defer, inspect, or repair)</span></p>
+  <table>
+    <thead><tr><th>Fleet risk band (from diagnosis)</th><th>Learned action (simulator)</th></tr></thead>
+    <tbody><tr><td>risk_high</td><td>defer</td></tr>
+<tr><td>risk_low</td><td>defer</td></tr>
+<tr><td>risk_mid</td><td>inspect</td></tr></tbody>
+  </table>
+  <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for <code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different problems, both valid as coursework artifacts.</div>
 </section>
 
   </div>
