@@ -170,18 +170,18 @@
       <summary>Top sequences</summary>
       <table>
         <thead><tr><th>Sequence</th><th>Frequency</th><th>Avg time to failure</th></tr></thead>
-        <tbody><tr><td>State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
+        <tbody><tr><td>State(machine=M1, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
 <tr><td>State(machine=M2, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M2, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr>
-<tr><td>State(machine=M1, bins=(&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr></tbody>
+<tr><td>State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;)) -&gt; State(machine=M1, bins=(&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;))</td><td>1</td><td>60.0</td></tr></tbody>
       </table>
     </details>
     <details>
       <summary>Warning sign ranking</summary>
       <table>
         <thead><tr><th>Pattern</th><th>Predictive score</th><th>Frequency</th><th>False positive rate</th></tr></thead>
-        <tbody><tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
+        <tbody><tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (3 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
 <tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr>
-<tr><td>State transition: (&#x27;low&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (3 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
+<tr><td>State transition: (&#x27;medium&#x27;, &#x27;low&#x27;, &#x27;low&#x27;) -&gt; (&#x27;medium&#x27;, &#x27;medium&#x27;, &#x27;medium&#x27;) (2 steps)</td><td>0.73</td><td>1</td><td>0.0</td></tr></tbody>
       </table>
     </details>
     <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
@@ -238,7 +238,7 @@
   </div>
   <p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold 0.35 when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ 0.55. Classifications file: /Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/outputs/module1/classifications.jsonl.</p>
 <p><strong>Recent training score (mean return, last window of training episodes):</strong> -1581.066</p>
-  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Higher (closer to zero) is better.</strong> Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>. Baseline comparisons → <code>module6/rl_metrics.json</code>.</p>
+  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Less negative (closer to zero) is better,</strong> but the raw size depends only on how large rewards are in <code>mdp.json</code>—it is not a grade out of 100. Compare this mean to <code>baseline_always_defer</code> and <code>baseline_random</code> in <code>module6/rl_metrics.json</code>; beating both means the learned policy is doing well on this simulator. Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>.</p>
   <p><strong>Summary of learned choices:</strong> defer: 3 | inspect: 3 <span class="subtle">(action counts summed over all 6 learned states)</span></p>
   <table>
     <thead><tr><th>MDP state (diagnosis risk × M1 signal)</th><th>Learned action (simulator)</th></tr></thead>

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from html import escape
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping, Optional
 
 
 def _read_json(path: Path) -> tuple[Any | None, str | None]:
@@ -47,6 +48,46 @@ def _status_badge(text: str) -> str:
     return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:10px">{escape(text)}</span>'
 
 
+def _module6_state_gloss(
+    state: str,
+    *,
+    rich: bool,
+    m1_alert: Optional[Mapping[str, Any]],
+) -> str:
+    """
+    One-line human explanation for an MDP state key in the HTML report.
+
+    Rich states use *_m1hot vs plain risk_*; thresholds come from rl_policy meta.m1_alert when present.
+    """
+    s = str(state)
+    if not rich:
+        if s == "risk_low":
+            return "Low diagnosis risk band (Module 3 score below the first risk threshold)."
+        if s == "risk_mid":
+            return "Medium diagnosis risk band (between the two risk thresholds)."
+        if s == "risk_high":
+            return "High diagnosis risk band (at or above the second risk threshold)."
+        return "MDP state from mdp.json (not one of the three default risk bands)."
+
+    band_label = {"risk_low": "Low", "risk_mid": "Medium", "risk_high": "High"}
+    hot = s.endswith("_m1hot")
+    base = s[: -len("_m1hot")] if hot else s
+    label = band_label.get(base, base.replace("_", " "))
+
+    if hot:
+        if isinstance(m1_alert, dict):
+            ar = m1_alert.get("anomaly_rate_threshold")
+            cf = m1_alert.get("confidence_fallback_threshold")
+            detail = (
+                f"M1-hot when Module 1 anomaly rate ≥ {ar} for that equipment (if classifications are used), "
+                f"else when diagnosis meta.m1_max_confidence ≥ {cf}."
+            )
+            return f"{label} diagnosis risk; {detail}"
+        return f"{label} diagnosis risk; M1-hot (elevated Module 1 style signal per runner rules)."
+
+    return f"{label} diagnosis risk; plain band (Module 1 signal did not meet the M1-hot threshold)."
+
+
 def load_module_outputs(outputs_root: Path) -> Dict[str, Any]:
     module1_rows, m1_err = _read_jsonl(outputs_root / "module1" / "classifications.jsonl")
     module2_sequences, m2_seq_err = _read_json(outputs_root / "module2" / "sequences.json")
@@ -55,6 +96,9 @@ def load_module_outputs(outputs_root: Path) -> Dict[str, Any]:
     module4_plan, m4_err = _read_json(outputs_root / "module4" / "maintenance_plan.json")
     module6_policy, m6_err = _read_json(outputs_root / "module6" / "rl_policy.json")
     module6_metrics, m6m_err = _read_json(outputs_root / "module6" / "rl_metrics.json")
+
+    errors_core = [e for e in [m1_err, m2_seq_err, m2_warn_err, m3_err] if e]
+    errors_optional = [e for e in [m4_err, m6_err, m6m_err] if e]
 
     return {
         "module1_rows": module1_rows or [],
@@ -66,7 +110,9 @@ def load_module_outputs(outputs_root: Path) -> Dict[str, Any]:
         "module6_policy": (module6_policy or {}).get("policy") or {},
         "module6_q_meta": (module6_policy or {}).get("meta") or {},
         "module6_metrics": module6_metrics or {},
-        "errors": [e for e in [m1_err, m2_seq_err, m2_warn_err, m3_err, m4_err, m6_err, m6m_err] if e],
+        "errors": errors_core + errors_optional,
+        "errors_core": errors_core,
+        "errors_optional": errors_optional,
         "outputs_root": str(outputs_root),
     }
 
@@ -257,7 +303,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         ret_line = ""
         if m6_ret is not None:
             ret_line = f"""<p><strong>Recent training score (mean return, last window of training episodes):</strong> {escape(str(m6_ret))}</p>
-  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Higher (closer to zero) is better.</strong> Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>. Baseline comparisons → <code>module6/rl_metrics.json</code>.</p>"""
+  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Less negative (closer to zero) is better,</strong> but the raw size depends only on how large rewards are in <code>mdp.json</code>—it is not a grade out of 100. Compare this mean to <code>baseline_always_defer</code> and <code>baseline_random</code> in <code>module6/rl_metrics.json</code>; beating both means the learned policy is doing well on this simulator. Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>.</p>"""
         tn = context.get("m6_training_note")
         training_narrative = ""
         if isinstance(tn, str) and tn.strip():
@@ -286,6 +332,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
                 "would pick <em>in the simulator</em> after training (defer / inspect / repair — same ids as Module 4).</p>"
             )
             state_th = "MDP state (diagnosis risk × M1 signal)"
+            gloss_th = "What this state means"
             summary_hint = f"(action counts summed over all {m6_n} learned states)"
         else:
             intro = (
@@ -297,12 +344,22 @@ def render_report_html(context: Dict[str, Any]) -> str:
                 "would pick <em>in the simulator</em> after training. Action names match Module 4.</p>"
             )
             state_th = "Fleet risk band (from diagnosis)"
+            gloss_th = "What this state means"
             summary_hint = "(counts how many bands pick defer, inspect, or repair)"
         policy_items = context.get("module6_policy") or {}
+        m1_for_gloss = context.get("m6_m1_alert_meta") if m6_rich else None
+        if not isinstance(m1_for_gloss, dict):
+            m1_for_gloss = None
         pol_rows = "\n".join(
-            f"<tr><td><code>{escape(str(st))}</code></td><td><code>{escape(str(ac))}</code></td></tr>"
+            (
+                "<tr>"
+                f"<td><code>{escape(str(st))}</code></td>"
+                f"<td class=\"subtle\">{escape(_module6_state_gloss(str(st), rich=m6_rich, m1_alert=m1_for_gloss))}</td>"
+                f"<td><code>{escape(str(ac))}</code></td>"
+                "</tr>"
+            )
             for st, ac in sorted(policy_items.items())
-        ) or "<tr><td colspan='2'>No policy rows.</td></tr>"
+        ) or "<tr><td colspan='3'>No policy rows.</td></tr>"
         m4_compare = (
             "If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on "
             "<code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule "
@@ -322,7 +379,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
 {m1_extra}{ret_line}
   <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">{summary_hint}</span></p>
   <table>
-    <thead><tr><th>{state_th}</th><th>Learned action (simulator)</th></tr></thead>
+    <thead><tr><th>{state_th}</th><th>{gloss_th}</th><th>Learned action (simulator)</th></tr></thead>
     <tbody>{pol_rows}</tbody>
   </table>
   <div class="connector"><strong>Compare with Module 4:</strong> {m4_compare}</div>
@@ -375,9 +432,32 @@ def render_report_html(context: Dict[str, Any]) -> str:
 </section>
 """
 
-    errors_html = "\n".join(
-        f"<li>{escape(msg)}</li>" for msg in context["errors"]
-    ) or "<li>No data loading warnings.</li>"
+    core_errs = context.get("errors_core") or []
+    opt_errs = context.get("errors_optional") or []
+
+    def _err_ul(items: List[str]) -> str:
+        if not items:
+            return "<li><span class=\"subtle\">None.</span></li>"
+        return "\n".join(f"<li>{escape(msg)}</li>" for msg in items)
+
+    core_block = (
+        "<p><strong>Modules 1–3 (core)</strong></p>"
+        "<ul>"
+        f"{_err_ul(core_errs)}"
+        "</ul>"
+    )
+    opt_block = (
+        "<p><strong>Modules 4 &amp; 6 (optional)</strong> "
+        "<span class=\"subtle\">— missing files here are normal if you have not run those modules.</span></p>"
+        "<ul>"
+        f"{_err_ul(opt_errs)}"
+        "</ul>"
+    )
+    errors_panel = f"""<div class="warning">
+  <p><strong>Data loading notes</strong></p>
+  {core_block}
+  {opt_block}
+</div>"""
 
     return f"""<!doctype html>
 <html lang="en">
@@ -467,7 +547,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
       <a href="#module4">Module 4 (optional)</a>
       <a href="#module6">Module 6 — learned policy (optional)</a>
     </nav>
-    <div class="warning"><strong>Data loading notes:</strong><ul>{errors_html}</ul></div>
+    {errors_panel}
 
     <section id="module1">
     <h2>Module 1 - Rule-Based Monitoring</h2>
@@ -554,3 +634,96 @@ def generate_report_from_run(
     outputs_root = infer_outputs_root(output_dir, module_number)
     target = report_path if report_path else (outputs_root / "report.html")
     return generate_report(outputs_root=outputs_root, report_path=target)
+
+
+def _artifact_exists(outputs_root: Path, *parts: str) -> bool:
+    return (outputs_root.joinpath(*parts)).is_file()
+
+
+def build_fleet_summary(outputs_root: Path) -> Dict[str, Any]:
+    """
+    Build a single JSON-serializable snapshot of whatever exists under ``outputs_root``.
+
+    Intended for demos and downstream tooling; values are derived from the same
+    loads as the HTML report (no re-running modules).
+    """
+    root = outputs_root.resolve()
+    data = load_module_outputs(outputs_root)
+    ctx = build_report_context(data)
+    m6_metrics = data.get("module6_metrics") or {}
+    trained = m6_metrics.get("trained_policy_last_window") or {}
+    defer_b = m6_metrics.get("baseline_always_defer") or {}
+    rand_b = m6_metrics.get("baseline_random") or {}
+    m6_mdp = m6_metrics.get("mdp") or {}
+    m4_totals = data.get("module4_totals") or {}
+
+    top_rules = [{"rule": r, "count": c} for r, c in (ctx.get("m1_top_rules") or [])[:5]]
+
+    policy = data.get("module6_policy") if isinstance(data.get("module6_policy"), dict) else {}
+
+    return {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "outputs_root": str(root),
+        "artifacts": {
+            "report_html": _artifact_exists(root, "report.html"),
+            "module1_classifications_jsonl": _artifact_exists(root, "module1", "classifications.jsonl"),
+            "module2_sequences_json": _artifact_exists(root, "module2", "sequences.json"),
+            "module2_warning_signs_json": _artifact_exists(root, "module2", "warning_signs.json"),
+            "module3_diagnosis_json": _artifact_exists(root, "module3", "diagnosis.json"),
+            "module4_maintenance_plan_json": _artifact_exists(root, "module4", "maintenance_plan.json"),
+            "module6_rl_policy_json": _artifact_exists(root, "module6", "rl_policy.json"),
+            "module6_rl_metrics_json": _artifact_exists(root, "module6", "rl_metrics.json"),
+        },
+        "load_errors": {
+            "core": list(data.get("errors_core") or []),
+            "optional": list(data.get("errors_optional") or []),
+        },
+        "module1": {
+            "row_count": int(ctx.get("m1_total", 0)),
+            "anomaly_count": int(ctx.get("m1_anomalies", 0)),
+            "anomaly_rate_pct": round(float(ctx.get("m1_anomaly_rate", 0.0)), 2),
+            "top_violated_rules": top_rules,
+        },
+        "module2": {
+            "sequence_count": int(ctx.get("m2_sequence_count", 0)),
+            "warning_sign_count": int(ctx.get("m2_warning_count", 0)),
+        },
+        "module3": {
+            "equipment_count": int(ctx.get("m3_equipment_count", 0)),
+        },
+        "module4": {
+            "assignment_count": int(ctx.get("m4_total_assignments", 0)),
+            "action_mix": dict(ctx.get("m4_action_counts") or {}),
+            "totals": {
+                "objective": m4_totals.get("objective"),
+                "maintenance_cost": m4_totals.get("maintenance_cost"),
+                "failure_penalty": m4_totals.get("failure_penalty"),
+            },
+        },
+        "module6": {
+            "policy_state_count": int(ctx.get("m6_policy_state_count", 0)),
+            "rich_mdp_states": bool(ctx.get("m6_rich_states")),
+            "trained_policy_last_window_mean_return": trained.get("mean_return"),
+            "baseline_always_defer_mean_return": defer_b.get("mean_return"),
+            "baseline_random_mean_return": rand_b.get("mean_return"),
+            "mdp_num_states": m6_mdp.get("num_states"),
+            "mdp_num_actions": m6_mdp.get("num_actions"),
+            "policy": dict(policy) if policy else {},
+            "meta_hyperparameters": (data.get("module6_q_meta") or {}).get("hyperparameters"),
+        },
+    }
+
+
+def write_fleet_summary(outputs_root: Path, summary_path: Path | None = None) -> Path:
+    """
+    Write ``fleet_summary.json`` under ``outputs_root`` unless ``summary_path`` is given.
+
+    Returns:
+        Path to the written file.
+    """
+    payload = build_fleet_summary(outputs_root)
+    target = summary_path if summary_path is not None else (outputs_root / "fleet_summary.json")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with open(target, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, sort_keys=True)
+    return target

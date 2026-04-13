@@ -129,6 +129,14 @@ def test_historical_record_comparison() -> None:
     assert record2 > record1
 
 
+def test_load_timestamped_csv_empty_file_no_header(tmp_path: Path) -> None:
+    """Empty CSV must fail fast with a clear error (no iterable fieldnames)."""
+    csv_path = tmp_path / "empty.csv"
+    csv_path.write_text("", encoding="utf-8")
+    with pytest.raises(ValueError, match="header"):
+        io.load_timestamped_csv(csv_path)
+
+
 def test_load_module1_schema_csv_valid(tmp_path: Path) -> None:
     """Test loading Module 1 schema CSV with failure_status."""
     csv_path = tmp_path / "m1.csv"

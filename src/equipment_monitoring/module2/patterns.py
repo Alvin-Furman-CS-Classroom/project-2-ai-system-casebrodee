@@ -7,7 +7,7 @@ This module processes paths discovered by search algorithms and:
 - Calculates timing statistics
 """
 
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional, Union
 from collections import Counter, defaultdict
 from datetime import datetime
 from .graph import Graph
@@ -30,7 +30,7 @@ class FailureSequence:
         self,
         sequence: List[State],
         frequency: int = 1,
-        machines: Set[str] = None,
+        machines: Optional[Set[str]] = None,
         avg_time_to_failure: float = 0.0
     ):
         self.sequence = sequence
@@ -81,7 +81,10 @@ class WarningSign:
         }
 
 
-def _get_time_difference(time1, time2) -> float:
+def _get_time_difference(
+    time1: Union[datetime, int, float],
+    time2: Union[datetime, int, float],
+) -> float:
     """
     Calculate time difference between two time keys.
     

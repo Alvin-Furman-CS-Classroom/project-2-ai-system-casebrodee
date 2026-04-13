@@ -86,17 +86,20 @@ def load_timestamped_csv(
     
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        
+        fieldnames = reader.fieldnames
+        if fieldnames is None:
+            raise ValueError("CSV has no header row")
+
         # Auto-detect sensor columns if not provided
         if sensor_columns is None:
             sensor_columns = [
-                col for col in reader.fieldnames
+                col for col in fieldnames
                 if col not in [timestamp_column, machine_id_column, failure_column]
             ]
-        
+
         # Validate required columns exist
         required = [timestamp_column, machine_id_column, failure_column]
-        missing = [col for col in required if col not in reader.fieldnames]
+        missing = [col for col in required if col not in fieldnames]
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
         

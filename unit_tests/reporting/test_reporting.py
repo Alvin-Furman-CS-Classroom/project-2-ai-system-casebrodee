@@ -43,6 +43,8 @@ def test_generate_report_with_partial_data(tmp_path: Path) -> None:
     assert "Module 6 blueprint" in html
     assert 'href="#module6"' in html
     assert "Module 6 policy rows" in html
+    assert "Modules 1–3 (core)" in html
+    assert "Modules 4 &amp; 6 (optional)" in html
 
 
 def test_generate_report_notes_missing_files(tmp_path: Path) -> None:
@@ -55,6 +57,8 @@ def test_generate_report_notes_missing_files(tmp_path: Path) -> None:
 
     assert "Missing file:" in html
     assert "No Module 1 data yet." in html
+    assert "Modules 1–3 (core)" in html
+    assert "Modules 4 &amp; 6 (optional)" in html
 
 
 def test_generate_report_includes_module6_detail_when_rl_outputs_exist(tmp_path: Path) -> None:
@@ -104,6 +108,8 @@ def test_generate_report_includes_module6_detail_when_rl_outputs_exist(tmp_path:
     assert "Recent training score" in html
     assert "-120.5" in html
     assert "Fleet risk band" in html
+    assert "What this state means" in html
+    assert "Low diagnosis risk band" in html
 
 
 def test_generate_report_module6_rich_states_and_training_note(tmp_path: Path) -> None:
@@ -161,6 +167,51 @@ def test_generate_report_module6_rich_states_and_training_note(tmp_path: Path) -
     assert "risk_mid_m1hot" in html
     assert "rl_training.json" in html
     assert "M1-hot signal" in html
+    assert "What this state means" in html
+    assert "M1-hot when Module 1 anomaly rate" in html
+
+
+def test_build_fleet_summary_and_write_round_trip(tmp_path: Path) -> None:
+    outputs = tmp_path / "outputs"
+    (outputs / "module1").mkdir(parents=True, exist_ok=True)
+    (outputs / "module1" / "classifications.jsonl").write_text(
+        '{"timestamp":"t1","equipment_id":"M1","status":"normal","violated_rules":[],"confidence":0.1}\n',
+        encoding="utf-8",
+    )
+    _write_json(outputs / "module2" / "sequences.json", {"sequences": []})
+    _write_json(outputs / "module2" / "warning_signs.json", {"warning_signs": []})
+    _write_json(outputs / "module3" / "diagnosis.json", {"equipment": []})
+    _write_json(
+        outputs / "module6" / "rl_policy.json",
+        {
+            "policy": {"risk_low": "defer", "risk_mid": "inspect", "risk_high": "repair"},
+            "q_table": {},
+            "meta": {"random_seed": 42},
+        },
+    )
+    _write_json(
+        outputs / "module6" / "rl_metrics.json",
+        {
+            "trained_policy_last_window": {"mean_return": -10.0, "std_return": 1.0, "window_episodes": 5},
+            "baseline_always_defer": {"mean_return": -12.0, "std_return": 0.0, "eval_episodes": 10},
+            "baseline_random": {"mean_return": -11.0, "std_return": 2.0, "eval_episodes": 10},
+            "mdp": {"num_states": 3, "num_actions": 3},
+        },
+    )
+
+    summary = reporting.build_fleet_summary(outputs)
+    assert summary["outputs_root"] == str(outputs.resolve())
+    assert "generated_at" in summary
+    assert summary["artifacts"]["module6_rl_policy_json"] is True
+    assert summary["module6"]["policy"] == {"risk_low": "defer", "risk_mid": "inspect", "risk_high": "repair"}
+    assert summary["module6"]["trained_policy_last_window_mean_return"] == -10.0
+
+    custom = outputs / "custom" / "snap.json"
+    written = reporting.write_fleet_summary(outputs, summary_path=custom)
+    assert written == custom
+    loaded = json.loads(custom.read_text(encoding="utf-8"))
+    assert loaded["module1"]["row_count"] == 1
+    assert loaded["load_errors"]["core"] == []
 
 
 def test_generate_report_handles_invalid_json(tmp_path: Path) -> None:

@@ -4,7 +4,7 @@
 
 - **Course topics:** MDP, Q-learning, policy (ε-greedy / greedy), performance metrics.
 - **Goal:** Learn a **maintenance-style policy** over discrete states using **tabular Q-learning**, with dynamics and rewards defined in **fixed JSON** (explicit MDP) and training driven by **rolling simulated episodes** (sampled transitions from that spec).
-- **Depends on:** Modules **1–4** for realistic state construction and aligned action ids. **Module 5 is skipped for now**; state features use M1–M4 artifacts only. When README is updated, describe dependency as “Modules 1–4 (required for full pipeline); Module 5 optional future extension.”
+- **Depends on:** Modules **1–4** for realistic state construction and aligned action ids. **Module 5** (supervised learning) is **future work** for this course/repo—we **do not plan to implement it** here; see [docs/project_improvement_plan.md](docs/project_improvement_plan.md).
 
 ---
 
@@ -15,8 +15,8 @@
 | Transition / reward source | **JSON file** defines the MDP (sparse transitions + rewards). |
 | Training | **Simulated episodes:** each step samples `s', r` from the JSON-backed model. |
 | Action space | Reuse **Module 4** action ids from `module4_config.json` (`defer`, `inspect`, `repair`) so policies are comparable to `maintenance_plan.json`. |
-| State space (v1) | **Discrete buckets** derived primarily from **Module 3** `diagnosis.json` per-equipment risk (e.g. low / medium / high). Optional v1.1: add one bit from aggregated Module 1 anomaly rate. |
-| Scope | **Single-equipment MDP** first (one `equipment_id` or aggregate “plant” state), or **parallel per-equipment** MDPs sharing the same transition JSON but different initial risk buckets—pick one in Phase 1 and document it. **Recommendation:** **per-equipment** episodes: state = risk bucket for that equipment; same `P(s'\|s,a)` for all (pedagogical simplification). |
+| State space | **Implemented:** diagnosis **risk band** (low / mid / high from thresholds) × **M1-hot** bit when `mdp.json` defines `*_m1hot` states—driven by Module 1 `classifications.jsonl` anomaly rate or diagnosis `meta.m1_max_confidence`. **Legacy:** three states only if the MDP JSON has no `*_m1hot` keys. |
+| Training scope | **One global Q-table** shared across the fleet; each episode samples a random equipment, starts in that unit’s derived MDP state, rolls the same `P(s′\|s,a)` from JSON (states do not embed `equipment_id`). |
 
 ---
 
@@ -54,6 +54,7 @@ Defines finite S, A, and stochastic transitions.
 Each inner triple: `[probability, next_state, reward]`. Probabilities per `(s,a)` must sum to 1 (validate in loader).
 
 - Rewards should reflect **cost + failure risk** in spirit of Module 4 (negative numbers for minimization). Keep magnitudes consistent enough that Q-values converge in reasonable episode counts.
+- **Units:** Numbers in `mdp.json` are **toy / pedagogical units**, not calibrated dollars or engineering KPIs. They only need to be **internally consistent** so that “better” actions have relatively higher (less negative) returns. The bundled production `mdp.json` uses large magnitudes so episode returns are often in the hundreds or thousands—see README “Interpreting training scores.”
 
 **Terminal states (optional):** If you add an absorbing `failed` state, episodes can end on transition into it; otherwise use fixed `max_steps_per_episode` only.
 
@@ -115,6 +116,28 @@ src/equipment_monitoring/module6/
 
 ---
 
+## FAQ: episodes, exploration, and metrics
+
+**What is one training episode?**  
+With equipment in `diagnosis.json`, each episode picks a **random equipment**, maps it to a **start state** (risk bucket, and `*_m1hot` when the MDP and config/CLI supply Module 1 signal), then samples transitions from `mdp.json` for up to **`max_steps_per_episode`** steps. One **global** Q-table is updated from all episodes.
+
+**What is ε-greedy?**  
+With probability **ε** (epsilon), the agent takes a **random** legal action; otherwise it takes the action with **highest current Q** for that state. **ε** usually **decays** from `epsilon_start` toward `epsilon_end` over `epsilon_decay_episodes` so early training explores and later training exploits.
+
+**Why is mean return a big negative number?**  
+Step rewards in `mdp.json` are typically **negative costs**; summing ~10–14 steps yields large negatives. **Do not** judge quality from the absolute value. Compare **`trained_policy_last_window`** to **`baseline_always_defer`** and **`baseline_random`** in `rl_metrics.json`: **less negative is better**; beating both baselines is the intended sanity check.
+
+**Where is the learning curve?**  
+`rl_training.json` lists per-episode **return**, **epsilon**, and **return_mean_so_far**.
+
+**How do we know Q-learning still works after code changes?**  
+`src/data/module6/fixtures/golden_policy_mdp.json` defines a tiny two-state MDP with an obvious optimal greedy policy; `unit_tests/module6/test_golden_mdp.py` trains with `gamma=0` and `max_steps_per_episode=1` and asserts the recovered greedy actions match that optimum.
+
+**What hyperparameters affect reproducibility?**  
+`random_seed`, `num_episodes`, `max_steps_per_episode`, `gamma`, `alpha`, and the ε schedule (`epsilon_start` / `epsilon_end` / `epsilon_decay_episodes`). Changing the seed can change the final greedy policy when Q-values are near-tied or exploration noise matters.
+
+---
+
 ## Implementation phases (step through in order)
 
 **Phase 1 — Spec and data**
@@ -143,14 +166,9 @@ src/equipment_monitoring/module6/
 
 ---
 
-## Open item to resolve at start of Phase 3
+## Resolved: training narrative
 
-**Training narrative:** Either
-
-- **A)** One global Q-table: each episode picks one equipment at random, initial state from that equipment’s risk bucket, simulates until horizon—experience from all equipment updates one table (states do not include `equipment_id`), or  
-- **B)** Same, but states include `equipment_id` (larger table; only if few machines in demo).
-
-**Recommendation:** **A** for v1 (states = `risk_low` / `risk_mid` / `risk_high` only).
+**Choice:** **A** — one **global** Q-table; each episode picks a random equipment, maps it to a derived start state (risk band × optional `*_m1hot`), rolls the simulator for `max_steps_per_episode`. States do **not** embed `equipment_id`. The default `mdp.json` extends pure risk bands with **M1-hot** variants when configured.
 
 ---
 
@@ -159,4 +177,4 @@ src/equipment_monitoring/module6/
 - `pytest` passes for new unit and integration tests.
 - CLI command documented in README runs end-to-end on sample outputs.
 - Artifacts clearly separate **MDP definition** (JSON), **training trace** (`rl_training.json`), and **deliverable policy** (`rl_policy.json`).
-- README / plan state explicitly that Module 5 is not required for this path.
+- README / plan state explicitly that Module 5 is future work, not implemented here.

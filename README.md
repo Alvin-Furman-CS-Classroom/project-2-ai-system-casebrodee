@@ -16,8 +16,12 @@ The overall module plan is adapted from `PROPOSAL.md`:
 | 2 | Uninformed Search (BFS, DFS), Informed Search (A*, Heuristics) | Historical sensor data with failure events, Graph structure, Search parameters | Discovered failure sequences, Visualizations, Ranked warning signs | Module 1 | Checkpoint 2 (Week 5) |
 | 3 | First-Order Logic (Quantifiers, Unification, Inference) | Knowledge base, Equipment state and sensor readings, Detected anomalies | Inferred diagnosis with confidence, Explanation chains, Priority ranking, Inspection recommendations | Modules 1-2 | Checkpoint 3 (Week 7) |
 | 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Module 3 `diagnosis.json`, maintenance actions + budget (JSON) | `maintenance_plan.json` (assignments, tradeoffs, minimax contingency, 2×2 Nash scan) | Modules 1-3 | Checkpoint 4 (Week 9) |
-| 5 | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | Labeled dataset, Feature engineering pipeline, Training parameters | Trained model with metrics, Confusion matrix, Real-time predictions, Performance comparison | Modules 1-4 | Checkpoint 5 (Week 11) |
-| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Module 3 `diagnosis.json`, JSON MDP (`mdp.json`), training config | `rl_policy.json`, `rl_training.json`, `rl_metrics.json` | Modules 1–4 (Module 5 optional extension) | Checkpoint 6 (Week 13) |
+| 5† | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | Labeled dataset, Feature engineering pipeline, Training parameters | Trained model with metrics, Confusion matrix, Real-time predictions, Performance comparison | Modules 1-4 | Checkpoint 5 (Week 11) |
+| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Module 3 `diagnosis.json`, `mdp.json`, `module6_config.json`, optional Module 1 `classifications.jsonl` (or `meta.m1_max_confidence`) for six-state / `*_m1hot` MDPs | `rl_policy.json`, `rl_training.json`, `rl_metrics.json` | Modules 1–4 | Checkpoint 6 (Week 13) |
+
+† **Module 5 is not implemented in this repository**—it remains **future work** (course topic / optional fork). The runnable system stops at **Module 6 (tabular RL)** without a neural or sklearn classifier. See [docs/project_improvement_plan.md](docs/project_improvement_plan.md#module-5-supervised-learning).
+
+**End-to-end run:** from the repo root, **`make pipeline`** runs Modules **1→2→3→4→6** and refreshes **`outputs/report.html`** (see [Full pipeline (`make`)](#full-pipeline-make)).
 
 ---
 
@@ -359,12 +363,52 @@ pip install -r requirements.txt
 The initial dependencies are:
 
 - `pytest` — testing framework.
+- `mypy` — static type checker (Module 6 + `reporting.py`; see **Static typing** below).
 
 Additional dependencies for future modules (e.g., plotting, ML libraries) can be added later.
 
 ---
 
 ## Running Modules
+
+### Full pipeline (`make`)
+
+From the **repository root**, with dependencies installed and **`PYTHONPATH=src`** implied by the recipes below:
+
+```bash
+make pipeline
+```
+
+This runs **Module 1 → 2 → 3 → 4 → 6** using the bundled demo CSV and config under **`outputs/full_pipeline/data/`** (`config.json`, `specs.json`, `readings_with_failures.csv`), then regenerates **`outputs/report.html`**.
+
+| Target | What it does |
+| ------ | ------------- |
+| `make test` | Run **`pytest`** on `unit_tests/` and `integration_tests/`. If **`.venv/bin/python`** exists, Make uses it (recommended: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`); otherwise **`python3`** on your `PATH` (must have pytest). Override with **`make test PYTHON=/path/to/python`**. |
+| `make typecheck` | Run **`mypy`** on the full **`src/equipment_monitoring`** package (see **`pyproject.toml`**). Same **`PYTHON`** / **`.venv`** rule as **`make test`**. |
+| `make pipeline` | Full chain + HTML report |
+| `make report` | Only rebuild `outputs/report.html` from whatever is already under `outputs/module*/` |
+| `make summary` | Write **`outputs/fleet_summary.json`** from the same artifacts (counts, Module 6 policy snapshot, load errors); does not re-run modules |
+| `make m1` … `make m6` | Run a single stage (dependencies run first; e.g. `make m6` runs m1→m4 then Module 6) |
+
+**Override inputs** (optional): `make pipeline M1_READINGS=/path/to.csv` or set `PIPELINE_DATA`, `M1_CONFIG`, `M1_SPECS`, `OUT`, or `PYTHON`. See `make help`.
+
+**Expected layout under `outputs/`** after a full run:
+
+| Path | Role |
+| ---- | ---- |
+| `outputs/report.html` | Static report (all modules) |
+| `outputs/fleet_summary.json` | Machine-readable snapshot (from **`make summary`** or API); same data sources as the report |
+| `outputs/module1/classifications.jsonl` | Module 1 per-reading labels |
+| `outputs/module1/alerts.txt` | Module 1 human-readable alerts |
+| `outputs/module2/sequences.json` | Module 2 failure-path sequences |
+| `outputs/module2/warning_signs.json` | Module 2 ranked warning signs |
+| `outputs/module3/diagnosis.json` | Module 3 diagnoses |
+| `outputs/module4/maintenance_plan.json` | Module 4 plan (if M4 ran) |
+| `outputs/module6/rl_policy.json` | Module 6 greedy policy + meta |
+| `outputs/module6/rl_training.json` | Module 6 per-episode training trace |
+| `outputs/module6/rl_metrics.json` | Module 6 baselines + MDP summary |
+
+On systems without a working `make` (or non-Unix shells), run the same CLI commands as in the per-module sections below; set paths to match the variables in the **`Makefile`**.
 
 ### Module 1
 
@@ -469,27 +513,42 @@ Expected output:
 ### Module 6
 
 - **Topic:** MDP from JSON, tabular Q-learning, ε-greedy exploration, greedy policy export, baselines (always-defer, random).
-- **Goal:** Learn a policy over **risk buckets** (`risk_low`, `risk_mid`, `risk_high`) using the same action ids as Module 4 (`defer`, `inspect`, `repair`). Training samples transitions from **`mdp.json`**. **Module 5 is not required.**
+- **Goal:** Learn a **global** Q-table over discrete MDP states using the same action ids as Module 4 (`defer`, `inspect`, `repair`). The bundled **`mdp.json`** uses **six states**: diagnosis risk band (`risk_low`, `risk_mid`, `risk_high`) crossed with a Module 1–style **alert** flag (`*_m1hot` vs plain), so the policy can differ for e.g. `risk_mid` and `risk_mid_m1hot`. A **three-state-only** MDP (risk bands only) is still supported if `mdp.json` defines only those keys. **Module 5 is not used** (see [docs/project_improvement_plan.md](docs/project_improvement_plan.md#module-5-supervised-learning)). **Quick run:** [`make pipeline`](#full-pipeline-make) executes the full stack through Module 6 and regenerates the HTML report.
 
-**Inputs:** Module 3 `diagnosis.json` (risk = max diagnosis score or meta blend, same as Module 4), `src/data/module6/module6_config.json`, and `src/data/module6/mdp.json` (states, actions, stochastic transitions as `[p, next_state, reward]` lists summing to 1; optional `initial_state_weights` if diagnosis has no equipment rows).
+**Inputs:** Module 3 `diagnosis.json` (risk = same rule as Module 4), `src/data/module6/module6_config.json`, and `src/data/module6/mdp.json` (states, actions, stochastic transitions as `[p, next_state, reward]` lists summing to 1; optional `initial_state_weights` if diagnosis has no equipment rows). Optional **`classifications_path`** in config or **`--classifications`** on the CLI (Module 1 `classifications.jsonl`) to drive the M1-hot bit via per-equipment anomaly rate; otherwise the runner uses `meta.m1_max_confidence` on each diagnosis block when the MDP has `*_m1hot` states.
 
 **Outputs:**
 
 | File | Top-level keys (summary) |
 |------|---------------------------|
-| `rl_policy.json` | `policy` (state → action), `q_table` (state → action → Q), `meta` (paths, hyperparameters, `module5_required`) |
+| `rl_policy.json` | `policy` (state → action), `q_table` (state → action → Q), `meta` (paths, hyperparameters, `training_note`, optional `m1_alert`) |
 | `rl_training.json` | `episodes` (list of `episode`, `return`, `steps`, `epsilon`, `return_mean_so_far`), `meta` (`mean_return_last_window`, `window_size`) |
 | `rl_metrics.json` | `trained_policy_last_window`, `baseline_always_defer`, `baseline_random` (each: mean/std + episode counts), `mdp` (state/action lists) |
 
-**Code:** `run_module6(diagnosis_path, module6_config_path, output_dir, *, mdp_path=None, module4_config_path=None, random_seed=None)`.
+#### Interpreting training scores
 
-Run after Module 3 (Module 4 optional):
+- Episode **return** is the **sum of step rewards** over an episode (up to `max_steps_per_episode`). In this project, rewards in `mdp.json` are usually **negative** (costs), so returns are typically **large negative numbers** (e.g. thousands). **The exact magnitude is not meaningful by itself**—it is fixed by how big the numbers are in the JSON.
+- **What to compare:** open `rl_metrics.json` and compare **`trained_policy_last_window.mean_return`** to **`baseline_always_defer.mean_return`** and **`baseline_random.mean_return`**. **Less negative (closer to zero) is better.** A trained policy that beats both baselines is behaving sensibly on this toy MDP, even if the raw mean is still e.g. −1500.
+- Uniformly **scaling all rewards** in `mdp.json` by a positive constant scales returns but (for this tabular setup) usually **does not change** the greedy optimal policy—useful if you only want friendlier numbers for a write-up.
+
+#### Reproducibility and variance
+
+Training is controlled by `src/data/module6/module6_config.json`: **`random_seed`**, **`num_episodes`**, **`max_steps_per_episode`**, **`gamma`**, **`alpha`**, and the ε schedule (**`epsilon_start`**, **`epsilon_end`**, **`epsilon_decay_episodes`**). The same inputs usually reproduce the same policy on the same machine (fixed seed + deterministic code path). **Different seeds** can yield **different** Q-values and greedy actions, especially early in training or when Q-values are close—this is normal for tabular RL with ε-greedy exploration. For a write-up, you can report metrics for **one** official seed or show a small range over 2–3 seeds.
+
+**Regression check:** `src/data/module6/fixtures/golden_policy_mdp.json` plus `unit_tests/module6/test_golden_mdp.py` assert that Q-learning recovers a known optimal greedy policy on a two-state toy MDP (guards the learner and `greedy_policy_from_q`).
+
+**Code:** `run_module6(diagnosis_path, module6_config_path, output_dir, *, mdp_path=None, module4_config_path=None, classifications_path=None, random_seed=None)`.
+
+Run after Module 3 (Module 4 optional). Pass Module 1 classifications when you want M1 anomaly rate to affect `*_m1hot` start states:
 
 ```bash
 PYTHONPATH=src python3 -m equipment_monitoring.cli --module 6 \
   --diagnosis outputs/module3/diagnosis.json \
+  --classifications outputs/module1/classifications.jsonl \
   --output-dir outputs/module6
 ```
+
+Without `--classifications`, optional `classifications_path` in `module6_config.json` is used when set.
 
 Defaults: `--module6-config` → `src/data/module6/module6_config.json`. Use `--mdp` to override the MDP path. Use `--module4-config` to override action validation (otherwise uses `module4_config_path` from the Module 6 config when set).
 
@@ -520,6 +579,8 @@ python -m equipment_monitoring.cli --module 4 \
   --report-path outputs/my_report.html
 ```
 
+After a successful module run, add **`--fleet-summary`** to also write **`fleet_summary.json`** under the inferred outputs root (same root as the default report path).
+
 Report content includes:
 - Module 1 summary/anomaly tables (when `classifications.jsonl` exists)
 - Module 2 top sequences and warning signs
@@ -527,7 +588,19 @@ Report content includes:
 - Optional Module 4 plan summary when `maintenance_plan.json` exists
 - Optional Module 6 RL policy summary when `module6/rl_policy.json` exists
 
-To refresh the report after adding Module 6 outputs, from the project root:
+To refresh the report from existing `outputs/module*/` artifacts:
+
+```bash
+make report
+```
+
+To emit the JSON fleet snapshot only:
+
+```bash
+make summary
+```
+
+Equivalent one-liner:
 
 ```bash
 PYTHONPATH=src python3 -c "from pathlib import Path; from equipment_monitoring.reporting import generate_report; generate_report(Path('outputs'), Path('outputs/report.html'))"
@@ -536,6 +609,10 @@ PYTHONPATH=src python3 -c "from pathlib import Path; from equipment_monitoring.r
 ---
 
 ## Testing
+
+### Continuous integration (GitHub Actions)
+
+On **push** and **pull_request** to **`main`** or **`master`**, **`.github/workflows/ci.yml`** installs **`requirements.txt`**, runs **`pytest unit_tests integration_tests`**, then **`mypy`**. Match that locally with **`make test`** and **`make typecheck`** before opening a PR.
 
 ### Unit Tests (`unit_tests/`)
 
@@ -566,6 +643,7 @@ Unit tests mirror the structure of `src/`.
 
 **Module 6:**
 - `unit_tests/module6/test_mdp_loader.py` - MDP / config validation
+- `unit_tests/module6/test_golden_mdp.py` - golden two-state MDP; optimal greedy policy after training
 - `unit_tests/module6/test_q_learning.py` - ε schedule, Q-update, short training run
 - `unit_tests/module6/test_state.py` - risk buckets from `diagnosis.json`; invalid/missing diagnosis → `Module6ConfigError`
 - `unit_tests/module6/test_module6_runner.py` - output files and policy shape
@@ -596,6 +674,25 @@ Unit tests mirror the structure of `src/`.
 
 **Module 6:**
 - `integration_tests/module6/test_module6_smoke.py` - Module 6 on `outputs/full_pipeline/module3/diagnosis.json` when present
+
+**Full stack (fixtures, always on in CI):**
+- `integration_tests/pipeline/test_full_stack_fixtures.py` - Module 1→2→3→4→6 on a tiny temp CSV + repo `src/data` configs, fast Module 6 training, then static HTML report (no `outputs/full_pipeline` dependency)
+
+### Static typing (mypy)
+
+Configuration lives in **`pyproject.toml`** (`[tool.mypy]`). From the repo root (with dev deps installed):
+
+```bash
+make typecheck
+```
+
+Equivalent:
+
+```bash
+mypy
+```
+
+The check applies to the entire **`src/equipment_monitoring`** tree.
 
 ### Running Tests
 

@@ -1,7 +1,7 @@
 {
   "warning_signs": [
     {
-      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
+      "pattern": "State transition: ('low', 'low', 'low') -> ('medium', 'medium', 'medium') (3 steps)",
       "predictive_score": 0.73,
       "frequency": 1,
       "false_positive_rate": 0.0
@@ -13,7 +13,7 @@
       "false_positive_rate": 0.0
     },
     {
-      "pattern": "State transition: ('low', 'low', 'low') -> ('medium', 'medium', 'medium') (3 steps)",
+      "pattern": "State transition: ('medium', 'low', 'low') -> ('medium', 'medium', 'medium') (2 steps)",
       "predictive_score": 0.73,
       "frequency": 1,
       "false_positive_rate": 0.0

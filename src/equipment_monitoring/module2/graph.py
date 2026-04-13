@@ -35,7 +35,7 @@ class State:
     def __hash__(self) -> int:
         return hash((self.machine_id, self.sensor_bins))
     
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, State):
             return False
         return self.machine_id == other.machine_id and self.sensor_bins == other.sensor_bins
@@ -55,7 +55,7 @@ class Graph:
     4. Marking failure states
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty graph."""
         self.nodes: Set[State] = set()
         self.edges: Dict[State, List[State]] = {}  # Adjacency list

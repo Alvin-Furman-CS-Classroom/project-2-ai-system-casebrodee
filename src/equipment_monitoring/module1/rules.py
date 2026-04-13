@@ -14,7 +14,7 @@ Rules are expressed as logical conditions:
 from __future__ import annotations
 
 from itertools import chain
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Set, cast
 
 
 def _get_thresholds(
@@ -33,11 +33,11 @@ def _get_thresholds(
     if equipment_id and equipment_id in equipment_specs:
         equipment_config = equipment_specs[equipment_id]
         if sensor_name in equipment_config:
-            return equipment_config[sensor_name]
+            return cast(Dict[str, float], equipment_config[sensor_name])
 
     # Fall back to global config
     if sensor_name in config:
-        return config[sensor_name]
+        return cast(Dict[str, float], config[sensor_name])
 
     return None
 

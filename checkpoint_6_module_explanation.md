@@ -126,4 +126,4 @@ With thresholds `[0.33, 0.66]`, buckets might be **`risk_high`** for M1 and **`r
 - [ ] Show **`diagnosis.json`** snippet and which bucket a machine falls into.  
 - [ ] Run or show CLI: `--module 6 --diagnosis … --output-dir …`.  
 - [ ] Open **`rl_policy.json`** and **`rl_metrics.json`**; compare **mean return** to **baseline_always_defer**.  
-- [ ] State clearly: **Module 5 not used**; optional future: add features from a classifier into the state.
+- [ ] State clearly: **Module 5 not implemented** (future work); optional fork: supervised model features in the state.

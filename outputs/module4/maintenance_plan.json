@@ -37,7 +37,7 @@
     "hill_climbing": {
       "objective": 3768.75,
       "restarts_used": 5,
-      "iterations": 29
+      "iterations": 28
     },
     "simulated_annealing": {
       "objective": 3768.75,

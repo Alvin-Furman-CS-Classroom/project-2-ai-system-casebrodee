@@ -1,0 +1,20 @@
+{
+  "states": ["g_low", "g_high"],
+  "actions": ["defer", "inspect", "repair"],
+  "initial_state_weights": {
+    "g_low": 0.5,
+    "g_high": 0.5
+  },
+  "transitions": {
+    "g_low": {
+      "defer": [[1.0, "g_low", -5.0]],
+      "inspect": [[1.0, "g_low", -1.0]],
+      "repair": [[1.0, "g_low", -20.0]]
+    },
+    "g_high": {
+      "defer": [[1.0, "g_high", -50.0]],
+      "inspect": [[1.0, "g_high", -8.0]],
+      "repair": [[1.0, "g_high", -3.0]]
+    }
+  }
+}

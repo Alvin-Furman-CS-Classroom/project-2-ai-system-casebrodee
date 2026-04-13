@@ -233,7 +233,7 @@ def a_star(
     failure_states = graph.failure_states
     
     # Priority queue: (total_cost, node)
-    open_set = []
+    open_set: List[SearchNode] = []
     heapq.heappush(open_set, SearchNode(start_state, [start_state]))
     
     # Track best cost to reach each state

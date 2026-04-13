@@ -9,7 +9,7 @@ This module provides helpers to load and validate:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, cast
 import json
 
 
@@ -32,7 +32,7 @@ def load_json(path: str | Path) -> Dict[str, Any]:
     
     with open(path, "r", encoding="utf-8") as f:
         try:
-            return json.load(f)
+            return cast(Dict[str, Any], json.load(f))
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(
                 f"Invalid JSON in {path}: {e.msg}",

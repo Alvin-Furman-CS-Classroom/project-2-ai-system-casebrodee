@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple, cast
 
 from .logic import Atom
 
@@ -24,7 +24,7 @@ def _load_jsonl_classifications(path: Path) -> List[Dict[str, Any]]:
 
 def _load_json(path: Path) -> Dict[str, Any]:
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        return cast(Dict[str, Any], json.load(f))
 
 
 def build_facts_per_equipment(

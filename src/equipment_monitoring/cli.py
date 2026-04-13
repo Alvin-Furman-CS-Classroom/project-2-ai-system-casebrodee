@@ -40,12 +40,24 @@ import argparse
 import json
 import sys
 import traceback
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from .module1 import classifier
 from .module1 import config as config_module
 from .module1 import io as io_module
+from .module2 import runner as module2_runner
+from .module3 import runner as module3_runner
+from .module3.kb_loader import KnowledgeBaseError
+from .module4 import runner as module4_runner
+from .module4.loader import Module4ConfigError
+from .module6 import runner as module6_runner
+from .module6.loader import Module6ConfigError
 from . import reporting
+
+_UNHANDLED = "__unhandled__"
+
+HandlerRow = tuple[type[BaseException], str]
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -59,7 +71,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         required=True,
         help="Module number to run (1–4, 6).",
     )
-    
+
     # Module 1 arguments
     parser.add_argument(
         "--config",
@@ -73,7 +85,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--readings",
         help="Path to sensor readings CSV (Module 1).",
     )
-    
+
     # Module 2 arguments
     parser.add_argument(
         "--data",
@@ -151,8 +163,104 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--report-path",
         help="Optional explicit path for generated HTML report.",
     )
-    
+    parser.add_argument(
+        "--fleet-summary",
+        action="store_true",
+        help="After a successful module run, write fleet_summary.json under the inferred outputs root (same root as --report).",
+    )
+
     return parser.parse_args(argv)
+
+
+def _try_run_module(run: Callable[[], None], handlers: Sequence[HandlerRow]) -> None:
+    """Run ``run()``; map domain exceptions to stderr messages and ``sys.exit(1)``."""
+    try:
+        run()
+    except Exception as e:
+        for exc_type, tag in handlers:
+            if isinstance(e, exc_type):
+                if tag == _UNHANDLED:
+                    traceback.print_exc(file=sys.stderr)
+                    print(f"[unexpected error] {e}", file=sys.stderr)
+                    sys.exit(1)
+                print(f"[{tag}] {e}", file=sys.stderr)
+                sys.exit(1)
+        raise
+
+
+def _maybe_write_fleet_summary(args: argparse.Namespace) -> None:
+    if not args.fleet_summary:
+        return
+    out_dir = Path(args.output_dir)
+    root = reporting.infer_outputs_root(out_dir, args.module)
+    path = reporting.write_fleet_summary(root)
+    print(f"Fleet summary wrote {path}")
+
+
+def _after_successful_run(args: argparse.Namespace, report_path: Path | None) -> None:
+    """Regenerate HTML report and/or fleet JSON when flags are set."""
+    if args.report:
+        out = reporting.generate_report_from_run(
+            output_dir=Path(args.output_dir),
+            module_number=args.module,
+            report_path=report_path,
+        )
+        print(f"Report wrote {out}")
+    _maybe_write_fleet_summary(args)
+
+
+def _handlers_module1() -> tuple[HandlerRow, ...]:
+    return (
+        (FileNotFoundError, "error"),
+        (config_module.ConfigValidationError, "config error"),
+        (io_module.CSVValidationError, "csv error"),
+        (json.JSONDecodeError, "json error"),
+        (OSError, "io error"),
+        (Exception, _UNHANDLED),
+    )
+
+
+def _handlers_module2() -> tuple[HandlerRow, ...]:
+    return (
+        (FileNotFoundError, "error"),
+        (json.JSONDecodeError, "json error"),
+        (ValueError, "value error"),
+        (KeyError, "error"),
+        (OSError, "io error"),
+        (Exception, _UNHANDLED),
+    )
+
+
+def _handlers_module3() -> tuple[HandlerRow, ...]:
+    return (
+        (FileNotFoundError, "error"),
+        (KnowledgeBaseError, "kb error"),
+        (json.JSONDecodeError, "json error"),
+        (OSError, "io error"),
+        (Exception, _UNHANDLED),
+    )
+
+
+def _handlers_module4() -> tuple[HandlerRow, ...]:
+    return (
+        (FileNotFoundError, "error"),
+        (Module4ConfigError, "module4 config error"),
+        (json.JSONDecodeError, "json error"),
+        (ValueError, "value error"),
+        (OSError, "io error"),
+        (Exception, _UNHANDLED),
+    )
+
+
+def _handlers_module6() -> tuple[HandlerRow, ...]:
+    return (
+        (FileNotFoundError, "error"),
+        (Module6ConfigError, "module6 error"),
+        (json.JSONDecodeError, "json error"),
+        (ValueError, "value error"),
+        (OSError, "io error"),
+        (Exception, _UNHANDLED),
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -163,48 +271,26 @@ def main(argv: list[str] | None = None) -> None:
         if not args.config or not args.specs or not args.readings:
             print("[error] Module 1 requires --config, --specs, and --readings", file=sys.stderr)
             sys.exit(1)
-        try:
+
+        def run_m1() -> None:
             classifier.run_module1(
                 config_path=Path(args.config),
                 specs_path=Path(args.specs),
                 csv_path=Path(args.readings),
                 output_dir=Path(args.output_dir),
             )
-        except FileNotFoundError as e:
-            print(f"[error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except config_module.ConfigValidationError as e:
-            print(f"[config error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except io_module.CSVValidationError as e:
-            print(f"[csv error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except json.JSONDecodeError as e:
-            print(f"[json error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except OSError as e:
-            print(f"[io error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            traceback.print_exc(file=sys.stderr)
-            print(f"[unexpected error] {e}", file=sys.stderr)
-            sys.exit(1)
-        if args.report:
-            out = reporting.generate_report_from_run(
-                output_dir=Path(args.output_dir),
-                module_number=1,
-                report_path=report_path,
-            )
-            print(f"Report wrote {out}")
+
+        _try_run_module(run_m1, _handlers_module1())
+        _after_successful_run(args, report_path)
 
     elif args.module == 2:
         if not args.data or not args.graph_config or not args.search_params:
             print("[error] Module 2 requires --data, --graph-config, and --search-params", file=sys.stderr)
             sys.exit(1)
-        try:
-            from .module2 import runner
+
+        def run_m2() -> None:
             classifications_path = Path(args.classifications) if args.classifications else None
-            runner.run_module2(
+            module2_runner.run_module2(
                 data_path=Path(args.data),
                 graph_config_path=Path(args.graph_config),
                 search_params_path=Path(args.search_params),
@@ -212,20 +298,9 @@ def main(argv: list[str] | None = None) -> None:
                 data_format=args.data_format,
                 classifications_path=classifications_path,
             )
-        except FileNotFoundError as e:
-            print(f"[error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            traceback.print_exc(file=sys.stderr)
-            print(f"[unexpected error] {e}", file=sys.stderr)
-            sys.exit(1)
-        if args.report:
-            out = reporting.generate_report_from_run(
-                output_dir=Path(args.output_dir),
-                module_number=2,
-                report_path=report_path,
-            )
-            print(f"Report wrote {out}")
+
+        _try_run_module(run_m2, _handlers_module2())
+        _after_successful_run(args, report_path)
 
     elif args.module == 3:
         if not args.kb or not args.classifications or not args.sequences or not args.warning_signs:
@@ -234,10 +309,8 @@ def main(argv: list[str] | None = None) -> None:
                 file=sys.stderr,
             )
             sys.exit(1)
-        from .module3 import runner as module3_runner
-        from .module3.kb_loader import KnowledgeBaseError
 
-        try:
+        def run_m3() -> None:
             module3_runner.run_module3(
                 kb_path=Path(args.kb),
                 classifications_path=Path(args.classifications),
@@ -245,23 +318,9 @@ def main(argv: list[str] | None = None) -> None:
                 warning_signs_path=Path(args.warning_signs),
                 output_dir=Path(args.output_dir),
             )
-        except FileNotFoundError as e:
-            print(f"[error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except KnowledgeBaseError as e:
-            print(f"[kb error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            traceback.print_exc(file=sys.stderr)
-            print(f"[unexpected error] {e}", file=sys.stderr)
-            sys.exit(1)
-        if args.report:
-            out = reporting.generate_report_from_run(
-                output_dir=Path(args.output_dir),
-                module_number=3,
-                report_path=report_path,
-            )
-            print(f"Report wrote {out}")
+
+        _try_run_module(run_m3, _handlers_module3())
+        _after_successful_run(args, report_path)
 
     elif args.module == 4:
         if not args.diagnosis:
@@ -269,10 +328,8 @@ def main(argv: list[str] | None = None) -> None:
             sys.exit(1)
         repo_default = Path(__file__).resolve().parent.parent / "data" / "module4" / "module4_config.json"
         config_path = Path(args.module4_config) if args.module4_config else repo_default
-        from .module4 import runner as module4_runner
-        from .module4.loader import Module4ConfigError
 
-        try:
+        def run_m4() -> None:
             prod_path = Path(args.production_schedule) if args.production_schedule else None
             module4_runner.run_module4(
                 diagnosis_path=Path(args.diagnosis),
@@ -280,23 +337,9 @@ def main(argv: list[str] | None = None) -> None:
                 output_dir=Path(args.output_dir),
                 production_schedule_path=prod_path,
             )
-        except FileNotFoundError as e:
-            print(f"[error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Module4ConfigError as e:
-            print(f"[module4 config error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            traceback.print_exc(file=sys.stderr)
-            print(f"[unexpected error] {e}", file=sys.stderr)
-            sys.exit(1)
-        if args.report:
-            out = reporting.generate_report_from_run(
-                output_dir=Path(args.output_dir),
-                module_number=4,
-                report_path=report_path,
-            )
-            print(f"Report wrote {out}")
+
+        _try_run_module(run_m4, _handlers_module4())
+        _after_successful_run(args, report_path)
 
     elif args.module == 6:
         if not args.diagnosis:
@@ -304,10 +347,8 @@ def main(argv: list[str] | None = None) -> None:
             sys.exit(1)
         repo_default_m6 = Path(__file__).resolve().parent.parent / "data" / "module6" / "module6_config.json"
         m6_cfg = Path(args.module6_config) if args.module6_config else repo_default_m6
-        from .module6 import runner as module6_runner
-        from .module6.loader import Module6ConfigError
 
-        try:
+        def run_m6() -> None:
             mdp_override = Path(args.mdp) if args.mdp else None
             m4_override = Path(args.module4_config) if args.module4_config else None
             cls_m6 = Path(args.classifications) if args.classifications else None
@@ -319,25 +360,10 @@ def main(argv: list[str] | None = None) -> None:
                 module4_config_path=m4_override,
                 classifications_path=cls_m6,
             )
-        except FileNotFoundError as e:
-            print(f"[error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Module6ConfigError as e:
-            print(f"[module6 error] {e}", file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            traceback.print_exc(file=sys.stderr)
-            print(f"[unexpected error] {e}", file=sys.stderr)
-            sys.exit(1)
-        if args.report:
-            out = reporting.generate_report_from_run(
-                output_dir=Path(args.output_dir),
-                module_number=6,
-                report_path=report_path,
-            )
-            print(f"Report wrote {out}")
+
+        _try_run_module(run_m6, _handlers_module6())
+        _after_successful_run(args, report_path)
 
 
 if __name__ == "__main__":
     main()
-
