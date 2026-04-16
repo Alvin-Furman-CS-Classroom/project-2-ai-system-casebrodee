@@ -181,3 +181,19 @@ def test_load_classifications_jsonl(tmp_path: Path) -> None:
     assert len(anomaly_set) == 1
     assert ("pump_A", "2026-01-01T00:01:00Z") in anomaly_set
     assert ("pump_A", "2026-01-01T00:00:00Z") not in anomaly_set
+
+
+def test_load_classification_anomaly_rates(tmp_path: Path) -> None:
+    """Test per-equipment anomaly-rate aggregation from Module 1 output."""
+    jsonl_path = tmp_path / "classifications.jsonl"
+    jsonl_path.write_text(
+        '{"timestamp":"2026-01-01T00:00:00Z","equipment_id":"pump_A","status":"normal"}\n'
+        '{"timestamp":"2026-01-01T00:01:00Z","equipment_id":"pump_A","status":"anomaly"}\n'
+        '{"timestamp":"2026-01-01T00:02:00Z","equipment_id":"pump_B","status":"anomaly"}\n',
+        encoding="utf-8",
+    )
+
+    rates = io.load_classification_anomaly_rates(jsonl_path)
+
+    assert rates["pump_A"] == pytest.approx(0.5)
+    assert rates["pump_B"] == pytest.approx(1.0)

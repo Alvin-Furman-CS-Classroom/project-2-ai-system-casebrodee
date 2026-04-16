@@ -230,7 +230,10 @@ def optimize_maintenance_plan(
     )
 
     mc, fp, obj = evaluate_objective(chosen, equipment, actions, config.failure_cost_scale)
-    assert abs(obj - chosen_obj) < OBJECTIVE_MATCH_EPS
+    if abs(obj - chosen_obj) >= OBJECTIVE_MATCH_EPS:
+        raise RuntimeError(
+            "Module 4 objective mismatch between optimizer selection and final evaluation"
+        )
 
     tradeoffs = _budget_tradeoffs(eq_list, config)
     contingency = {"single_full_repair_minimax": _contingency_minimax_block(eq_list, config)}

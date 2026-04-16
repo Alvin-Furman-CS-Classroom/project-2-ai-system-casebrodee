@@ -31,12 +31,10 @@ def plot_machine_degradation(
     Note: This is a placeholder. Actual implementation will require matplotlib
     or another plotting library to be added as a dependency.
     """
-    # TODO: Implement visualization using matplotlib
-    # - Plot sensor values over time
-    # - Mark state transitions
-    # - Highlight failure points
-    # - Save to output_path if provided
-    pass
+    raise NotImplementedError(
+        "Module 2 visualization plots are not implemented yet; use the HTML report "
+        "for current project visualizations."
+    )
 
 
 def plot_all_machines(

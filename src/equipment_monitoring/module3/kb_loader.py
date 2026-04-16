@@ -15,8 +15,13 @@ class KnowledgeBaseError(ValueError):
 
 def load_kb(path: str | Path) -> List[Rule]:
     path = Path(path)
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        raise
+    except json.JSONDecodeError as e:
+        raise KnowledgeBaseError(f"Invalid KB JSON in {path}: {e}") from e
     if not isinstance(data, dict) or "rules" not in data:
         raise KnowledgeBaseError("KB JSON must be an object with a 'rules' array")
     rules_raw = data["rules"]

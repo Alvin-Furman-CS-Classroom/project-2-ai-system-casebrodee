@@ -7,14 +7,15 @@ This module processes paths discovered by search algorithms and:
 - Calculates timing statistics
 """
 
-from typing import List, Dict, Set, Optional, Union
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Dict, List, Mapping, Optional, Set, Union
 from .graph import Graph
 from .graph import State
-from .config import SearchParams
 
 
+@dataclass
 class FailureSequence:
     """
     Represents a discovered sequence that precedes failures.
@@ -26,17 +27,10 @@ class FailureSequence:
         avg_time_to_failure: Average time steps from sequence end to failure
     """
     
-    def __init__(
-        self,
-        sequence: List[State],
-        frequency: int = 1,
-        machines: Optional[Set[str]] = None,
-        avg_time_to_failure: float = 0.0
-    ):
-        self.sequence = sequence
-        self.frequency = frequency
-        self.machines = machines or set()
-        self.avg_time_to_failure = avg_time_to_failure
+    sequence: List[State]
+    frequency: int = 1
+    machines: Optional[Set[str]] = None
+    avg_time_to_failure: float = 0.0
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization."""
@@ -44,10 +38,11 @@ class FailureSequence:
             "sequence": [str(state) for state in self.sequence],
             "frequency": self.frequency,
             "avg_time_to_failure": self.avg_time_to_failure,
-            "machines": list(self.machines)
+            "machines": list(self.machines or set())
         }
 
 
+@dataclass
 class WarningSign:
     """
     Represents a ranked warning sign with predictive metrics.
@@ -59,26 +54,23 @@ class WarningSign:
         false_positive_rate: Rate of false positives (pattern occurred without failure)
     """
     
-    def __init__(
-        self,
-        pattern: str,
-        predictive_score: float,
-        frequency: int,
-        false_positive_rate: float = 0.0
-    ):
-        self.pattern = pattern
-        self.predictive_score = predictive_score
-        self.frequency = frequency
-        self.false_positive_rate = false_positive_rate
+    pattern: str
+    predictive_score: float
+    frequency: int
+    false_positive_rate: float = 0.0
+    module1_anomaly_rate: float | None = None
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization."""
-        return {
+        data = {
             "pattern": self.pattern,
             "predictive_score": self.predictive_score,
             "frequency": self.frequency,
-            "false_positive_rate": self.false_positive_rate
+            "false_positive_rate": self.false_positive_rate,
         }
+        if self.module1_anomaly_rate is not None:
+            data["module1_anomaly_rate"] = self.module1_anomaly_rate
+        return data
 
 
 def _get_time_difference(
@@ -177,6 +169,53 @@ def extract_sequences(
     return sequences
 
 
+def _find_matching_neighbor(current_state: State, target_state: State, graph: Graph) -> State | None:
+    for neighbor in graph.get_neighbors(current_state):
+        if neighbor == target_state:
+            return neighbor
+    return None
+
+
+def _follow_sequence(graph: Graph, sequence: List[State], start_state: State) -> State | None:
+    current_state = start_state
+    for next_state in sequence[1:]:
+        matched_neighbor = _find_matching_neighbor(current_state, next_state, graph)
+        if matched_neighbor is None:
+            return None
+        current_state = matched_neighbor
+    return current_state
+
+
+def _path_leads_to_failure(graph: Graph, start_state: State, max_search_depth: int) -> bool:
+    visited = {start_state}
+    queue = deque([(start_state, 0)])
+    while queue:
+        current, depth = queue.popleft()
+        if graph.is_failure_state(current):
+            return True
+        if depth >= max_search_depth:
+            continue
+        for neighbor in graph.get_neighbors(current):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append((neighbor, depth + 1))
+    return False
+
+
+def _count_non_failure_continuations(graph: Graph, end_state: State, max_search_depth: int) -> int:
+    neighbors = graph.get_neighbors(end_state)
+    if not neighbors:
+        return 1 if not graph.is_failure_state(end_state) else 0
+
+    false_positives = 0
+    for neighbor in neighbors:
+        if graph.is_failure_state(neighbor):
+            continue
+        if not _path_leads_to_failure(graph, neighbor, max_search_depth):
+            false_positives += 1
+    return false_positives
+
+
 def _count_false_positives(
     graph: Graph,
     sequence: List[State],
@@ -197,82 +236,55 @@ def _count_false_positives(
         return 0
     
     false_positives = 0
-    
-    # Find all states that match the first state in the sequence
-    matching_start_states = [
-        state for state in graph.nodes
-        if state == sequence[0]
-    ]
-    
+    matching_start_states = [state for state in graph.nodes if state == sequence[0]]
+
     for start_state in matching_start_states:
-        # Try to follow the sequence path
-        current_state = start_state
-        sequence_matched = True
-        
-        for next_state_in_sequence in sequence[1:]:
-            neighbors = graph.get_neighbors(current_state)
-            # Check if any neighbor matches the next state in sequence
-            matching_neighbor = None
-            for neighbor in neighbors:
-                if neighbor == next_state_in_sequence:
-                    matching_neighbor = neighbor
-                    break
-            
-            if matching_neighbor is None:
-                sequence_matched = False
-                break
-            
-            current_state = matching_neighbor
-        
-        if sequence_matched:
-            # Sequence matched! Check each continuation path separately
-            end_state = current_state
-            
-            # If end state itself is a failure, skip (this is a true positive, already counted)
-            if graph.is_failure_state(end_state):
-                continue
-            
-            neighbors = graph.get_neighbors(end_state)
-            
-            # Check each neighbor path separately
-            # If a neighbor is a failure state, that's a true positive (already in frequency)
-            # If a neighbor is not a failure and doesn't lead to failure, that's a false positive
-            for neighbor in neighbors:
-                if graph.is_failure_state(neighbor):
-                    # This path leads to failure - true positive, skip
-                    continue
-                
-                # Check if this neighbor path leads to failure within search depth
-                visited = {end_state, neighbor}
-                queue = [neighbor]
-                found_failure = False
-                
-                for _ in range(max_search_depth):
-                    if not queue:
-                        break
-                    current = queue.pop(0)
-                    if graph.is_failure_state(current):
-                        found_failure = True
-                        break
-                    for next_neighbor in graph.get_neighbors(current):
-                        if next_neighbor not in visited:
-                            visited.add(next_neighbor)
-                            queue.append(next_neighbor)
-                
-                if not found_failure:
-                    # This path doesn't lead to failure - false positive
-                    false_positives += 1
-            
-            # If end state has no neighbors and isn't a failure, that's also a false positive
-            if not neighbors and not graph.is_failure_state(end_state):
-                false_positives += 1
-    
+        end_state = _follow_sequence(graph, sequence, start_state)
+        if end_state is None or graph.is_failure_state(end_state):
+            continue
+        false_positives += _count_non_failure_continuations(graph, end_state, max_search_depth)
+
     return false_positives
+
+
+def _build_pattern_label(sequence: List[State]) -> str:
+    if sequence:
+        first_state = sequence[0]
+        last_state = sequence[-1]
+        return (
+            f"State transition: {first_state.sensor_bins} -> "
+            f"{last_state.sensor_bins} ({len(sequence)} steps)"
+        )
+    return "Empty sequence"
+
+
+def _predictive_metrics(true_positives: int, false_positives: int) -> tuple[float, float]:
+    total_occurrences = true_positives + false_positives
+    false_positive_rate = false_positives / total_occurrences if total_occurrences > 0 else 0.0
+    if total_occurrences == 0:
+        return min(true_positives / 10.0, 1.0), false_positive_rate
+    precision = true_positives / total_occurrences
+    frequency_weight = min(true_positives / 10.0, 1.0)
+    predictive_score = precision * 0.7 + frequency_weight * 0.3
+    return predictive_score, false_positive_rate
+
+
+def _sequence_module1_anomaly_rate(
+    machines: Set[str] | None,
+    module1_anomaly_rates: Mapping[str, float] | None,
+) -> float | None:
+    if not machines or not module1_anomaly_rates:
+        return None
+    matched_rates = [module1_anomaly_rates[machine] for machine in sorted(machines) if machine in module1_anomaly_rates]
+    if not matched_rates:
+        return None
+    return sum(matched_rates) / len(matched_rates)
 
 
 def rank_warning_signs(
     sequences: List[FailureSequence],
-    graph: Graph
+    graph: Graph,
+    module1_anomaly_rates: Mapping[str, float] | None = None,
 ) -> List[WarningSign]:
     """
     Rank warning signs by predictive power.
@@ -287,38 +299,15 @@ def rank_warning_signs(
     warning_signs = []
     
     for seq in sequences:
-        # Create human-readable pattern description
-        if len(seq.sequence) > 0:
-            first_state = seq.sequence[0]
-            last_state = seq.sequence[-1]
-            pattern = f"State transition: {first_state.sensor_bins} -> {last_state.sensor_bins} ({len(seq.sequence)} steps)"
-        else:
-            pattern = "Empty sequence"
-        
-        # Calculate false positive rate
-        # seq.frequency is the number of true positives (sequences that led to failure)
-        # Search graph for sequences that match but don't lead to failure
+        pattern = _build_pattern_label(seq.sequence)
         false_positives = _count_false_positives(graph, seq.sequence)
-        true_positives = seq.frequency  # Use frequency as true positives
-        total_occurrences = true_positives + false_positives
-        false_positive_rate = false_positives / total_occurrences if total_occurrences > 0 else 0.0
-        
-        # Calculate predictive score based on precision (true_positives / total_occurrences)
-        # This is more meaningful than just frequency
-        if total_occurrences > 0:
-            precision = true_positives / total_occurrences
-            # Combine precision with frequency (normalized) for final score
-            frequency_weight = min(seq.frequency / 10.0, 1.0)
-            predictive_score = (precision * 0.7 + frequency_weight * 0.3)
-        else:
-            # If no occurrences found in graph search, use frequency-based score
-            predictive_score = min(seq.frequency / 10.0, 1.0)
-        
+        predictive_score, false_positive_rate = _predictive_metrics(seq.frequency, false_positives)
         warning_signs.append(WarningSign(
             pattern=pattern,
             predictive_score=predictive_score,
             frequency=seq.frequency,
-            false_positive_rate=false_positive_rate
+            false_positive_rate=false_positive_rate,
+            module1_anomaly_rate=_sequence_module1_anomaly_rate(seq.machines, module1_anomaly_rates),
         ))
     
     # Sort by predictive score (highest first)

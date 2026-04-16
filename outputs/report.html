@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>Industrial Monitoring Report</title>
   <style>
+
     :root {
       --bg: #f5f7fb;
       --panel: #ffffff;
@@ -45,13 +46,14 @@
     .blueprint-card h3 { margin: 0 0 8px; font-size: 16px; color: #16346d; }
     .blueprint-card p { margin: 5px 0; font-size: 13px; color: #30445f; }
     .connector { margin-top: 8px; padding: 8px 10px; border-left: 4px solid #7aa2f7; background: #f6f9ff; color: #2b4266; border-radius: 6px; }
+
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Industrial Equipment Monitoring Report</h1>
     <p class="subtle">Source root: outputs</p>
-
+    
     <section>
       <h2>System Overview</h2>
       <p class="module-intro">This report connects all modules so a reader can move from raw sensor observations to final maintenance actions.</p>
@@ -119,6 +121,7 @@
     
     </section>
 
+
     <nav>
       <a href="#module1">Module 1</a>
       <a href="#module2">Module 2</a>
@@ -126,8 +129,12 @@
       <a href="#module4">Module 4 (optional)</a>
       <a href="#module6">Module 6 — learned policy (optional)</a>
     </nav>
-    <div class="warning"><strong>Data loading notes:</strong><ul><li>No data loading warnings.</li></ul></div>
-
+    <div class="warning">
+  <p><strong>Data loading notes</strong></p>
+  <p><strong>Modules 1–3 (core)</strong></p><ul><li><span class="subtle">None.</span></li></ul>
+  <p><strong>Modules 4 &amp; 6 (optional)</strong> <span class="subtle">— missing files here are normal if you have not run those modules.</span></p><ul><li><span class="subtle">None.</span></li></ul>
+</div>
+    
     <section id="module1">
     <h2>Module 1 - Rule-Based Monitoring</h2>
     <p class="module-intro">Module 1 flags readings that violate thresholds. A higher anomaly rate usually means higher operational instability.</p>
@@ -160,6 +167,7 @@
     <div class="connector"><strong>Connection:</strong> Anomaly labels and violated-rule patterns become structured facts used by Module 2 and Module 3.</div>
     </section>
 
+    
     <section id="module2">
     <h2>Module 2 - Failure Pattern Discovery</h2>
     <p class="module-intro">Module 2 searches historical transitions for recurring paths that appear before failures.</p>
@@ -187,6 +195,7 @@
     <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
     </section>
 
+    
     <section id="module3">
       <h2>Module 3 - Diagnosis and Recommendations</h2>
       <p class="module-intro">Module 3 combines facts and rules to produce hypotheses, confidence scores, and inspection guidance.</p>
@@ -197,6 +206,7 @@
 <details><summary><strong>M2</strong> (2 diagnoses)</summary><ul><li><strong>pressure_system_overload</strong> (score=0.685) - Verify relief valves, process setpoints, and line restrictions for blockage.</li><li><strong>escalate_monitoring</strong> (score=0.595) - Increase sampling frequency and cross-check with maintenance history for this asset.</li></ul></details>
       <div class="connector"><strong>Connection:</strong> The highest-confidence risk signals from this section directly drive Module 4 action selection and budget tradeoffs.</div>
     </section>
+
     
 <section id="module4">
   <h2>Module 4 - Maintenance Plan (optional)</h2>
@@ -204,25 +214,25 @@
   <div class="metric-grid">
     <div class="metric-card">
       <div class="metric-label">Objective</div>
-      <div class="metric-value">3768.75</div>
+      <div class="metric-value">2653.5</div>
       <div class="metric-help">Lower is better. This combines maintenance cost and predicted failure penalty.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Maintenance cost</div>
-      <div class="metric-value">1100.0</div>
+      <div class="metric-value">1800.0</div>
       <div class="metric-help">Direct spend from selected actions.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Failure penalty</div>
-      <div class="metric-value">2668.75</div>
+      <div class="metric-value">853.5</div>
       <div class="metric-help">Expected risk cost after actions are applied.</div>
     </div>
   </div>
-  <p><strong>Action mix:</strong> inspect: 1 | repair: 1</p>
+  <p><strong>Action mix:</strong> repair: 2</p>
   <table>
     <thead><tr><th>Equipment</th><th>Action</th><th>Cost</th><th>Downtime (h)</th></tr></thead>
     <tbody><tr><td>M1</td><td>repair</td><td>900.0</td><td>10.0</td></tr>
-<tr><td>M2</td><td>inspect</td><td>200.0</td><td>2.0</td></tr></tbody>
+<tr><td>M2</td><td>repair</td><td>900.0</td><td>10.0</td></tr></tbody>
   </table>
 </section>
 
@@ -241,13 +251,13 @@
   <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Less negative (closer to zero) is better,</strong> but the raw size depends only on how large rewards are in <code>mdp.json</code>—it is not a grade out of 100. Compare this mean to <code>baseline_always_defer</code> and <code>baseline_random</code> in <code>module6/rl_metrics.json</code>; beating both means the learned policy is doing well on this simulator. Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>.</p>
   <p><strong>Summary of learned choices:</strong> defer: 3 | inspect: 3 <span class="subtle">(action counts summed over all 6 learned states)</span></p>
   <table>
-    <thead><tr><th>MDP state (diagnosis risk × M1 signal)</th><th>Learned action (simulator)</th></tr></thead>
-    <tbody><tr><td><code>risk_high</code></td><td><code>inspect</code></td></tr>
-<tr><td><code>risk_high_m1hot</code></td><td><code>inspect</code></td></tr>
-<tr><td><code>risk_low</code></td><td><code>defer</code></td></tr>
-<tr><td><code>risk_low_m1hot</code></td><td><code>defer</code></td></tr>
-<tr><td><code>risk_mid</code></td><td><code>defer</code></td></tr>
-<tr><td><code>risk_mid_m1hot</code></td><td><code>inspect</code></td></tr></tbody>
+    <thead><tr><th>MDP state (diagnosis risk × M1 signal)</th><th>What this state means</th><th>Learned action (simulator)</th></tr></thead>
+    <tbody><tr><td><code>risk_high</code></td><td class="subtle">High diagnosis risk; plain band (Module 1 signal did not meet the M1-hot threshold).</td><td><code>inspect</code></td></tr>
+<tr><td><code>risk_high_m1hot</code></td><td class="subtle">High diagnosis risk; M1-hot when Module 1 anomaly rate ≥ 0.35 for that equipment (if classifications are used), else when diagnosis meta.m1_max_confidence ≥ 0.55.</td><td><code>inspect</code></td></tr>
+<tr><td><code>risk_low</code></td><td class="subtle">Low diagnosis risk; plain band (Module 1 signal did not meet the M1-hot threshold).</td><td><code>defer</code></td></tr>
+<tr><td><code>risk_low_m1hot</code></td><td class="subtle">Low diagnosis risk; M1-hot when Module 1 anomaly rate ≥ 0.35 for that equipment (if classifications are used), else when diagnosis meta.m1_max_confidence ≥ 0.55.</td><td><code>defer</code></td></tr>
+<tr><td><code>risk_mid</code></td><td class="subtle">Medium diagnosis risk; plain band (Module 1 signal did not meet the M1-hot threshold).</td><td><code>defer</code></td></tr>
+<tr><td><code>risk_mid_m1hot</code></td><td class="subtle">Medium diagnosis risk; M1-hot when Module 1 anomaly rate ≥ 0.35 for that equipment (if classifications are used), else when diagnosis meta.m1_max_confidence ≥ 0.55.</td><td><code>inspect</code></td></tr></tbody>
   </table>
   <div class="connector"><strong>Compare with Module 4:</strong> If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on <code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule while Module 6 optimizes the toy MDP—different objectives.</div>
 </section>

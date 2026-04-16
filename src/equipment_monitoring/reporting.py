@@ -187,14 +187,59 @@ def build_report_context(data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def render_report_html(context: Dict[str, Any]) -> str:
+REPORT_STYLES = """
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --border: #dde3ee;
+      --text: #1f2937;
+      --muted: #5f6b7a;
+      --accent: #234a8f;
+      --accent-soft: #e7efff;
+      --ok: #2a9d8f;
+      --warn: #e76f51;
+      --shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 0; line-height: 1.45; color: var(--text); background: var(--bg); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin-top: 0; color: #12213f; }
+    h2 { margin-bottom: 6px; }
+    section { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 14px 0; box-shadow: var(--shadow); }
+    nav { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 12px 0 14px; display: flex; gap: 12px; flex-wrap: wrap; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+    th, td { border: 1px solid var(--border); padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f4fa; }
+    .subtle { color: var(--muted); margin-top: 4px; }
+    .warning { background: #fff8e1; padding: 8px; border: 1px solid #f0d98c; border-radius: 8px; }
+    .module-intro { color: var(--muted); margin: 4px 0 12px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 10px 0 12px; }
+    .metric-card { background: #f8fbff; border: 1px solid #d6e3ff; border-radius: 8px; padding: 10px; }
+    .metric-label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #52627a; font-weight: 700; }
+    .metric-value { font-size: 24px; font-weight: 700; color: #123f88; margin-top: 2px; }
+    .metric-help { font-size: 12px; color: #586983; margin-top: 6px; }
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+    .flow-box { background: var(--panel); border: 1px solid #bfd0f5; border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 2px rgba(35, 74, 143, 0.08); }
+    .flow-arrow { color: #6a7da6; font-weight: 700; }
+    .howto { background: var(--accent-soft); border: 1px solid #c3d5ff; border-radius: 8px; padding: 10px; margin-top: 8px; }
+    .howto p { margin: 6px 0; }
+    .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+    .blueprint-card { border: 1px solid #d4def1; border-radius: 8px; background: #fbfcff; padding: 10px; }
+    .blueprint-card h3 { margin: 0 0 8px; font-size: 16px; color: #16346d; }
+    .blueprint-card p { margin: 5px 0; font-size: 13px; color: #30445f; }
+    .connector { margin-top: 8px; padding: 8px 10px; border-left: 4px solid #7aa2f7; background: #f6f9ff; color: #2b4266; border-radius: 6px; }
+"""
+
+
+def _render_module_blueprints() -> str:
     m6_blueprint_body = """
         <p><strong>Input:</strong> per-equipment risk from <code>diagnosis.json</code> (same bucketing rule as Module 4), optionally crossed with a Module 1 &ldquo;alert&rdquo; signal from <code>classifications.jsonl</code> anomaly rate or diagnosis <code>meta.m1_max_confidence</code>; plus <code>mdp.json</code> (a <em>toy</em> stochastic world: next risk level and cost after each action)</p>
         <p><strong>Processing:</strong> Q-learning runs many episodes; each episode picks a random fleet unit, starts in that unit&rsquo;s derived MDP state, and rolls the simulator for several steps</p>
         <p><strong>Output:</strong> <code>rl_policy.json</code> (greedy action per state), <code>rl_training.json</code> (per-episode return and ε schedule), <code>rl_metrics.json</code> (trained policy vs always-defer and random baselines)</p>
         <p><strong>Note:</strong> no neural nets or Module 5—tabular RL over explicit JSON dynamics. A 3-state-only MDP (risk bands only) is still supported if <code>mdp.json</code> defines only <code>risk_low</code> / <code>risk_mid</code> / <code>risk_high</code>.</p>
 """
-    module_blueprints = f"""
+    return f"""
     <div class="blueprint-grid">
       <div class="blueprint-card">
         <h3>Module 1 blueprint</h3>
@@ -231,6 +276,36 @@ def render_report_html(context: Dict[str, Any]) -> str:
     </div>
     """
 
+
+def _render_errors_panel(context: Mapping[str, Any]) -> str:
+    def _err_ul(items: List[str]) -> str:
+        if not items:
+            return "<li><span class=\"subtle\">None.</span></li>"
+        return "\n".join(f"<li>{escape(msg)}</li>" for msg in items)
+
+    core_errs = list(context.get("errors_core") or [])
+    opt_errs = list(context.get("errors_optional") or [])
+    core_block = (
+        "<p><strong>Modules 1–3 (core)</strong></p>"
+        "<ul>"
+        f"{_err_ul(core_errs)}"
+        "</ul>"
+    )
+    opt_block = (
+        "<p><strong>Modules 4 &amp; 6 (optional)</strong> "
+        "<span class=\"subtle\">— missing files here are normal if you have not run those modules.</span></p>"
+        "<ul>"
+        f"{_err_ul(opt_errs)}"
+        "</ul>"
+    )
+    return f"""<div class="warning">
+  <p><strong>Data loading notes</strong></p>
+  {core_block}
+  {opt_block}
+</div>"""
+
+
+def _render_module1_section(context: Mapping[str, Any]) -> str:
     m1_rows_html = "\n".join(
         (
             "<tr>"
@@ -243,12 +318,39 @@ def render_report_html(context: Dict[str, Any]) -> str:
         )
         for row in context["module1_rows"][:50]
     ) or "<tr><td colspan='5'>No Module 1 data yet.</td></tr>"
-
     rule_rows_html = "\n".join(
         f"<tr><td>{escape(rule)}</td><td>{count}</td></tr>"
         for rule, count in context["m1_top_rules"]
     ) or "<tr><td colspan='2'>No anomaly rules found.</td></tr>"
+    return f"""
+    <section id="module1">
+    <h2>Module 1 - Rule-Based Monitoring</h2>
+    <p class="module-intro">Module 1 flags readings that violate thresholds. A higher anomaly rate usually means higher operational instability.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Total readings</div><div class="metric-value">{context["m1_total"]}</div></div>
+      <div class="metric-card"><div class="metric-label">Anomalies</div><div class="metric-value">{context["m1_anomalies"]}</div></div>
+      <div class="metric-card"><div class="metric-label">Anomaly rate</div><div class="metric-value">{context["m1_anomaly_rate"]:.1f}%</div></div>
+    </div>
+    <details open>
+      <summary>Top violated rules</summary>
+      <table>
+        <thead><tr><th>Rule</th><th>Count</th></tr></thead>
+        <tbody>{rule_rows_html}</tbody>
+      </table>
+    </details>
+    <details>
+      <summary>Recent classifications (max 50 rows)</summary>
+      <table>
+        <thead><tr><th>Timestamp</th><th>Equipment</th><th>Status</th><th>Violated rules</th><th>Confidence</th></tr></thead>
+        <tbody>{m1_rows_html}</tbody>
+      </table>
+    </details>
+    <div class="connector"><strong>Connection:</strong> Anomaly labels and violated-rule patterns become structured facts used by Module 2 and Module 3.</div>
+    </section>
+"""
 
+
+def _render_module2_section(context: Mapping[str, Any]) -> str:
     seq_rows_html = "\n".join(
         (
             "<tr>"
@@ -259,7 +361,6 @@ def render_report_html(context: Dict[str, Any]) -> str:
         )
         for seq in context["m2_top_sequences"]
     ) or "<tr><td colspan='3'>No Module 2 sequences yet.</td></tr>"
-
     warn_rows_html = "\n".join(
         (
             "<tr>"
@@ -271,7 +372,33 @@ def render_report_html(context: Dict[str, Any]) -> str:
         )
         for w in context["m2_top_warning_signs"]
     ) or "<tr><td colspan='4'>No warning signs yet.</td></tr>"
+    return f"""
+    <section id="module2">
+    <h2>Module 2 - Failure Pattern Discovery</h2>
+    <p class="module-intro">Module 2 searches historical transitions for recurring paths that appear before failures.</p>
+    <div class="howto">
+      <p><strong>Interpretation tip:</strong> prioritize sequences with high frequency and short average time-to-failure, then validate with warning-sign predictive score and false-positive rate.</p>
+    </div>
+    <details open>
+      <summary>Top sequences</summary>
+      <table>
+        <thead><tr><th>Sequence</th><th>Frequency</th><th>Avg time to failure</th></tr></thead>
+        <tbody>{seq_rows_html}</tbody>
+      </table>
+    </details>
+    <details>
+      <summary>Warning sign ranking</summary>
+      <table>
+        <thead><tr><th>Pattern</th><th>Predictive score</th><th>Frequency</th><th>False positive rate</th></tr></thead>
+        <tbody>{warn_rows_html}</tbody>
+      </table>
+    </details>
+    <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
+    </section>
+"""
 
+
+def _render_module3_section(context: Mapping[str, Any]) -> str:
     diagnosis_cards = "\n".join(
         (
             f"<details><summary><strong>{escape(str(eq.get('equipment_id', 'unknown')))}</strong> "
@@ -290,120 +417,38 @@ def render_report_html(context: Dict[str, Any]) -> str:
         )
         for eq in context["module3_equipment"]
     ) or "<p>No Module 3 diagnosis data yet.</p>"
-
-    module6_section = ""
-    if context.get("m6_policy_state_count", 0):
-        m6_rich = bool(context.get("m6_rich_states"))
-        m6_n = int(context.get("m6_policy_state_count", 0))
-        m6_mix = " | ".join(
-            f"{escape(action)}: {count}"
-            for action, count in sorted(context.get("m6_action_counts", {}).items())
-        )
-        m6_ret = context.get("m6_mean_return_window")
-        ret_line = ""
-        if m6_ret is not None:
-            ret_line = f"""<p><strong>Recent training score (mean return, last window of training episodes):</strong> {escape(str(m6_ret))}</p>
-  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Less negative (closer to zero) is better,</strong> but the raw size depends only on how large rewards are in <code>mdp.json</code>—it is not a grade out of 100. Compare this mean to <code>baseline_always_defer</code> and <code>baseline_random</code> in <code>module6/rl_metrics.json</code>; beating both means the learned policy is doing well on this simulator. Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>.</p>"""
-        tn = context.get("m6_training_note")
-        training_narrative = ""
-        if isinstance(tn, str) and tn.strip():
-            training_narrative = f"""  <div class="howto">
-    <p><strong>What RL is training on:</strong> {escape(tn)}</p>
-  </div>
-"""
-        m1a = context.get("m6_m1_alert_meta")
-        m1_extra = ""
-        if m6_rich and isinstance(m1a, dict):
-            cp = m1a.get("classifications_path")
-            ar = m1a.get("anomaly_rate_threshold")
-            cf = m1a.get("confidence_fallback_threshold")
-            m1_extra = f"""  <p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold {escape(str(ar))} when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ {escape(str(cf))}. Classifications file: {escape(str(cp) if cp else "none (config/CLI)")}.</p>
-"""
-        if m6_rich:
-            intro = (
-                "Module 6 runs tabular Q-learning on <code>mdp.json</code>. States combine a diagnosis risk band "
-                "(<code>risk_low</code>, <code>risk_mid</code>, <code>risk_high</code>) with whether Module 1 style "
-                "evidence is &ldquo;hot&rdquo; (<code>_m1hot</code> suffix), so the policy can treat, for example, "
-                "<code>risk_mid</code> differently from <code>risk_mid_m1hot</code>."
-            )
-            howto_read = (
-                "<p><strong>Reading the table:</strong> Each row is one MDP state key. The suffix <code>_m1hot</code> "
-                "means the run marked elevated Module 1 activity for that risk level. The action is what the agent "
-                "would pick <em>in the simulator</em> after training (defer / inspect / repair — same ids as Module 4).</p>"
-            )
-            state_th = "MDP state (diagnosis risk × M1 signal)"
-            gloss_th = "What this state means"
-            summary_hint = f"(action counts summed over all {m6_n} learned states)"
-        else:
-            intro = (
-                "Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick defer, inspect, or repair "
-                "for each coarse fleet risk band from diagnosis."
-            )
-            howto_read = (
-                "<p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent "
-                "would pick <em>in the simulator</em> after training. Action names match Module 4.</p>"
-            )
-            state_th = "Fleet risk band (from diagnosis)"
-            gloss_th = "What this state means"
-            summary_hint = "(counts how many bands pick defer, inspect, or repair)"
-        policy_items = context.get("module6_policy") or {}
-        m1_for_gloss = context.get("m6_m1_alert_meta") if m6_rich else None
-        if not isinstance(m1_for_gloss, dict):
-            m1_for_gloss = None
-        pol_rows = "\n".join(
-            (
-                "<tr>"
-                f"<td><code>{escape(str(st))}</code></td>"
-                f"<td class=\"subtle\">{escape(_module6_state_gloss(str(st), rich=m6_rich, m1_alert=m1_for_gloss))}</td>"
-                f"<td><code>{escape(str(ac))}</code></td>"
-                "</tr>"
-            )
-            for st, ac in sorted(policy_items.items())
-        ) or "<tr><td colspan='3'>No policy rows.</td></tr>"
-        m4_compare = (
-            "If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on "
-            "<code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule "
-            "while Module 6 optimizes the toy MDP—different objectives."
-            if m6_rich
-            else "If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for "
-            "<code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes "
-            "the toy MDP—different problems, both valid as coursework artifacts."
-        )
-        module6_section = f"""
-<section id="module6">
-  <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
-  <p class="module-intro">{intro}</p>
-{training_narrative}  <div class="howto">
-    {howto_read}
-  </div>
-{m1_extra}{ret_line}
-  <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">{summary_hint}</span></p>
-  <table>
-    <thead><tr><th>{state_th}</th><th>{gloss_th}</th><th>Learned action (simulator)</th></tr></thead>
-    <tbody>{pol_rows}</tbody>
-  </table>
-  <div class="connector"><strong>Compare with Module 4:</strong> {m4_compare}</div>
-</section>
+    return f"""
+    <section id="module3">
+      <h2>Module 3 - Diagnosis and Recommendations</h2>
+      <p class="module-intro">Module 3 combines facts and rules to produce hypotheses, confidence scores, and inspection guidance.</p>
+      <div class="howto">
+        <p><strong>Interpretation tip:</strong> look for repeated high-score hypotheses across machines to identify fleet-wide issues vs isolated failures.</p>
+      </div>
+      {diagnosis_cards}
+      <div class="connector"><strong>Connection:</strong> The highest-confidence risk signals from this section directly drive Module 4 action selection and budget tradeoffs.</div>
+    </section>
 """
 
-    module4_section = ""
-    if context["module4_assignments"]:
-        m4_rows = "\n".join(
-            (
-                "<tr>"
-                f"<td>{escape(str(a.get('equipment_id', '')))}</td>"
-                f"<td>{escape(str(a.get('action_id', '')))}</td>"
-                f"<td>{a.get('cost', 0)}</td>"
-                f"<td>{a.get('downtime_hours', 0)}</td>"
-                "</tr>"
-            )
-            for a in context["module4_assignments"]
+
+def _render_module4_section(context: Mapping[str, Any]) -> str:
+    if not context["module4_assignments"]:
+        return ""
+    m4_rows = "\n".join(
+        (
+            "<tr>"
+            f"<td>{escape(str(a.get('equipment_id', '')))}</td>"
+            f"<td>{escape(str(a.get('action_id', '')))}</td>"
+            f"<td>{a.get('cost', 0)}</td>"
+            f"<td>{a.get('downtime_hours', 0)}</td>"
+            "</tr>"
         )
-        totals = context["module4_totals"]
-        m4_action_mix = " | ".join(
-            f"{escape(action)}: {count}" for action, count in sorted(context["m4_action_counts"].items())
-        )
-        module4_section = f"""
+        for a in context["module4_assignments"]
+    )
+    totals = context["module4_totals"]
+    m4_action_mix = " | ".join(
+        f"{escape(action)}: {count}" for action, count in sorted(context["m4_action_counts"].items())
+    )
+    return f"""
 <section id="module4">
   <h2>Module 4 - Maintenance Plan (optional)</h2>
   <p class="module-intro">This module turns Module 3 risk estimates into concrete actions that balance maintenance spend and residual failure risk under constraints.</p>
@@ -432,87 +477,116 @@ def render_report_html(context: Dict[str, Any]) -> str:
 </section>
 """
 
-    core_errs = context.get("errors_core") or []
-    opt_errs = context.get("errors_optional") or []
 
-    def _err_ul(items: List[str]) -> str:
-        if not items:
-            return "<li><span class=\"subtle\">None.</span></li>"
-        return "\n".join(f"<li>{escape(msg)}</li>" for msg in items)
-
-    core_block = (
-        "<p><strong>Modules 1–3 (core)</strong></p>"
-        "<ul>"
-        f"{_err_ul(core_errs)}"
-        "</ul>"
+def _render_module6_section(context: Mapping[str, Any]) -> str:
+    if not context.get("m6_policy_state_count", 0):
+        return ""
+    m6_rich = bool(context.get("m6_rich_states"))
+    m6_n = int(context.get("m6_policy_state_count", 0))
+    m6_mix = " | ".join(
+        f"{escape(action)}: {count}"
+        for action, count in sorted(context.get("m6_action_counts", {}).items())
     )
-    opt_block = (
-        "<p><strong>Modules 4 &amp; 6 (optional)</strong> "
-        "<span class=\"subtle\">— missing files here are normal if you have not run those modules.</span></p>"
-        "<ul>"
-        f"{_err_ul(opt_errs)}"
-        "</ul>"
+    m6_ret = context.get("m6_mean_return_window")
+    ret_line = ""
+    if m6_ret is not None:
+        ret_line = f"""<p><strong>Recent training score (mean return, last window of training episodes):</strong> {escape(str(m6_ret))}</p>
+  <p class="subtle">Each episode rolls the toy MDP for several steps; per-step rewards are usually negative (costs), so episode return is negative. <strong>Less negative (closer to zero) is better,</strong> but the raw size depends only on how large rewards are in <code>mdp.json</code>—it is not a grade out of 100. Compare this mean to <code>baseline_always_defer</code> and <code>baseline_random</code> in <code>module6/rl_metrics.json</code>; beating both means the learned policy is doing well on this simulator. Full learning curve: per-episode return, ε-greedy ε, and running mean → <code>module6/rl_training.json</code>.</p>"""
+    tn = context.get("m6_training_note")
+    training_narrative = ""
+    if isinstance(tn, str) and tn.strip():
+        training_narrative = f"""  <div class="howto">
+    <p><strong>What RL is training on:</strong> {escape(tn)}</p>
+  </div>
+"""
+    m1a = context.get("m6_m1_alert_meta")
+    m1_extra = ""
+    if m6_rich and isinstance(m1a, dict):
+        cp = m1a.get("classifications_path")
+        ar = m1a.get("anomaly_rate_threshold")
+        cf = m1a.get("confidence_fallback_threshold")
+        m1_extra = f"""  <p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold {escape(str(ar))} when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ {escape(str(cf))}. Classifications file: {escape(str(cp) if cp else "none (config/CLI)")}.</p>
+"""
+    if m6_rich:
+        intro = (
+            "Module 6 runs tabular Q-learning on <code>mdp.json</code>. States combine a diagnosis risk band "
+            "(<code>risk_low</code>, <code>risk_mid</code>, <code>risk_high</code>) with whether Module 1 style "
+            "evidence is &ldquo;hot&rdquo; (<code>_m1hot</code> suffix), so the policy can treat, for example, "
+            "<code>risk_mid</code> differently from <code>risk_mid_m1hot</code>."
+        )
+        howto_read = (
+            "<p><strong>Reading the table:</strong> Each row is one MDP state key. The suffix <code>_m1hot</code> "
+            "means the run marked elevated Module 1 activity for that risk level. The action is what the agent "
+            "would pick <em>in the simulator</em> after training (defer / inspect / repair — same ids as Module 4).</p>"
+        )
+        state_th = "MDP state (diagnosis risk × M1 signal)"
+        gloss_th = "What this state means"
+        summary_hint = f"(action counts summed over all {m6_n} learned states)"
+    else:
+        intro = (
+            "Module 6 runs Q-learning in a toy simulator (<code>mdp.json</code>) to pick defer, inspect, or repair "
+            "for each coarse fleet risk band from diagnosis."
+        )
+        howto_read = (
+            "<p><strong>Reading the table:</strong> Each row is one coarse risk band. The action is the one the agent "
+            "would pick <em>in the simulator</em> after training. Action names match Module 4.</p>"
+        )
+        state_th = "Fleet risk band (from diagnosis)"
+        gloss_th = "What this state means"
+        summary_hint = "(counts how many bands pick defer, inspect, or repair)"
+    policy_items = context.get("module6_policy") or {}
+    m1_for_gloss = context.get("m6_m1_alert_meta") if m6_rich else None
+    if not isinstance(m1_for_gloss, dict):
+        m1_for_gloss = None
+    pol_rows = "\n".join(
+        (
+            "<tr>"
+            f"<td><code>{escape(str(st))}</code></td>"
+            f"<td class=\"subtle\">{escape(_module6_state_gloss(str(st), rich=m6_rich, m1_alert=m1_for_gloss))}</td>"
+            f"<td><code>{escape(str(ac))}</code></td>"
+            "</tr>"
+        )
+        for st, ac in sorted(policy_items.items())
+    ) or "<tr><td colspan='3'>No policy rows.</td></tr>"
+    m4_compare = (
+        "If Module 4 assigns <code>repair</code> to specific machines while Module 6 prefers <code>defer</code> on "
+        "<code>risk_high</code> or <code>risk_high_m1hot</code>, remember Module 4 optimizes a constrained schedule "
+        "while Module 6 optimizes the toy MDP—different objectives."
+        if m6_rich
+        else "If Module 4 shows <code>repair</code> on specific machines while Module 6 shows <code>defer</code> for "
+        "<code>risk_high</code>, call out that Module 4 optimizes a constrained schedule while Module 6 optimizes "
+        "the toy MDP—different problems, both valid as coursework artifacts."
     )
-    errors_panel = f"""<div class="warning">
-  <p><strong>Data loading notes</strong></p>
-  {core_block}
-  {opt_block}
-</div>"""
+    return f"""
+<section id="module6">
+  <h2>Module 6 — Learned maintenance policy (reinforcement learning)</h2>
+  <p class="module-intro">{intro}</p>
+{training_narrative}  <div class="howto">
+    {howto_read}
+  </div>
+{m1_extra}{ret_line}
+  <p><strong>Summary of learned choices:</strong> {m6_mix or "N/A"} <span class="subtle">{summary_hint}</span></p>
+  <table>
+    <thead><tr><th>{state_th}</th><th>{gloss_th}</th><th>Learned action (simulator)</th></tr></thead>
+    <tbody>{pol_rows}</tbody>
+  </table>
+  <div class="connector"><strong>Compare with Module 4:</strong> {m4_compare}</div>
+</section>
+"""
 
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Industrial Monitoring Report</title>
-  <style>
-    :root {{
-      --bg: #f5f7fb;
-      --panel: #ffffff;
-      --border: #dde3ee;
-      --text: #1f2937;
-      --muted: #5f6b7a;
-      --accent: #234a8f;
-      --accent-soft: #e7efff;
-      --ok: #2a9d8f;
-      --warn: #e76f51;
-      --shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
-    }}
-    body {{ font-family: Segoe UI, Arial, sans-serif; margin: 0; line-height: 1.45; color: var(--text); background: var(--bg); }}
-    .container {{ max-width: 1200px; margin: 0 auto; padding: 24px; }}
-    h1, h2 {{ margin-top: 0; color: #12213f; }}
-    h2 {{ margin-bottom: 6px; }}
-    section {{ background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 14px 0; box-shadow: var(--shadow); }}
-    nav {{ background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 12px 0 14px; display: flex; gap: 12px; flex-wrap: wrap; }}
-    nav a {{ color: var(--accent); text-decoration: none; font-weight: 600; }}
-    nav a:hover {{ text-decoration: underline; }}
-    table {{ border-collapse: collapse; width: 100%; margin: 10px 0; }}
-    th, td {{ border: 1px solid var(--border); padding: 8px; text-align: left; vertical-align: top; }}
-    th {{ background: #f0f4fa; }}
-    .subtle {{ color: var(--muted); margin-top: 4px; }}
-    .warning {{ background: #fff8e1; padding: 8px; border: 1px solid #f0d98c; border-radius: 8px; }}
-    .module-intro {{ color: var(--muted); margin: 4px 0 12px; }}
-    .metric-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 10px 0 12px; }}
-    .metric-card {{ background: #f8fbff; border: 1px solid #d6e3ff; border-radius: 8px; padding: 10px; }}
-    .metric-label {{ font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #52627a; font-weight: 700; }}
-    .metric-value {{ font-size: 24px; font-weight: 700; color: #123f88; margin-top: 2px; }}
-    .metric-help {{ font-size: 12px; color: #586983; margin-top: 6px; }}
-    .flow {{ display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }}
-    .flow-box {{ background: var(--panel); border: 1px solid #bfd0f5; border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 2px rgba(35, 74, 143, 0.08); }}
-    .flow-arrow {{ color: #6a7da6; font-weight: 700; }}
-    .howto {{ background: var(--accent-soft); border: 1px solid #c3d5ff; border-radius: 8px; padding: 10px; margin-top: 8px; }}
-    .howto p {{ margin: 6px 0; }}
-    .blueprint-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }}
-    .blueprint-card {{ border: 1px solid #d4def1; border-radius: 8px; background: #fbfcff; padding: 10px; }}
-    .blueprint-card h3 {{ margin: 0 0 8px; font-size: 16px; color: #16346d; }}
-    .blueprint-card p {{ margin: 5px 0; font-size: 13px; color: #30445f; }}
-    .connector {{ margin-top: 8px; padding: 8px 10px; border-left: 4px solid #7aa2f7; background: #f6f9ff; color: #2b4266; border-radius: 6px; }}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Industrial Equipment Monitoring Report</h1>
-    <p class="subtle">Source root: {escape(context["outputs_root"])}</p>
 
+def _render_overview_section(context: Mapping[str, Any], module_blueprints: str) -> str:
+    m6_metric_help = (
+        "MDP states with a greedy action after Q-learning (default mdp.json: six, risk × M1-hot)."
+        if context.get("m6_rich_states")
+        else "MDP states with a learned action (often three risk bands only)."
+    )
+    m6_howto = (
+        "—states pair diagnosis risk with a Module 1 &ldquo;hot&rdquo; flag when using the default six-state MDP."
+        if context.get("m6_rich_states")
+        else "—usually one row per risk band when the MDP has only three states."
+    )
+    return f"""
     <section>
       <h2>System Overview</h2>
       <p class="module-intro">This report connects all modules so a reader can move from raw sensor observations to final maintenance actions.</p>
@@ -521,7 +595,7 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="metric-card"><div class="metric-label">Module 2 sequences</div><div class="metric-value">{context["m2_sequence_count"]}</div><div class="metric-help">Failure-path patterns discovered.</div></div>
         <div class="metric-card"><div class="metric-label">Module 3 equipment</div><div class="metric-value">{context["m3_equipment_count"]}</div><div class="metric-help">Machines with diagnosis blocks.</div></div>
         <div class="metric-card"><div class="metric-label">Module 4 assignments</div><div class="metric-value">{context["m4_total_assignments"]}</div><div class="metric-help">Final action decisions (if available).</div></div>
-        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">{"MDP states with a greedy action after Q-learning (default mdp.json: six, risk × M1-hot)." if context.get("m6_rich_states") else "MDP states with a learned action (often three risk bands only)."}</div></div>
+        <div class="metric-card"><div class="metric-label">Module 6 policy rows</div><div class="metric-value">{context.get("m6_policy_state_count", 0)}</div><div class="metric-help">{m6_metric_help}</div></div>
       </div>
       <div class="flow">
         <div class="flow-box">Module 1<br><span class="subtle">Classify readings</span></div>
@@ -535,10 +609,37 @@ def render_report_html(context: Dict[str, Any]) -> str:
         <div class="flow-box">Module 6<br><span class="subtle">Learn policy in a simulator (optional)</span></div>
       </div>
       <div class="howto">
-        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a tabular RL demo on <code>mdp.json</code>{"—states pair diagnosis risk with a Module 1 &ldquo;hot&rdquo; flag when using the default six-state MDP." if context.get("m6_rich_states") else "—usually one row per risk band when the MDP has only three states."} See that section for the policy table and training narrative.</p>
+        <p><strong>How to read this report:</strong> Start with anomaly volume (Module 1), pattern strength (Module 2), diagnosis (Module 3), then Module 4&rsquo;s per-machine plan. <strong>Module 6 (optional)</strong> is a tabular RL demo on <code>mdp.json</code>{m6_howto} See that section for the policy table and training narrative.</p>
       </div>
       {module_blueprints}
     </section>
+"""
+
+
+def render_report_html(context: Dict[str, Any]) -> str:
+    module_blueprints = _render_module_blueprints()
+    errors_panel = _render_errors_panel(context)
+    overview_section = _render_overview_section(context, module_blueprints)
+    module1_section = _render_module1_section(context)
+    module2_section = _render_module2_section(context)
+    module3_section = _render_module3_section(context)
+    module4_section = _render_module4_section(context)
+    module6_section = _render_module6_section(context)
+
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Industrial Monitoring Report</title>
+  <style>
+{REPORT_STYLES}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Industrial Equipment Monitoring Report</h1>
+    <p class="subtle">Source root: {escape(context["outputs_root"])}</p>
+    {overview_section}
 
     <nav>
       <a href="#module1">Module 1</a>
@@ -548,64 +649,9 @@ def render_report_html(context: Dict[str, Any]) -> str:
       <a href="#module6">Module 6 — learned policy (optional)</a>
     </nav>
     {errors_panel}
-
-    <section id="module1">
-    <h2>Module 1 - Rule-Based Monitoring</h2>
-    <p class="module-intro">Module 1 flags readings that violate thresholds. A higher anomaly rate usually means higher operational instability.</p>
-    <div class="metric-grid">
-      <div class="metric-card"><div class="metric-label">Total readings</div><div class="metric-value">{context["m1_total"]}</div></div>
-      <div class="metric-card"><div class="metric-label">Anomalies</div><div class="metric-value">{context["m1_anomalies"]}</div></div>
-      <div class="metric-card"><div class="metric-label">Anomaly rate</div><div class="metric-value">{context["m1_anomaly_rate"]:.1f}%</div></div>
-    </div>
-    <details open>
-      <summary>Top violated rules</summary>
-      <table>
-        <thead><tr><th>Rule</th><th>Count</th></tr></thead>
-        <tbody>{rule_rows_html}</tbody>
-      </table>
-    </details>
-    <details>
-      <summary>Recent classifications (max 50 rows)</summary>
-      <table>
-        <thead><tr><th>Timestamp</th><th>Equipment</th><th>Status</th><th>Violated rules</th><th>Confidence</th></tr></thead>
-        <tbody>{m1_rows_html}</tbody>
-      </table>
-    </details>
-    <div class="connector"><strong>Connection:</strong> Anomaly labels and violated-rule patterns become structured facts used by Module 2 and Module 3.</div>
-    </section>
-
-    <section id="module2">
-    <h2>Module 2 - Failure Pattern Discovery</h2>
-    <p class="module-intro">Module 2 searches historical transitions for recurring paths that appear before failures.</p>
-    <div class="howto">
-      <p><strong>Interpretation tip:</strong> prioritize sequences with high frequency and short average time-to-failure, then validate with warning-sign predictive score and false-positive rate.</p>
-    </div>
-    <details open>
-      <summary>Top sequences</summary>
-      <table>
-        <thead><tr><th>Sequence</th><th>Frequency</th><th>Avg time to failure</th></tr></thead>
-        <tbody>{seq_rows_html}</tbody>
-      </table>
-    </details>
-    <details>
-      <summary>Warning sign ranking</summary>
-      <table>
-        <thead><tr><th>Pattern</th><th>Predictive score</th><th>Frequency</th><th>False positive rate</th></tr></thead>
-        <tbody>{warn_rows_html}</tbody>
-      </table>
-    </details>
-    <div class="connector"><strong>Connection:</strong> Top warning signs and sequences are consumed by Module 3 to support or weaken diagnosis hypotheses.</div>
-    </section>
-
-    <section id="module3">
-      <h2>Module 3 - Diagnosis and Recommendations</h2>
-      <p class="module-intro">Module 3 combines facts and rules to produce hypotheses, confidence scores, and inspection guidance.</p>
-      <div class="howto">
-        <p><strong>Interpretation tip:</strong> look for repeated high-score hypotheses across machines to identify fleet-wide issues vs isolated failures.</p>
-      </div>
-      {diagnosis_cards}
-      <div class="connector"><strong>Connection:</strong> The highest-confidence risk signals from this section directly drive Module 4 action selection and budget tradeoffs.</div>
-    </section>
+    {module1_section}
+    {module2_section}
+    {module3_section}
     {module4_section}
     {module6_section}
   </div>

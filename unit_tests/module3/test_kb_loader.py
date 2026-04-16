@@ -50,6 +50,13 @@ def test_load_kb_rules_not_array(tmp_path: Path) -> None:
         load_kb(path)
 
 
+def test_load_kb_invalid_json(tmp_path: Path) -> None:
+    path = tmp_path / "kb.json"
+    path.write_text('{"rules": [', encoding="utf-8")
+    with pytest.raises(KnowledgeBaseError, match="Invalid KB JSON"):
+        load_kb(path)
+
+
 def test_load_kb_rule_missing_id(tmp_path: Path) -> None:
     path = tmp_path / "kb.json"
     path.write_text(

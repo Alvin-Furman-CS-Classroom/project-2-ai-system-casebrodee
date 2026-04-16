@@ -12,9 +12,13 @@ This module provides the run_module2() function that orchestrates:
 import json
 from pathlib import Path
 from typing import Optional
-from .io import load_timestamped_csv, load_module1_schema_csv
+from .io import (
+    load_classification_anomaly_rates,
+    load_module1_schema_csv,
+    load_timestamped_csv,
+)
 from .config import GraphConfig, SearchParams
-from .graph import build_graph, Graph
+from .graph import build_graph
 from .search import discover_failure_sequences
 from .patterns import extract_sequences, rank_warning_signs
 
@@ -39,8 +43,8 @@ def run_module2(
         data_format: "timestamped" (default) for Machine_ID/Timestamp/Failure_Status CSV,
             or "module1" for timestamp/equipment_id/temperature/vibration/pressure/failure_status CSV
             (same schema Module 1 uses; allows one dataset to feed both modules).
-        classifications_path: Optional path kept for CLI compatibility with the Module 1 pipeline;
-            reserved for future warning-sign enrichment (not used by the current ranker).
+        classifications_path: Optional Module 1 ``classifications.jsonl`` used to enrich
+            warning signs with per-equipment anomaly-rate context.
 
     Outputs:
         - sequences.json: Discovered failure sequences
@@ -74,8 +78,17 @@ def run_module2(
     # 5. Extract and aggregate sequences
     sequences = extract_sequences(paths, graph, search_params.min_pattern_length)
 
-    # 6. Rank warning signs (classifications_path reserved; see docstring)
-    warning_signs = rank_warning_signs(sequences, graph)
+    # 6. Rank warning signs and optionally enrich with Module 1 anomaly rates.
+    module1_anomaly_rates = (
+        load_classification_anomaly_rates(classifications_path)
+        if classifications_path is not None
+        else None
+    )
+    warning_signs = rank_warning_signs(
+        sequences,
+        graph,
+        module1_anomaly_rates=module1_anomaly_rates,
+    )
     
     # 7. Write outputs
     sequences_output = {

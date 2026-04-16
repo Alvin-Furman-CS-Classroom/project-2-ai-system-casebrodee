@@ -329,3 +329,31 @@ def test_rank_warning_signs_improved_predictive_score() -> None:
     assert 0.0 < warning_signs[0].predictive_score <= 1.0
     assert warning_signs[0].false_positive_rate > 0.0
 
+
+def test_rank_warning_signs_includes_module1_anomaly_rate() -> None:
+    """Warning signs can include Module 1 anomaly context when provided."""
+    state_a = graph.State("pump_A", ("low", "low"))
+    state_b = graph.State("pump_A", ("medium", "low"))
+
+    g = graph.Graph()
+    g.add_node(state_a)
+    g.add_node(state_b)
+
+    sequences = [
+        patterns.FailureSequence(
+            sequence=[state_a, state_b],
+            frequency=2,
+            machines={"pump_A", "pump_B"},
+        )
+    ]
+
+    warning_signs = patterns.rank_warning_signs(
+        sequences,
+        g,
+        module1_anomaly_rates={"pump_A": 0.25, "pump_B": 0.75},
+    )
+
+    assert len(warning_signs) == 1
+    assert warning_signs[0].module1_anomaly_rate == pytest.approx(0.5)
+    assert 0 <= warning_signs[0].to_dict()["module1_anomaly_rate"] <= 1
+
