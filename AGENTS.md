@@ -1,12 +1,21 @@
 ## Project Context
 
-- System title: [Your System Title]
-- Theme: [Your Theme]
-- Proposal link or summary: [Your Proposal Link or Summary]
+- System title: Industrial Equipment Monitoring & Predictive Maintenance System
+- Theme: Rule-based and AI-driven monitoring of industrial equipment using sensor data.
+- Proposal link or summary: See `PROPOSAL.md` (Industrial Equipment Monitoring & Predictive Maintenance System - Final Proposal).
 
-**Module plan:**
+**Module plan (this repository):**
 
-[Your Module Plan Table copied from README.md]
+| Module | Topic(s) | Inputs | Outputs | Depends On | Checkpoint |
+| ------ | -------- | ------ | ------- | ---------- | ---------- |
+| 1 | Propositional Logic | Configuration file (JSON), Sensor readings CSV, Equipment specifications (JSON) | Per-reading classification (JSON), Alert messages (text) | None | Checkpoint 1 (Week 3) |
+| 2 | Uninformed Search (BFS, DFS), Informed Search (A*, Heuristics) | Historical sensor data with failure events, Graph structure, Search parameters | Discovered failure sequences, Visualizations, Ranked warning signs | Module 1 | Checkpoint 2 (Week 5) |
+| 3 | First-Order Logic (Quantifiers, Unification, Inference) | Knowledge base, Module 1/2 artifacts | `diagnosis.json` (hypotheses, scores, inspection text) | Modules 1–2 | Checkpoint 3 (Week 7) |
+| 4 | Advanced Search (Hill Climbing, Simulated Annealing), Game Theory (Minimax, Nash Equilibrium) | Module 3 `diagnosis.json`, maintenance actions + budget (+ optional production cap) | `maintenance_plan.json` | Modules 1–3 | Checkpoint 4 (Week 9) |
+| 5† | Supervised Learning (Logistic Regression, Evaluation Metrics, Neural Networks) | (course design) | (course design) | Modules 1–4 | Checkpoint 5 (Week 11) |
+| 6 | Reinforcement Learning (MDP, Q-Learning, Policy Functions) | Module 3 `diagnosis.json`, `mdp.json`, `module6_config.json`, optional Module 1 classifications for `*_m1hot` states | `rl_policy.json`, `rl_training.json`, `rl_metrics.json` | Modules 1–4 | Checkpoint 6 (Week 13) |
+
+† **Module 5 is not implemented here** (future work / fork). **Module 6** does not depend on it. Authoritative scope notes: [docs/project_improvement_plan.md](docs/project_improvement_plan.md). Full stack locally: **`make pipeline`** (see `README.md`).
 
 ## Constraints
 

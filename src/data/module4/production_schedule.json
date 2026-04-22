@@ -1,0 +1,5 @@
+{
+  "label": "example_peak_season",
+  "notes": "Optional file for Module 4: caps total maintenance downtime when production is tight. Pass --production-schedule to the CLI. The effective cap is min(base config max_total_downtime_hours, this value).",
+  "max_total_downtime_hours": 16
+}

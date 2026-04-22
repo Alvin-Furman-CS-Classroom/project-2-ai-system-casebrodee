@@ -1,0 +1,51 @@
+{
+  "states": [
+    "risk_low",
+    "risk_low_m1hot",
+    "risk_mid",
+    "risk_mid_m1hot",
+    "risk_high",
+    "risk_high_m1hot"
+  ],
+  "actions": ["defer", "inspect", "repair"],
+  "initial_state_weights": {
+    "risk_low": 0.12,
+    "risk_low_m1hot": 0.1,
+    "risk_mid": 0.18,
+    "risk_mid_m1hot": 0.15,
+    "risk_high": 0.22,
+    "risk_high_m1hot": 0.23
+  },
+  "transitions": {
+    "risk_low": {
+      "defer": [[0.88, "risk_low", -8.0], [0.12, "risk_mid", -8.0]],
+      "inspect": [[0.82, "risk_low", -200.0], [0.18, "risk_mid", -200.0]],
+      "repair": [[0.94, "risk_low", -880.0], [0.06, "risk_mid", -880.0]]
+    },
+    "risk_low_m1hot": {
+      "defer": [[0.72, "risk_low_m1hot", -28.0], [0.2, "risk_mid_m1hot", -28.0], [0.08, "risk_mid", -28.0]],
+      "inspect": [[0.52, "risk_low", -205.0], [0.35, "risk_low_m1hot", -205.0], [0.13, "risk_mid", -205.0]],
+      "repair": [[0.9, "risk_low", -900.0], [0.1, "risk_mid", -900.0]]
+    },
+    "risk_mid": {
+      "defer": [[0.52, "risk_mid", -65.0], [0.35, "risk_high", -65.0], [0.13, "risk_low", -65.0]],
+      "inspect": [[0.5, "risk_low", -240.0], [0.4, "risk_mid", -240.0], [0.1, "risk_high", -240.0]],
+      "repair": [[0.58, "risk_low", -720.0], [0.32, "risk_mid", -720.0], [0.1, "risk_high", -720.0]]
+    },
+    "risk_mid_m1hot": {
+      "defer": [[0.42, "risk_mid_m1hot", -105.0], [0.4, "risk_high_m1hot", -105.0], [0.18, "risk_mid", -105.0]],
+      "inspect": [[0.42, "risk_low", -255.0], [0.38, "risk_mid", -255.0], [0.2, "risk_mid_m1hot", -255.0]],
+      "repair": [[0.52, "risk_low", -740.0], [0.35, "risk_mid", -740.0], [0.13, "risk_high", -740.0]]
+    },
+    "risk_high": {
+      "defer": [[0.48, "risk_high", -410.0], [0.4, "risk_mid", -410.0], [0.12, "risk_low", -410.0]],
+      "inspect": [[0.22, "risk_high", -360.0], [0.48, "risk_mid", -360.0], [0.3, "risk_low", -360.0]],
+      "repair": [[0.64, "risk_low", -1020.0], [0.28, "risk_mid", -1020.0], [0.08, "risk_high", -1020.0]]
+    },
+    "risk_high_m1hot": {
+      "defer": [[0.5, "risk_high_m1hot", -560.0], [0.38, "risk_mid_m1hot", -560.0], [0.12, "risk_high", -560.0]],
+      "inspect": [[0.16, "risk_high_m1hot", -400.0], [0.44, "risk_mid", -400.0], [0.4, "risk_low", -400.0]],
+      "repair": [[0.7, "risk_low", -1040.0], [0.22, "risk_mid", -1040.0], [0.08, "risk_high_m1hot", -1040.0]]
+    }
+  }
+}

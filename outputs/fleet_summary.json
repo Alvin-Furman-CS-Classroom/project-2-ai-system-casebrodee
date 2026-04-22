@@ -1,0 +1,78 @@
+{
+  "artifacts": {
+    "module1_classifications_jsonl": true,
+    "module2_sequences_json": true,
+    "module2_warning_signs_json": true,
+    "module3_diagnosis_json": true,
+    "module4_maintenance_plan_json": true,
+    "module6_rl_metrics_json": true,
+    "module6_rl_policy_json": true,
+    "report_html": true
+  },
+  "generated_at": "2026-04-13T21:56:13Z",
+  "load_errors": {
+    "core": [],
+    "optional": []
+  },
+  "module1": {
+    "anomaly_count": 7,
+    "anomaly_rate_pct": 100.0,
+    "row_count": 7,
+    "top_violated_rules": [
+      {
+        "count": 7,
+        "rule": "pressure_high"
+      },
+      {
+        "count": 1,
+        "rule": "vibration_high"
+      }
+    ]
+  },
+  "module2": {
+    "sequence_count": 3,
+    "warning_sign_count": 3
+  },
+  "module3": {
+    "equipment_count": 2
+  },
+  "module4": {
+    "action_mix": {
+      "inspect": 1,
+      "repair": 1
+    },
+    "assignment_count": 2,
+    "totals": {
+      "failure_penalty": 2668.75,
+      "maintenance_cost": 1100.0,
+      "objective": 3768.75
+    }
+  },
+  "module6": {
+    "baseline_always_defer_mean_return": -3582.555,
+    "baseline_random_mean_return": -5523.447,
+    "mdp_num_actions": 3,
+    "mdp_num_states": 6,
+    "meta_hyperparameters": {
+      "alpha": 0.12,
+      "epsilon_decay_episodes": 2500,
+      "epsilon_end": 0.05,
+      "epsilon_start": 0.35,
+      "gamma": 0.95,
+      "max_steps_per_episode": 14,
+      "num_episodes": 8000
+    },
+    "policy": {
+      "risk_high": "inspect",
+      "risk_high_m1hot": "inspect",
+      "risk_low": "defer",
+      "risk_low_m1hot": "defer",
+      "risk_mid": "defer",
+      "risk_mid_m1hot": "inspect"
+    },
+    "policy_state_count": 6,
+    "rich_mdp_states": true,
+    "trained_policy_last_window_mean_return": -1581.066
+  },
+  "outputs_root": "/Users/brodeeclontz/Documents/GitHub/project-2-ai-system-casebrodee/outputs"
+}

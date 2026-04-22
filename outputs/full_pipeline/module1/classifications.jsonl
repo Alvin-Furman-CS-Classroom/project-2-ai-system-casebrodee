@@ -1,0 +1,7 @@
+{"timestamp": "2026-01-01T00:00:00Z", "equipment_id": "M1", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}
+{"timestamp": "2026-01-01T00:01:00Z", "equipment_id": "M1", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}
+{"timestamp": "2026-01-01T00:02:00Z", "equipment_id": "M1", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}
+{"timestamp": "2026-01-01T00:03:00Z", "equipment_id": "M1", "status": "anomaly", "violated_rules": ["pressure_high", "vibration_high"], "confidence": 0.7999999999999999}
+{"timestamp": "2026-01-01T00:00:00Z", "equipment_id": "M2", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}
+{"timestamp": "2026-01-01T00:01:00Z", "equipment_id": "M2", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}
+{"timestamp": "2026-01-01T00:02:00Z", "equipment_id": "M2", "status": "anomaly", "violated_rules": ["pressure_high"], "confidence": 0.7}

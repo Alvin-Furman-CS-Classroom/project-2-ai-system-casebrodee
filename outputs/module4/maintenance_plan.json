@@ -1,0 +1,122 @@
+{
+  "assignments": [
+    {
+      "equipment_id": "M1",
+      "action_id": "repair",
+      "cost": 900.0,
+      "downtime_hours": 10.0,
+      "residual_risk_weighted": 0.0885
+    },
+    {
+      "equipment_id": "M2",
+      "action_id": "repair",
+      "cost": 900.0,
+      "downtime_hours": 10.0,
+      "residual_risk_weighted": 0.0822
+    }
+  ],
+  "totals": {
+    "maintenance_cost": 1800.0,
+    "failure_penalty": 853.5,
+    "objective": 2653.5
+  },
+  "meta": {
+    "production_schedule": {
+      "applied": false
+    },
+    "effective_max_total_downtime_hours": 40.0
+  },
+  "optimization": {
+    "recommended_method": "hill_climbing",
+    "hill_climbing": {
+      "objective": 2653.5,
+      "restarts_used": 5,
+      "iterations": 44
+    },
+    "simulated_annealing": {
+      "objective": 2653.5,
+      "iterations": 4000
+    }
+  },
+  "tradeoffs": [
+    {
+      "budget_multiplier": 0.5,
+      "effective_budget": 1500.0,
+      "best_objective": 3768.75
+    },
+    {
+      "budget_multiplier": 0.75,
+      "effective_budget": 2250.0,
+      "best_objective": 2653.5
+    },
+    {
+      "budget_multiplier": 1.0,
+      "effective_budget": 3000.0,
+      "best_objective": 2653.5
+    },
+    {
+      "budget_multiplier": 1.25,
+      "effective_budget": 3750.0,
+      "best_objective": 2653.5
+    }
+  ],
+  "contingency": {
+    "single_full_repair_minimax": {
+      "chosen_equipment": "M1",
+      "nature_worst_case_failure_on": "M2",
+      "maintainer_repair_cost": 900.0,
+      "failure_penalty_under_worst_case": 3425.0,
+      "total": 4325.0
+    }
+  },
+  "game_analysis": {
+    "description": "2x2 scan: row = optimized schedule vs all-defer; col = baseline risk vs stressed risks (factor 1.15). Row utility is negative total objective (minimize cost); column utility is failure penalty. mixed_nash_zero_sum uses the row payoff matrix only, zero-sum (column minimizes row).",
+    "payoff_row_operator_utility": [
+      [
+        -2653.5,
+        -2781.525
+      ],
+      [
+        -7112.5,
+        -8179.375
+      ]
+    ],
+    "payoff_col_environment_utility": [
+      [
+        853.5,
+        981.525
+      ],
+      [
+        7112.5,
+        8179.375
+      ]
+    ],
+    "pure_nash_equilibria": [
+      {
+        "row_strategy_index": 0,
+        "col_strategy_index": 1,
+        "payoff_row": -2781.525,
+        "payoff_col": 981.525
+      }
+    ],
+    "mixed_nash_zero_sum_row_matrix": {
+      "matrix": [
+        [
+          -2653.5,
+          -2781.525
+        ],
+        [
+          -7112.5,
+          -8179.375
+        ]
+      ],
+      "equilibrium": {
+        "degenerate": false,
+        "row_probability_strategy_0": 1.0,
+        "col_probability_strategy_0": 1.0,
+        "value_to_row": -2045.454545,
+        "delta_denominator": -938.85
+      }
+    }
+  }
+}

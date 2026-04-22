@@ -1,0 +1,9 @@
+{
+  "max_depth": 50,
+  "lookback_window": 50,
+  "min_pattern_length": 3,
+  "heuristic": "time_to_failure",
+  "a_star_weight": 1.0,
+  "max_total_paths": null,
+  "max_paths_per_start": null
+}

@@ -1,0 +1,16 @@
+{
+  "gamma": 0.95,
+  "alpha": 0.12,
+  "epsilon_start": 0.35,
+  "epsilon_end": 0.05,
+  "epsilon_decay_episodes": 2500,
+  "num_episodes": 8000,
+  "max_steps_per_episode": 14,
+  "random_seed": 42,
+  "risk_thresholds": [0.33, 0.66],
+  "mdp_path": "mdp.json",
+  "module4_config_path": "../module4/module4_config.json",
+  "classifications_path": null,
+  "m1_anomaly_rate_alert": 0.35,
+  "m1_confidence_alert_fallback": 0.55
+}
