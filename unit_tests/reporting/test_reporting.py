@@ -171,6 +171,59 @@ def test_generate_report_module6_rich_states_and_training_note(tmp_path: Path) -
     assert "M1-hot when Module 1 anomaly rate" in html
 
 
+def test_generate_report_module6_m1_hot_github_classifications_link(tmp_path: Path) -> None:
+    """M1-hot panel links to the canonical GitHub blob, not a local absolute path."""
+    outputs = tmp_path / "outputs"
+    (outputs / "module1").mkdir(parents=True, exist_ok=True)
+    (outputs / "module1" / "classifications.jsonl").write_text(
+        '{"timestamp":"t1","equipment_id":"M1","status":"normal","violated_rules":[],"confidence":0.1}\n',
+        encoding="utf-8",
+    )
+    _write_json(outputs / "module2" / "sequences.json", {"sequences": []})
+    _write_json(outputs / "module2" / "warning_signs.json", {"warning_signs": []})
+    _write_json(outputs / "module3" / "diagnosis.json", {"equipment": []})
+    _write_json(
+        outputs / "module6" / "rl_policy.json",
+        {
+            "policy": {
+                "risk_low": "defer",
+                "risk_low_m1hot": "inspect",
+                "risk_mid": "inspect",
+                "risk_mid_m1hot": "inspect",
+                "risk_high": "repair",
+                "risk_high_m1hot": "repair",
+            },
+            "q_table": {},
+            "meta": {
+                "random_seed": 1,
+                "m1_alert": {
+                    "classifications_path": str(tmp_path / "somewhere" / "classifications.jsonl"),
+                    "anomaly_rate_threshold": 0.35,
+                    "confidence_fallback_threshold": 0.55,
+                },
+            },
+        },
+    )
+    _write_json(
+        outputs / "module6" / "rl_metrics.json",
+        {
+            "trained_policy_last_window": {"mean_return": -50.0, "std_return": 1.0, "window_episodes": 10},
+            "baseline_always_defer": {"mean_return": -60.0, "std_return": 1.0, "eval_episodes": 200},
+            "baseline_random": {"mean_return": -55.0, "std_return": 2.0, "eval_episodes": 200},
+            "mdp": {"num_states": 6, "num_actions": 3, "states": [], "actions": []},
+        },
+    )
+
+    report_path = outputs / "report.html"
+    reporting.generate_report(outputs, report_path)
+    html = report_path.read_text(encoding="utf-8")
+
+    url = reporting.REPORT_MODULE1_CLASSIFICATIONS_BLOB_URL
+    assert url in html
+    assert f'<a href="{url}"' in html
+    assert "somewhere/classifications.jsonl" not in html
+
+
 def test_build_fleet_summary_and_write_round_trip(tmp_path: Path) -> None:
     outputs = tmp_path / "outputs"
     (outputs / "module1").mkdir(parents=True, exist_ok=True)

@@ -8,6 +8,21 @@ from html import escape
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
+# Canonical public link for Module 1 `classifications.jsonl` in the HTML report
+# (avoids embedding machine-specific absolute paths).
+REPORT_MODULE1_CLASSIFICATIONS_BLOB_URL = (
+    "https://github.com/Alvin-Furman-CS-Classroom/project-2-ai-system-casebrodee/"
+    "blob/main/outputs/module1/classifications.jsonl"
+)
+
+
+def _classifications_file_report_html(cp: Any) -> str:
+    """How the M1-hot panel cites the classifications artifact in generated HTML."""
+    if not cp:
+        return escape("none (config/CLI)")
+    esc = escape(REPORT_MODULE1_CLASSIFICATIONS_BLOB_URL)
+    return f'<a href="{esc}" rel="noopener noreferrer">{esc}</a>'
+
 
 def _read_json(path: Path) -> tuple[Any | None, str | None]:
     if not path.exists():
@@ -1118,7 +1133,7 @@ def _render_module6_section(context: Mapping[str, Any]) -> str:
         cp = m1a.get("classifications_path")
         ar = m1a.get("anomaly_rate_threshold")
         cf = m1a.get("confidence_fallback_threshold")
-        m1_extra = f"""  <details class="soft-panel"><summary>M1-hot signal (this run)</summary><div class="details-body"><p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold {escape(str(ar))} when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ {escape(str(cf))}. Classifications file: {escape(str(cp) if cp else "none (config/CLI)")}.</p></div></details>
+        m1_extra = f"""  <details class="soft-panel"><summary>M1-hot signal (this run)</summary><div class="details-body"><p class="subtle"><strong>M1-hot signal (this run):</strong> anomaly-rate threshold {escape(str(ar))} when classifications are available; otherwise fallback on diagnosis <code>meta.m1_max_confidence</code> ≥ {escape(str(cf))}. Classifications file: {_classifications_file_report_html(cp)}.</p></div></details>
 """
     if m6_rich:
         intro = (
